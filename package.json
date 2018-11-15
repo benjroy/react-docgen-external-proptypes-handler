@@ -15,6 +15,7 @@
   },
   "homepage": "https://github.com/siddharthkp/react-docgen-external-proptypes-handler#readme",
   "devDependencies": {
-    "jest": "^23.6.0"
+    "jest": "^23.6.0",
+    "react-docgen": "^2.21.0"
   }
 }
