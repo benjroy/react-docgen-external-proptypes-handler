@@ -13,5 +13,8 @@
   "bugs": {
     "url": "https://github.com/siddharthkp/react-docgen-external-proptypes-handler/issues"
   },
-  "homepage": "https://github.com/siddharthkp/react-docgen-external-proptypes-handler#readme"
+  "homepage": "https://github.com/siddharthkp/react-docgen-external-proptypes-handler#readme",
+  "devDependencies": {
+    "jest": "^23.6.0"
+  }
 }
