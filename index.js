@@ -448,41 +448,38 @@ function amendDocs(doc, path, props) {
 }
 
 
-function resolveExternalProps(componentPath, path) {
-  // console.log('propertyPath.node', Object.keys(propertyPath.node), propertyPath.node);
-
-  const variableNameToSpread = path.node.argument.name;
-  console.log('variableNameToSpread', variableNameToSpread);
-
-  // get map of import paths to local and remote variable names
-  const importSpecifiers = getImportSpecifiersForVariable(propTypesAST)
-  // console.log('spread importSpecifiers', importSpecifiers)
-
-  // pick the path to the targeted file
-  const importTarget = importSpecifiers[variableNameToSpread];
-  console.log('importTarget', importTarget)
-
-  if (!importTarget) {
-    return;
-  }
-
-  const _propsNameIdentifier = importTarget.imported || variableNameToSpread;
-  // lots duplicated from here
-  const _propTypesFilePath = resolveFilePath(componentPath, importTarget.path); // slightly altered
-  const propTypesSrc = getSrc(_propTypesFilePath) //altered
-  const _propTypesAST = getAST(propTypesSrc) // altered
-  const importedPropTypes = getIdentifiers(_propTypesAST)[_propsNameIdentifier]; // slightly altered
-
-  if (!importedPropTypes) {
-    return
-  }
-  console.log('importedPropTypes', propTypesFilePath);
-  propTypesPath = utils.resolveToValue(importedPropTypes.path)
-
-  //updating doc object with external props
-  amendPropTypes(doc, propTypesPath)
+function isImportedVariable({ ast, variableName }) {
+  const importSpecifiers = getImportSpecifiersForVariable(ast)
+  return !!importSpecifiers[variableName];
 }
 
+function resolveImportedVariableNameToAstPath({ filepath, ast, variableName }) {
+  console.log('resolveImportedVariableNameToAstPath', { variableName, filepath });
+
+  // get map of import paths to local and remote variable names
+  const importSpecifiers = getImportSpecifiersForVariable(ast)
+  // pick the path to the targeted file
+  const importTarget = importSpecifiers[variableName];
+  console.log('NOT importTarget', importTarget)
+
+  if (!importTarget) {
+    throw new Error(`Cannot find target to import for variableName: ${variableName} in ${filepath}`);
+  }
+
+  const importedFilepath = resolveFilePath(filepath, importTarget.path); // slightly altered
+  const importedSrc = getSrc(importedFilepath) //altered
+  const importedAST = getAST(importedSrc) // altered
+  const importedPropTypes = getIdentifiers(importedAST)[importTarget.imported || variableName]; // slightly altered
+
+  if (!importedPropTypes) {
+    // TODO: better error
+    throw 'no imported proptypes'
+  }
+  // console.log('resolveImportedVariableNameToAstPathimportedPropTypes', importedPropTypes);
+  const importedPropTypesPath = utils.resolveToValue(importedPropTypes.path)
+
+  return { path: importedPropTypesPath, filepath: importedFilepath, ast: importedAST };
+}
 
 /**
  * Initilizer of react-docgen custom handler.
@@ -491,11 +488,14 @@ function resolveExternalProps(componentPath, path) {
  * @param  {String} componentPath  Absolute path of the react component
  */
 function createImportHandler(componentPath) {
+  const filepath = componentPath;
   return function handleExternalImports(doc, path) {
+    // TODO: rename root
     const root = path.scope.getGlobalScope().node;
     let propTypesPath, propTypesFilePath, propTypesAST;
 
     propTypesAST = root;
+    const ast = root;
     propTypesFilePath = componentPath;
 
     propTypesPath = utils.getMemberValuePath(path, 'propTypes');
@@ -506,106 +506,30 @@ function createImportHandler(componentPath) {
     // console.log('got resolveToValue', propTypesPath);
     // OH WOW REMOVE THOSE THREE LINES ABOVE
 
-
-    // if (!propTypesPath) {
-    //   return
-    // }
-    // console.log('propTypesPath', propTypesFilePath);
-    // TEMP CODE HERE
-    // END TEMP CODE HERE
-
-    // const propsNameIdentifier = propTypesPath.node.name
-    // let propsNameIdentifier = propTypesPath.node.name
-    // propTypesPath = utils.resolveToValue(propTypesPath)
-    // // console.log('propsNameIdentifier', propsNameIdentifier);
-    // if (!propTypesPath) {
-    //   return
-    // }
-    // console.log('2 propTypesPath', propTypesPath);
     const isObjectExpression = types.ObjectExpression.check(propTypesPath.node);
     console.log('before condition', isObjectExpression);
 
-    if (!types.ObjectExpression.check(propTypesPath.node)) {
-      console.log('NOT OBJECT EXPRESSION', propTypesPath);
-      // console.log('propTypesPath.node.source.value', propTypesPath.node.source);
-      //First resolve dependencies against component path
-      const variableNameToSpread = propTypesPath.node.name;
-      console.log('NOT variableNameToSpread', variableNameToSpread)
+    const importedVariableNames = [];
 
-      // get map of import paths to local and remote variable names
-      const importSpecifiers = getImportSpecifiersForVariable(propTypesAST)
-      // pick the path to the targeted file
-      const importTarget = importSpecifiers[variableNameToSpread];
-      console.log('NOT importTarget', importTarget)
-      if (!importTarget) return;
-
-      // propTypesFilePath = resolveFilePath(componentPath, propTypesPath.node.source.value)
-      // const propTypesSrc = getSrc(propTypesFilePath)
-      // propTypesAST = getAST(propTypesSrc)
-      // const importedPropTypes = getIdentifiers(propTypesAST)[variableNameToSpread]
-      const _propsNameIdentifier = importTarget.imported || variableNameToSpread;
-      // lots duplicated from here
-      const _propTypesFilePath = resolveFilePath(componentPath, importTarget.path); // slightly altered
-      const propTypesSrc = getSrc(_propTypesFilePath) //altered
-      const _propTypesAST = getAST(propTypesSrc) // altered
-      const importedPropTypes = getIdentifiers(_propTypesAST)[_propsNameIdentifier]; // slightly altered
-
-      // const propsNameIdentifier = propTypesPath.node.name
-      // propTypesFilePath = resolveFilePath(componentPath, propTypesPath.node.source.value)
-      // const propTypesSrc = getSrc(propTypesFilePath)
-      // propTypesAST = getAST(propTypesSrc)
-      // const importedPropTypes = getIdentifiers(propTypesAST)[propsNameIdentifier]
-
-      if (!importedPropTypes) {
-        return
-      }
-      // console.log('importedPropTypes', propTypesFilePath);
-      propTypesPath = utils.resolveToValue(importedPropTypes.path)
-
-      //updating doc object with external props
-      amendPropTypes(doc, propTypesPath)
-    } else {
-      console.log('I AM AN OBJECT EXPRESSION');
-      // console.log(propTypesPath);
-      propTypesPath.get('properties').each(propertyPath => {
-
-        if (!types.SpreadProperty.check(propertyPath.value)) return;
-        // console.log('propertyPath.node', Object.keys(propertyPath.node), propertyPath.node);
-
-        const variableNameToSpread = propertyPath.node.argument.name;
-        console.log('variableNameToSpread', variableNameToSpread);
-
-        // get map of import paths to local and remote variable names
-        const importSpecifiers = getImportSpecifiersForVariable(propTypesAST)
-        // console.log('spread importSpecifiers', importSpecifiers)
-
-        // pick the path to the targeted file
-        const importTarget = importSpecifiers[variableNameToSpread];
-        console.log('importTarget', importTarget)
-
-        if (!importTarget) {
-          return;
-        }
-
-        const _propsNameIdentifier = importTarget.imported || variableNameToSpread;
-        // lots duplicated from here
-        const _propTypesFilePath = resolveFilePath(componentPath, importTarget.path); // slightly altered
-        const propTypesSrc = getSrc(_propTypesFilePath) //altered
-        const _propTypesAST = getAST(propTypesSrc) // altered
-        const importedPropTypes = getIdentifiers(_propTypesAST)[_propsNameIdentifier]; // slightly altered
-
-        if (!importedPropTypes) {
-          return
-        }
-        console.log('importedPropTypes', propTypesFilePath);
-        propTypesPath = utils.resolveToValue(importedPropTypes.path)
-        console.log('after propTypesPath', propTypesPath)
-        //updating doc object with external props
-        amendPropTypes(doc, propTypesPath)
-
-      });
-
+    // deal with literal assignments
+    if (types.ObjectExpression.check(propTypesPath.node) === false) {
+      if (!isImportedVariable({ ast, variableName: propTypesPath.node.name })) return;
+      importedVariableNames.push(propTypesPath.node.name);
     }
+    // deal with spread variables
+    if (types.ObjectExpression.check(propTypesPath.node) === true) {
+      propTypesPath.get('properties').each(propertyPath => {
+        if (!types.SpreadProperty.check(propertyPath.value)) return;
+        if (!isImportedVariable({ ast, variableName: propertyPath.node.argument.name })) return;
+        importedVariableNames.push(propertyPath.node.argument.name);
+      });
+    }
+
+    importedVariableNames.forEach(variableName => {
+      const resolved = resolveImportedVariableNameToAstPath({ variableName, ast, filepath });
+      //updating doc object with external props
+      amendPropTypes(doc, resolved.path);
+    });
 
     const computedPropNames = getComputedPropValuesFromDoc(doc)
     console.log('computedPropNames', computedPropNames)
