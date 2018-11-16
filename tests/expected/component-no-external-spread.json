@@ -1,0 +1,63 @@
+{
+  "description": "",
+  "displayName": "ComponentNoExternalSpread",
+  "methods": [],
+  "props": {
+    "local-bool-spread": {
+      "type": {
+        "name": "bool"
+      },
+      "required": true
+    },
+    "local-string": {
+      "type": {
+        "name": "string"
+      },
+      "required": false,
+      "description": "Comment for local-string.",
+      "defaultValue": {
+        "value": "'default-local-string'",
+        "computed": false
+      }
+    },
+    "local-node": {
+      "type": {
+        "name": "node"
+      },
+      "required": true,
+      "description": "Comment for local-node."
+    },
+    "local-number": {
+      "type": {
+        "name": "number"
+      },
+      "required": false,
+      "description": "Comment for local-number."
+    },
+    "local-enum": {
+      "type": {
+        "name": "enum",
+        "value": [
+          {
+            "value": "9",
+            "computed": false
+          },
+          {
+            "value": "'eight'",
+            "computed": false
+          },
+          {
+            "value": "7",
+            "computed": false
+          }
+        ]
+      },
+      "required": false,
+      "description": "Comment for local-enum.",
+      "defaultValue": {
+        "value": "3",
+        "computed": false
+      }
+    }
+  }
+}
