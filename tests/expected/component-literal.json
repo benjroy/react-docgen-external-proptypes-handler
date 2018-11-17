@@ -1,7 +1,4 @@
 {
-  "description": "",
-  "displayName": "ComponentLiteral",
-  "methods": [],
   "props": {
     "api-1-node-required": {
       "type": {
@@ -17,6 +14,5 @@
       "required": false,
       "description": "Comment for api-1-bool."
     }
-  },
-  "composes": ["./api-1"]
+  }
 }

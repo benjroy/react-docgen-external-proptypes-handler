@@ -46,6 +46,24 @@
       "required": true,
       "description": "Comment for api-2-node-required."
     },
+    "api-3-node-required": {
+      "type": {
+        "name": "node"
+      },
+      "required": true,
+      "description": "Comment for api-3-node-required."
+    },
+    "api-3-number": {
+      "type": {
+        "name": "number"
+      },
+      "required": false,
+      "description": "Comment for api-3-number.",
+      "defaultValue": {
+        "computed": false,
+        "value": "42"
+      }
+    },
     "local-number": {
       "type": {
         "name": "number"
