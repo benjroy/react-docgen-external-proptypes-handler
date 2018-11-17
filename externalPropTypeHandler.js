@@ -29,6 +29,9 @@ const {
   getNameOrValue,
 } = docgen.utils;
 
+const HOP = Object.prototype.hasOwnProperty
+const createObject = Object.create
+
 const {
   types: { namedTypes: types },
 } = recast;
@@ -127,7 +130,7 @@ function getAST(src) {
 }
 
 function getImportsForLocalVariablesFromAST(ast) {
-  const specifiers = {};
+  const specifiers = createObject(null);
 
   recast.visit(ast, {
     visitImportDeclaration: path => {
@@ -188,7 +191,7 @@ function resolveImportModuleFilePath(filepath, modulePath) {
  * @return {Object} Which holds identifier relative file path as `key` and identifier name as `value`
  */
 function getIdentifiers(ast) {
-  const identifiers = {};
+  const identifiers = createObject(null);
 
   recast.visit(ast, {
     visitVariableDeclarator(path) {
@@ -269,6 +272,9 @@ function resolveToImportedPaths(path, filepath) {
   console.log('imports', imports);
 
   const importedPaths = variableNames.reduce((memo, variableName) => {
+    if (!HOP.call(imports, variableName)) {
+      return memo;
+    }
     const { modulePath, target } = imports[variableName];
     // only process relative imports (not node_modules dependencies)
     if (modulePath.startsWith('./')) {
