@@ -30,11 +30,12 @@ const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-*.js'
 
 describe('react-docgen-external-proptypes-handler', () => TARGET_FILES.forEach(filepath => {
   const name = path.basename(filepath, '.js');
-  const expected = require(`./expected/${name}.json`);
+  // const expected = require(`./expected/${name}.json`);
 
   it(`processes all props for ${name}`, () => {
     const info = processFilepath(filepath);
     // console.log(`info ${name}`, JSON.stringify(info, null, 2));
-    expect(info).toEqual(expected);
+    // expect(info).toEqual(expected);
+    expect(info).toMatchSnapshot();
   });
 }));

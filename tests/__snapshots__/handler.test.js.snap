@@ -1,0 +1,247 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`react-docgen-external-proptypes-handler processes all props for component-literal 1`] = `
+Object {
+  "composes": Array [
+    "./api-1",
+  ],
+  "description": "",
+  "displayName": "ComponentLiteral",
+  "methods": Array [],
+  "props": Object {
+    "api-1-bool": Object {
+      "description": "Comment for api-1-bool.",
+      "required": false,
+      "type": Object {
+        "name": "bool",
+      },
+    },
+    "api-1-node-required": Object {
+      "description": "Comment for api-1-node-required.",
+      "required": true,
+      "type": Object {
+        "name": "node",
+      },
+    },
+  },
+}
+`;
+
+exports[`react-docgen-external-proptypes-handler processes all props for component-no-external-spread 1`] = `
+Object {
+  "description": "",
+  "displayName": "ComponentNoExternalSpread",
+  "methods": Array [],
+  "props": Object {
+    "local-bool-spread": Object {
+      "required": true,
+      "type": Object {
+        "name": "bool",
+      },
+    },
+    "local-enum": Object {
+      "defaultValue": Object {
+        "computed": false,
+        "value": "3",
+      },
+      "description": "Comment for local-enum.",
+      "required": false,
+      "type": Object {
+        "name": "enum",
+        "value": Array [
+          Object {
+            "computed": false,
+            "value": "9",
+          },
+          Object {
+            "computed": false,
+            "value": "'eight'",
+          },
+          Object {
+            "computed": false,
+            "value": "7",
+          },
+        ],
+      },
+    },
+    "local-enum-external-list": Object {
+      "description": "",
+      "required": false,
+      "type": Object {
+        "computed": true,
+        "name": "enum",
+        "value": "ENUM",
+      },
+    },
+    "local-enum-external-values": Object {
+      "description": "",
+      "required": false,
+      "type": Object {
+        "name": "enum",
+        "value": Array [
+          Object {
+            "computed": true,
+            "value": "VALUES.ZERO",
+          },
+          Object {
+            "computed": true,
+            "value": "VALUES.ONE",
+          },
+          Object {
+            "computed": true,
+            "value": "VALUES.TWO",
+          },
+          Object {
+            "computed": true,
+            "value": "VALUES.THREE",
+          },
+        ],
+      },
+    },
+    "local-node": Object {
+      "description": "Comment for local-node.",
+      "required": true,
+      "type": Object {
+        "name": "node",
+      },
+    },
+    "local-number": Object {
+      "description": "Comment for local-number.",
+      "required": false,
+      "type": Object {
+        "name": "number",
+      },
+    },
+    "local-string": Object {
+      "defaultValue": Object {
+        "computed": false,
+        "value": "'default-local-string'",
+      },
+      "description": "Comment for local-string.",
+      "required": false,
+      "type": Object {
+        "name": "string",
+      },
+    },
+  },
+}
+`;
+
+exports[`react-docgen-external-proptypes-handler processes all props for component-spreads 1`] = `
+Object {
+  "composes": Array [
+    "./api-1",
+    "./api-2",
+  ],
+  "description": "",
+  "displayName": "ComponentSpreads",
+  "methods": Array [],
+  "props": Object {
+    "api-1-bool": Object {
+      "description": "Comment for api-1-bool.",
+      "required": false,
+      "type": Object {
+        "name": "bool",
+      },
+    },
+    "api-1-node-required": Object {
+      "description": "Comment for api-1-node-required.",
+      "required": true,
+      "type": Object {
+        "name": "node",
+      },
+    },
+    "api-2-node-required": Object {
+      "description": "Comment for api-2-node-required.",
+      "required": true,
+      "type": Object {
+        "name": "node",
+      },
+    },
+    "api-2-string": Object {
+      "description": "Comment for api-2-string.",
+      "required": false,
+      "type": Object {
+        "name": "string",
+      },
+    },
+    "local-string": Object {
+      "defaultValue": Object {
+        "computed": false,
+        "value": "'default-local-string'",
+      },
+      "description": "",
+      "required": false,
+      "type": Object {
+        "name": "string",
+      },
+    },
+  },
+}
+`;
+
+exports[`react-docgen-external-proptypes-handler processes all props for component-spreads-nested 1`] = `
+Object {
+  "composes": Array [
+    "./api-3",
+  ],
+  "description": "",
+  "displayName": "ComponentSpreadsNested",
+  "methods": Array [],
+  "props": Object {
+    "api-1-bool": Object {
+      "description": "Comment for api-1-bool.",
+      "required": false,
+      "type": Object {
+        "name": "bool",
+      },
+    },
+    "api-1-node-required": Object {
+      "description": "Comment for api-1-node-required.",
+      "required": true,
+      "type": Object {
+        "name": "node",
+      },
+    },
+    "api-2-node-required": Object {
+      "description": "Comment for api-2-node-required.",
+      "required": true,
+      "type": Object {
+        "name": "node",
+      },
+    },
+    "api-2-string": Object {
+      "description": "Comment for api-2-string.",
+      "required": false,
+      "type": Object {
+        "name": "string",
+      },
+    },
+    "api-3-node-required": Object {
+      "description": "Comment for api-3-node-required.",
+      "required": true,
+      "type": Object {
+        "name": "node",
+      },
+    },
+    "api-3-number": Object {
+      "description": "Comment for api-3-number.",
+      "required": false,
+      "type": Object {
+        "name": "number",
+      },
+    },
+    "local-number": Object {
+      "defaultValue": Object {
+        "computed": false,
+        "value": "4242",
+      },
+      "description": "",
+      "required": false,
+      "type": Object {
+        "name": "number",
+      },
+    },
+  },
+}
+`;
