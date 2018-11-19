@@ -36,6 +36,8 @@ const {
   types: { namedTypes: types },
 } = recast;
 
+console.log('types', types);
+
 function isPropTypesExpression(path) {
   const moduleName = resolveToModule(path);
   if (moduleName) {
@@ -49,7 +51,7 @@ function getImportedValuePath() {}
 // we will amend this method to follow imports
 // function amendPropTypes(getDescriptor, path) {
 function amendPropTypes(getDescriptor, documentation, path, filepath) {
-  console.log('amendPropTypes', filepath, path.get('properties'));
+  // console.log('amendPropTypes', filepath, path.get('properties'));
 
   if (!types.ObjectExpression.check(path.node)) {
     console.log('amendPropTypes bailing', filepath, path.node);
@@ -237,6 +239,69 @@ function getIdentifiers(ast) {
   return identifiers;
 }
 
+
+/**
+ * Method to parse and get computed nodes from a document object
+ *
+ * @method getComputedPropValuesFromDoc
+ * @param  {Object} doc  react-docgen document object
+ * @return {Object/Boolean} Object with computed property identifer as `key` and AST node path as `value`,
+ *                          If documnet object have any computed properties else return false.
+ */
+
+function getComputedPropValuesFromDoc(doc, output = []) {
+  let flag;
+  // const computedProps = createObject(null);
+  const props = doc.toObject().props;
+
+  flag = false
+
+  if (!props) return false;
+
+  for (const prop in props) {
+    console.log('prop', prop);
+    if (!HOP.call(props, prop)) continue;
+    gatherComputedPropValues(props[prop].type, output);
+    continue;
+  }
+  //   const o = props[prop];
+  //   console.log('has prop', o);
+  //   if (o.type && o.type.name !== 'enum') continue;
+  //   if (!o.type.computed) {
+
+  //     continue;
+  //   };
+  //   computedProps[o.type.value] = o;
+  // }
+  // if (Object.keys(computedProps).length === 0) return false;
+  if (output.length === 0) return false;
+  return output;
+}
+
+function gatherComputedPropValues(docPropType, output = []) {
+  const type = docPropType;
+  if (!type) return output;
+  if (Array.isArray(type.value)) {
+    type.value.forEach(propValueType => gatherComputedPropValues(propValueType, output));
+    // return output;
+  }
+  if (type.computed) {
+    output.push(type.value);
+  }
+  return output;
+
+  // if (type.name === 'enum' && type.computed) {
+  //   output.push = type.value;
+
+  // } 
+
+  // if (type.name !== 'enum') return output;
+  // if (Array.isArray(type.value)) {
+  //   gather
+  //   return output;
+  // }
+}
+
 function resolveToImportedPaths(path, filepath) {
   console.log('resolveToImportedValue', filepath, path);
 
@@ -262,6 +327,7 @@ function resolveToImportedPaths(path, filepath) {
     }
     default: {
       console.log('UNHANDELED resolveToImportedPaths', path.node)
+      // throw new Error('UNHANDELED resolveToImportedPaths');
     }
   }
 
@@ -304,13 +370,13 @@ function getExternalPropTypeHandler(propName) {
     console.log('getExternalPropTypeHandler', propName, filepath);
     return function externalPropTypeHandler(documentation, path) {
       console.log('documentation', documentation);
+      console.log('identifiers', getIdentifiers(path.scope.getGlobalScope().node))
       let propTypesPath = getMemberValuePath(path, propName);
       if (!propTypesPath) {
         return;
       }
       console.log('propTypesPath', propTypesPath)
       // propTypesPath = resolveToValue(propTypesPath);
-      const externalPropTypesPaths = resolveToImportedPaths(propTypesPath, filepath);
       // console.log('paths', paths);
       // if (!propTypesPath) {
       //   return;
@@ -326,16 +392,33 @@ function getExternalPropTypeHandler(propName) {
         default:
           getDescriptor = documentation.getPropDescriptor;
       }
+
+      getDescriptor = getDescriptor.bind(documentation);
+
+      const internalPropTypesPath = resolveToValue(propTypesPath);
+      if (internalPropTypesPath) {
+        amendPropTypes(getDescriptor, documentation, internalPropTypesPath, filepath);
+      }
+
+      const externalPropTypesPaths = resolveToImportedPaths(propTypesPath, filepath);
       // amendPropTypes(getDescriptor.bind(documentation), propTypesPath, filepath);
       externalPropTypesPaths.forEach(
         ({ moduleTargetPath, moduleFilePath }) =>
           amendPropTypes(
-            getDescriptor.bind(documentation),
+            // getDescriptor.bind(documentation),
+            getDescriptor,
             documentation,
             resolveToValue(moduleTargetPath),
             moduleFilePath),
       );
       // amendPropTypes(getDescriptor.bind(documentation), propTypesPath, filepath);
+
+      const computedPropNames = getComputedPropValuesFromDoc(documentation)
+      console.log('computedPropNames', computedPropNames)
+      // if (!computedPropNames) {
+      //   return
+      // }
+
     }
   }
 
