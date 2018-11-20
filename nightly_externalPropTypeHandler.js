@@ -105,21 +105,11 @@ function resolveExternalsInObjectExpression(path, filepath) {
           case types.Identifier.name: {
             // console.log('SPREAD_PROPERTY Identifier', propertyPath.node.argument, propertyPath.name);
             resolvedObjectExpression = resolveIdentifierNameToExternalValue(propertyPath.node.argument.name, getRoot(propertyPath), filepath);
-            // console.log('resolvedObjectExpression', resolvedObjectExpression);
-            // resolveExternalsInObjectExpression(resolvedObjectExpression, filepath);
-
-            // // propertyPath.parentPath.value[propertyPath.name] = resolvedObjectExpression.value;
-            // propertyPath.node.argument = resolvedObjectExpression.value;
             break;
           }
           case types.ObjectExpression.name: {
             resolvedObjectExpression = resolveToValue(propertyPath).get('argument');
             // console.log('SPREAD_PROPERTY ObjectExpression', propertyPath.name, resolvedObjectExpression);
-
-            // resolveExternalsInObjectExpression(resolvedObjectExpression, filepath);
-            // console.log('2 SPREAD_PROPERTY ObjectExpression', propertyPath.name, propertyPath.parentPath);
-            // // propertyPath.parentPath.value[propertyPath.name] = resolvedObjectExpression.value;
-            // propertyPath.node.argument = resolvedObjectExpression.value;
             break;
           }
           default: {
@@ -127,9 +117,9 @@ function resolveExternalsInObjectExpression(path, filepath) {
             throw new Error('there should be no unhandled spread_property');
           }
         }
+        // recurse to process and external references in the child pbject
         resolveExternalsInObjectExpression(resolvedObjectExpression, filepath);
-
-        // propertyPath.parentPath.value[propertyPath.name] = resolvedObjectExpression.value;
+        // overwrite the target value with the recursively processed ObjectExpression
         propertyPath.node.argument = resolvedObjectExpression.value;
 
         break;
