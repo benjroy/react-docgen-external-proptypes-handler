@@ -42,6 +42,7 @@ ComponentLocalSpread.propTypes = {
      * Comment for inline-object-spread-string.
      */
     'inline-object-spread-string': PropTypes.string,
+    // ...localProps,
   }
 };
 ComponentLocalSpread.defaultProps = {
