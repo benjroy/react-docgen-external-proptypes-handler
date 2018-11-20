@@ -164,35 +164,22 @@ function getExternalPropTypeHandler(propName) {
       }
 
       if (types.Identifier.check(propTypesPath.node)) {
-        // console.log('I AM AN IDENTIFIER', filepath, propTypesPath.parentPath);
-        console.log('I AM AN IDENTIFIER', filepath);
-        console.log('in code', recast.print(propTypesPath).code);
-        // console.log('getRoot', getRoot(propTypesPath));
-        // const identifier = resolveIdentifierNameToExternalValue(propTypesPath.node.name, getRoot(propTypesPath), filepath);
+        // console.log('I AM AN IDENTIFIER', filepath);
+        // console.log('in code', recast.print(propTypesPath).code);
         const resolved = resolveIdentifierNameToExternalValue(propTypesPath.node.name, getRoot(propTypesPath), filepath);
-        console.log('out resolveIdentifierNameToExternalValue', resolved);
+        // console.log('out resolveIdentifierNameToExternalValue', resolved);
         const { code } = recast.print(resolved.value);
-        // const ast = getAst(code);
-        console.log('out resolveIdentifierNameToExternalValue', code);
+        // console.log('out resolveIdentifierNameToExternalValue', code);
 
         // maybe don't need this assert
         types.AssignmentExpression.assert(propTypesPath.parentPath.node);
 
         propTypesPath.parentPath.value.right = resolved.value;
-        // console.log('resolved', resolveToValue(propTypesPath.parentPath))
 
-        // recast.visit(identifier, {
-        //   visitIdentifier(path) {
-        //     console.log('VISITED IDENTIFIER', filepath, path);
-        //     this.traverse(path);
-        //   },
-        // });
-
-        // amendPropTypes(getDescriptor, resolveToValue(propTypesPath.parentPath), documentation);
         propTypesPath = resolveToValue(propTypesPath.parentPath);
         return;
       } else {
-        console.log('NOT IDENTIFIER!', propTypesPath);
+        // console.log('NOT IDENTIFIER!', propTypesPath);
         propTypesPath = resolveToValue(propTypesPath);
       }
 
@@ -204,7 +191,7 @@ function getExternalPropTypeHandler(propName) {
       // const resolvedObjectExpression = resolveExternalsInObjectExpressionNode(propTypesPath.node, filepath);
 
       // console.log('RESOLVED EXTERNALS', resolvedObjectExpression);
-      console.log('RESOLVED EXTERNALS', recast.print(propTypesPath).code);
+      console.log('RESOLVED EXTERNALS', filepath, recast.print(propTypesPath).code);
 
       amendPropTypes(getDescriptor, propTypesPath, documentation);
       // amendPropTypes(getDescriptor, resolvedObjectExpression, documentation);
