@@ -11,7 +11,8 @@
 
 const fs = require('fs');
 const { resolve, dirname } = require('path');
-const recast = require('recast')
+const recast = require('recast');
+const { NodePath } = require('ast-types');
 const docgen = require('react-docgen');
 const babylon = require('react-docgen/dist/babylon').default
 const setPropDescription = require('react-docgen/dist/utils/setPropDescription').default
@@ -33,10 +34,14 @@ const HOP = Object.prototype.hasOwnProperty
 const createObject = Object.create
 
 const {
-  types: { namedTypes: types },
+  types: {
+    namedTypes: types,
+    builders,
+  },
 } = recast;
 
-console.log('types', types);
+// console.log('types', types);
+// console.log('builders', builders);
 
 function isPropTypesExpression(path) {
   const moduleName = resolveToModule(path);
@@ -51,7 +56,7 @@ function getImportedValuePath() {}
 // we will amend this method to follow imports
 // function amendPropTypes(getDescriptor, path) {
 function amendPropTypes(getDescriptor, documentation, path, filepath) {
-  // console.log('amendPropTypes', filepath, path.get('properties'));
+  console.log('amendPropTypes', filepath, path);
 
   if (!types.ObjectExpression.check(path.node)) {
     console.log('amendPropTypes bailing', filepath, path.node);
@@ -59,7 +64,7 @@ function amendPropTypes(getDescriptor, documentation, path, filepath) {
   }
 
   path.get('properties').each(function(propertyPath) {
-    // console.log('amendPropTypes properties iter', filepath, propertyPath);
+    console.log('amendPropTypes properties iter', filepath, propertyPath.node.type, propertyPath);
     switch (propertyPath.node.type) {
       case types.Property.name: {
         const propDescriptor = getDescriptor(getPropertyName(propertyPath));
@@ -91,11 +96,15 @@ function amendPropTypes(getDescriptor, documentation, path, filepath) {
       }
       case types.SpreadProperty.name: {
         const variableName = getNameOrValue(propertyPath.get('argument'));
-        console.log('propertyPath: HANDLE SPREAD PROPERTY', propertyPath);
-        console.log('TODO: HANDLE SPREAD PROPERTY', variableName);
-        console.log('propertyPath', filepath, propertyPath.get('argument').get('id'))
-        // const externalPropTypesPaths = resolveToImportedPaths(propertyPath.parentPath.parentPath, filepath);
-        const externalPropTypesPaths = resolveToImportedPaths(path, filepath);
+        // console.log('propertyPath: HANDLE SPREAD PROPERTY', propertyPath);
+        // console.log('TODO: HANDLE SPREAD PROPERTY', variableName);
+        // const resolvedValuePath = resolveToValue(propertyPath.get('argument'));
+        // const resolvedValuePaths = resolveToValueFollowImports(propertyPath, { filepath, ast: propertyPath.scope.getGlobalScope().node });
+        // console.log('TODO: HANDLE SPREAD PROPERTY resolvedValuePaths', resolvedValuePaths);
+
+        // console.log('propertyPath', filepath, propertyPath.get('argument').get('id'))
+        const externalPropTypesPaths = resolveToImportedPaths(propertyPath.parentPath.parentPath, filepath);
+        // const externalPropTypesPaths = resolveToImportedPaths(path, filepath);
         externalPropTypesPaths.forEach(
           ({ moduleTargetPath, moduleFilePath }) => {
             console.log('external', moduleFilePath);
@@ -104,6 +113,10 @@ function amendPropTypes(getDescriptor, documentation, path, filepath) {
         );
 
         // console.log('TODO: HANDLE SPREAD PROPERTY', propertyPath.get('argument').get('id'));
+        break;
+      }
+      case types.ObjectExpression.name: {
+        console.log('propertyPath: HANDLE ObjectExpression PROPERTY', propertyPath.parentPath.parentPath);
         break;
       }
       default: {
@@ -139,14 +152,6 @@ function getImportsForLocalVariablesFromAST(ast) {
       // import { foo } from '<name>'
       const name = path.node.source.value;
       path.node.specifiers.forEach(node => {
-        // let target;
-        // switch(node.type) {
-        //   case types.ImportDefaultSpecifier: {
-        //     target = 'default';
-        //   }
-        // }
-
-        console.log('getImportsForLocalVariablesFromAST node', node);
         specifiers[node.local.name] = {
           modulePath: name,
           target: node.imported && node.imported.name || node.local.name,
@@ -200,22 +205,166 @@ function resolveImportModuleFilePath(filepath, modulePath) {
  * @param  {Object} ast Root AST node of a component
  * @return {Object} Which holds identifier relative file path as `key` and identifier name as `value`
  */
+function getIdentifierNodes(ast) {
+  const identifiers = createObject(null);
+
+  recast.visit(ast, {
+    // visitExportNamedDeclaration(path) {
+    //   console.log('getIdentifiers visitExportNamedDeclaration', path);
+    //   // throw new Error('visitExportNamedDeclaration');
+    //   this.traverse(path);
+    // },
+    // visitExportDeclaration(path) {
+    //   console.log('getIdentifiers visitExportDeclaration', path);
+    //   throw new Error('visitExportDeclaration')
+    //   this.traverse(path);
+    // },
+    // visitVariableDeclaration(path) {
+    //   console.log('getIdentifiers visitVariableDeclaration', path);
+    //   console.log('2 getIdentifiers visitVariableDeclaration', path.value.declarations);
+    //   // throw new Error('visitVariableDeclaration')
+    //   this.traverse(path);
+    // },
+    visitVariableDeclarator(path) {
+      // console.log('getIdentifiers visitVariableDeclarator', path);
+      const node = path.node
+      const nodeType = node.init.type
+
+      // if (!HOP.call(identifiers, node.id.name)) {
+      //   identifiers[node.id.name] = [];
+      // }
+      if (HOP.call(identifiers, node.id.name)) {
+        console.log('already exists', identifiers);
+        throw new Error(`${node.id.name} already exists in identifiers`);
+      }
+
+      // identifiers[node.id.name].push(node.init);
+      // console.log('node.id.name', node.id.name, node.init);
+      // console.log('node.id.name path', node.id.name, path);
+      // identifiers[node.id.name] = node.init;
+      identifiers[node.id.name] = {
+        path,
+        value: node.init,
+      }
+      // console.log('getIdentifiers visitVariableDeclarator name', node.id.name);
+
+      this.traverse(path);
+      return;
+
+
+
+
+      switch(node.init.type) {
+        case types.Identifier.name: {
+          console.log('getIdentifiers resolveToModule', node.id);
+          // console.log('2 getIdentifiers resolveToModule', resolveToModule(resolveToValue(node.id)));
+          // if (identifiers[node.init.name]) {
+          //   identifiers[node.init.name].push(node.init.name);
+          // } else {
+          //   identifiers[node.init.name] = [node.init.name];
+          // }
+          identifiers[node.id.name].push[node.init.value];
+          break;
+        }
+        case types.Literal.name: {
+          if (identifiers[node.id.name]) {
+            identifiers[node.id.name].push(node.init.value);
+          } else {
+            identifiers[node.id.name] = [node.init.value];
+          }
+          break;
+        }
+        case types.ArrayExpression.name: {
+          if (identifiers[node.id.name]) {
+            identifiers[node.id.name].push(node.init.elements);
+          } else {
+            identifiers[node.id.name] = node.init.elements;
+          }
+          break;
+        }
+        case types.ObjectExpression.name: {
+          if (identifiers[node.id.name]) {
+            identifiers[node.id.name].push({
+              path,
+              value: node.init.properties,
+            })
+          } else {
+            identifiers[node.id.name] = {
+              path,
+              value: node.init.properties,
+            }
+          }
+          break;
+        }
+        default: {
+          console.log('getIdentifiers unhandled', path.node);
+          // throw new Error('getIdentifiers unhandled');
+        }
+      }
+
+      // if (nodeType === types.Identifier.name) {
+      //   console.log('getIdentifiers resolveToModule', node.id);
+      //   // console.log('2 getIdentifiers resolveToModule', resolveToModule(resolveToValue(node.id)));
+      //   if (identifiers[node.init.name]) {
+      //     identifiers[node.init.name].push(node.init.name);
+      //   } else {
+      //     identifiers[node.init.name] = [node.init.name];
+      //   }
+      // } else if (nodeType === types.Literal.name) {
+      //   if (identifiers[node.id.name]) {
+      //     identifiers[node.id.name].push(node.init.value);
+      //   } else {
+      //     identifiers[node.id.name] = [node.init.value];
+      //   }
+      // } else if (nodeType === types.ArrayExpression.name) {
+      //   if (identifiers[node.id.name]) {
+      //     identifiers[node.id.name].push(node.init.elements);
+      //   } else {
+      //     identifiers[node.id.name] = node.init.elements;
+      //   }
+      // } else if (nodeType === types.ObjectExpression.name) {
+      //   if (identifiers[node.id.name]) {
+      //     identifiers[node.id.name].push({
+      //       path,
+      //       value: node.init.properties,
+      //     })
+      //   } else {
+      //     identifiers[node.id.name] = {
+      //       path,
+      //       value: node.init.properties,
+      //     }
+      //   }
+      // } else {
+      //   console.log('getIdentifiers unhandled', path);
+      // }
+
+      // this.traverse(path);
+    }
+  });
+
+  return identifiers;
+}
+
+
+/**
+ * Filters the list of identifier node values or node paths from a given AST.
+ *
+ * @method getIdentifiers
+ * @param  {Object} ast Root AST node of a component
+ * @return {Object} Which holds identifier relative file path as `key` and identifier name as `value`
+ */
 function getIdentifiers(ast) {
   const identifiers = createObject(null);
 
   recast.visit(ast, {
     visitVariableDeclarator(path) {
+      console.log('getIdentifiers visitVariableDeclarator', path);
       const node = path.node
       const nodeType = node.init.type
 
       if (nodeType === types.Identifier.name) {
-        console.log('THIS NODE TYPE', node);
-        // if (identifiers[node.init.name]) {
-        //   identifiers[node.id.name].push(node.init.value);
-        // } else {
-        //   identifiers[node.id.name] = [node.init.value];
-        // }
-
+        console.log('getIdentifiers resolveToModule', node.id);
+        // console.log('2 getIdentifiers resolveToModule', resolveToModule(resolveToValue(node.id)));
         if (identifiers[node.init.name]) {
           identifiers[node.init.name].push(node.init.name);
         } else {
@@ -245,6 +394,8 @@ function getIdentifiers(ast) {
             value: node.init.properties,
           }
         }
+      } else {
+        console.log('getIdentifiers unhandled', path);
       }
 
       this.traverse(path);
@@ -254,11 +405,10 @@ function getIdentifiers(ast) {
   return identifiers;
 }
 
-
 /**
  * Method to parse and get computed nodes from a document object
  *
- * @method getComputedPropValueNamesFromDoc
+ * @method getComputedPropValuesFromDoc
  * @param  {Object} doc  react-docgen document object
  * @return {Object/Boolean} Object with computed property identifer as `key` and AST node path as `value`,
  *                          If documnet object have any computed properties else return false.
@@ -279,16 +429,6 @@ function getComputedPropValueNamesFromDoc(doc, output = []) {
     gatherComputedPropValues(props[prop].type, output);
     continue;
   }
-  //   const o = props[prop];
-  //   console.log('has prop', o);
-  //   if (o.type && o.type.name !== 'enum') continue;
-  //   if (!o.type.computed) {
-
-  //     continue;
-  //   };
-  //   computedProps[o.type.value] = o;
-  // }
-  // if (Object.keys(computedProps).length === 0) return false;
   if (output.length === 0) return false;
   return output;
 }
@@ -353,9 +493,29 @@ function resolveToImportedPaths(path, filepath) {
   console.log('imports', imports);
 
   const importedPaths = variableNames.reduce((memo, variableName) => {
-    const resolvedPath = resolveVariableNameToPathFollowingImports(variableName, { ast, imports, filepath });
-    if (resolvedPath) {
-      memo.push(resolvedPath);
+    // const temp = resolveValueForImportedVariable(variableName, { ast, imports, filepath });
+    // console.log('temptemptemp', temp);
+
+    if (!HOP.call(imports, variableName)) {
+      return memo;
+    }
+    const { modulePath, target } = imports[variableName];
+    // only process relative imports (not node_modules dependencies)
+    if (modulePath.startsWith('./')) {
+      const moduleFilePath = resolveImportModuleFilePath(filepath, modulePath);
+      const moduleSrc = getSrc(moduleFilePath);
+      const moduleAST = getAST(moduleSrc);
+      const moduleTarget = getIdentifiers(moduleAST)[target];
+      if (!moduleTarget) {
+        // TODO: better error, or none at all
+        throw new Error('no moduleTarget');
+      }
+      const moduleTargetPath = resolveToValue(moduleTarget.path);
+
+      memo.push({ moduleTargetPath, moduleFilePath });
+      // console.log('moduleTargetPath', moduleTargetPath);
+      // TEMP
+      // memo.push(resolveToImportedPaths(targetPath, moduleFilePath));
     }
     return memo;
   }, []);
@@ -363,10 +523,99 @@ function resolveToImportedPaths(path, filepath) {
   return paths.concat(importedPaths);
 }
 
-function resolveVariableNameToPathFollowingImports(variableName, { ast, imports, filepath }) {
-  // const variableName = getNameOrValue(identifierPath); // local variable name
+function appendPropertyNodePathToObjectExpressionBuilder(objectExpressionBuilder, propertyPath) {
+  console.log('appendPropertyNodePathToObjectExpressionBuilder', propertyPath.value);
+  objectExpressionBuilder.properties.push(propertyPath.value);
+}
 
-  console.log('resolveVariableNameToPathFollowingImports', variableName);
+// NEW NEW NEW
+// function resolveToValueFollowImports(path, { ast, filepath }, outputObjectExpression = builders.objectExpression([])) {
+function resolveToValueFollowImports(path, { ast, filepath }, outputObjectExpression = builders.objectExpression([])) {
+  // console.log('resolveToValueFollowImports', filepath, path);
+  // console.log('resolveToValueFollowImports outputObjectExpression', outputObjectExpression)
+
+  // const ast = path.scope.getGlobalScope().node;
+  const imports = getImportsForLocalVariablesFromAST(ast);
+
+  const variableNames = [];
+  const paths = [];
+
+  switch (path.node.type) {
+    case types.ObjectExpression.name: {
+      path.get('properties').each(propertyPath => {
+      // path.node.properties.forEach(propertyPath => {
+        if (!types.SpreadProperty.check(propertyPath.value)) {
+          // console.log('NOT SPREADING', propertyPath.value);
+          // console.log('pushing propertypath', propertyPath);
+          appendPropertyNodePathToObjectExpressionBuilder(outputObjectExpression, propertyPath);
+          // outputObjectExpression.properties.push(propertyPath)
+          // paths.push(propertyPath);
+          return;
+        };
+        resolveToValueFollowImports(propertyPath, { ast, filepath }, outputObjectExpression);
+
+        // const target = resolveToValue(propertyPath).get('argument');
+        // const resolvedPath = resolvePathFollowingImports(resolveToValue(propertyPath), { ast, imports, filepath });
+        // console.log('SPREAD PROPERTY', propertyPath);
+        // console.log('SPREAD PROPERTY RESOLVED', resolvedPath);
+        // const variableName = getNameOrValue(resolveToValue(propertyPath).get('argument')); // local variable name
+        // variableNames.push(variableName);
+      });
+      break;
+    }
+    case types.SpreadProperty.name: {
+      // console.log('SPREAD PROPERTY', path);
+      const identifier = resolveToValue(path).get('argument');
+      // sanity check
+      types.Identifier.assert(identifier.value);
+      // console.log('SPREAD PROPERTY IDENTIFIER', identifier);
+      const resolved = resolveIdentifierPathToValuesFollowingImports(identifier, { ast, imports, filepath });
+      console.log('SPREAD PROPERTY resolvedPaths', resolved);
+
+      if (!resolved) break;
+
+      resolved.properties.forEach(propertyPath => {
+        // console.log('pushing propertypath', propertyPath);
+        // outputObjectExpression.properties.push(propertyPath);
+        appendPropertyNodePathToObjectExpressionBuilder(outputObjectExpression, propertyPath);        
+      });
+      // resolved.properties.forEach(p => resolveToValueFollowImports(p, { ast, filepath }, outputObjectExpression));
+      // resolveToValueFollowImports({ node: resolved }, { ast, filepath }, outputObjectExpression);
+      break;
+    }
+    case types.VariableDeclarator.name: {
+      // console.log('VARIABLEDECLARATOR PROPERTY', path);
+      // sanity check
+      types.Identifier.assert(path.value.id);
+      // console.log('2 VARIABLEDECLARATOR PROPERTY', resolveToValue(path));
+      resolveToValueFollowImports(resolveToValue(path), { ast, filepath }, outputObjectExpression);
+      // resolvedPaths.forEach(p => resolveToValueFollowImports(p, { ast, filepath }, outputObjectExpression));
+      break;
+    }
+    case types.Identifier.name: {
+      variableNames.push(getNameOrValue(path)); // gives local variable name when literal assignment
+      console.log('TODO: IDENTIFIER resolveToImportedValue', filepath);
+      break;
+    }
+    default: {
+      console.log('UNHANDELED resolveToValueFollowImports', path.node)
+      // throw new Error('UNHANDELED resolveToImportedPaths');
+    }
+  }
+
+  const importedPaths = [];
+
+  console.log('output props', outputObjectExpression);
+
+  // return paths.concat(importedPaths);
+  return outputObjectExpression;
+}
+
+
+function resolveIdentifierPathToValuesFollowingImports(identifierPath, { ast, imports, filepath }) {
+  const variableName = getNameOrValue(identifierPath); // local variable name
+
+  console.log('resolvePathFollowingImports', variableName);
   if (!HOP.call(imports, variableName)) {
     // TODO: aggregate properties from local values
     return;
@@ -381,8 +630,7 @@ function resolveVariableNameToPathFollowingImports(variableName, { ast, imports,
   const moduleSrc = getSrc(moduleFilePath);
   const moduleAST = getAST(moduleSrc);
   console.log('imports[variableName]', imports[variableName]);
-  // const moduleIdentifiers = getIdentifierNodes(moduleAST)
-  const moduleIdentifiers = getIdentifiers(moduleAST)
+  const moduleIdentifiers = getIdentifierNodes(moduleAST)
   console.log('moduleIdentifiers', moduleIdentifiers);
   const moduleTarget = moduleIdentifiers[target];
 
@@ -391,27 +639,27 @@ function resolveVariableNameToPathFollowingImports(variableName, { ast, imports,
     throw new Error('no moduleTarget');
   }
 
-  const moduleTargetPath = resolveToValue(moduleTarget.path);
+  // const moduleTargetPath = resolveToValue(moduleTarget.path);
+  const moduleTargetPath = moduleTarget.path;
+  console.log('moduleTarget resolveIdentifierPathToValuesFollowingImports', moduleTargetPath);
 
-  return { moduleTargetPath, moduleFilePath };
-  // const moduleTargetPath = moduleTarget.path;
-  // console.log('moduleTarget resolveIdentifierPathToValuesFollowingImports', moduleTargetPath);
-
-  // return resolveToValueFollowImports(moduleTargetPath, { ast: moduleAST, filepath: moduleFilePath });
-  // // return moduleTarget.path;
+  return resolveToValueFollowImports(moduleTargetPath, { ast: moduleAST, filepath: moduleFilePath });
+  // return moduleTarget.path;
 
 }
+
 
 function getExternalPropTypeHandler(propName) {
   return function getExternalPropTypeHandlerForFilePath(filepath) {
     console.log('getExternalPropTypeHandler', propName, filepath);
     return function externalPropTypeHandler(documentation, path) {
       console.log('documentation', documentation);
-      console.log('identifiers', getIdentifiers(path.scope.getGlobalScope().node))
+
       let propTypesPath = getMemberValuePath(path, propName);
       if (!propTypesPath) {
         return;
       }
+
       console.log('propTypesPath', propTypesPath)
       // propTypesPath = resolveToValue(propTypesPath);
       // console.log('paths', paths);
@@ -438,7 +686,7 @@ function getExternalPropTypeHandler(propName) {
       }
 
       const externalPropTypesPaths = resolveToImportedPaths(propTypesPath, filepath);
-      // amendPropTypes(getDescriptor.bind(documentation), propTypesPath, filepath);
+
       externalPropTypesPaths.forEach(
         ({ moduleTargetPath, moduleFilePath }) =>
           amendPropTypes(
@@ -448,28 +696,25 @@ function getExternalPropTypeHandler(propName) {
             resolveToValue(moduleTargetPath),
             moduleFilePath),
       );
-      // amendPropTypes(getDescriptor.bind(documentation), propTypesPath, filepath);
+// return;
+      // // console.log(JSON.stringify(documentation, null, 2));
+      // const _the_value = resolveToValueFollowImports(propTypesPath, { filepath, ast: path.scope.getGlobalScope().node });
 
-      // const computedPropNames = getComputedPropValueNamesFromDoc(documentation)
-      // console.log('computedPropNames', computedPropNames)
-      // // if (!computedPropNames) {
-      // //   return
-      // // }
+      // console.log('_the_value', _the_value);
 
-      const computedPropValueNames = getComputedPropValueNamesFromDoc(documentation);
-      console.log('computedPropValueNames', computedPropValueNames);
-      const identifiers = getIdentifiers(path.scope.getGlobalScope().node);
-      const ast = path.scope.getGlobalScope().node;
-      const imports = getImportsForLocalVariablesFromAST(ast);
+      // // const computedPropValueNames = getComputedPropValueNamesFromDoc(documentation);
+      // // console.log('computedPropValueNames', computedPropValueNames);
+      // // // const identifiers = __getIdentifiers(path.scope.getGlobalScope().node);
 
-      console.log('identifiers', identifiers);
+      // // // console.log('identifiers', identifiers);
+      // const propTypesPathValue = resolveToValue(propTypesPath);
+      // const outputNodePath = new NodePath(_the_value, propTypesPathValue.parentPath, propTypesPathValue.name);
 
-      for (const key in identifiers) {
-        console.log(key);
-        const resolvedVars = resolveVariableNameToPathFollowingImports(key, { ast, imports, filepath });
-        console.log('resolved vars');
-      }
+      // // console.log('astTypes', NodePath);
+      // console.log('outputNodePath', outputNodePath);
+      //   // console.log('internal PropTypesPath', internalPropTypesPath);
 
+      // // amendPropTypes(getDescriptor, documentation, resolveToValue(outputNodePath), filepath);
     }
   }
 
