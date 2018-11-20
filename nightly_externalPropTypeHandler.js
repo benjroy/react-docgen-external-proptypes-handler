@@ -1,14 +1,3 @@
-// MODIFYING react-docgen/src/handlers/propTypeHandler.js
-// import getPropType from '../utils/getPropType';
-// import getPropertyName from '../utils/getPropertyName';
-// import getMemberValuePath from '../utils/getMemberValuePath';
-// import isReactModuleName from '../utils/isReactModuleName';
-// import isRequiredPropType from '../utils/isRequiredPropType';
-// import printValue from '../utils/printValue';
-// // import recast from 'recast';
-// import resolveToModule from '../utils/resolveToModule';
-// import resolveToValue from '../utils/resolveToValue';
-
 const fs = require('fs');
 const { resolve, dirname } = require('path');
 const recast = require('recast')
@@ -18,6 +7,7 @@ const setPropDescription = require('react-docgen/dist/utils/setPropDescription')
 const isRequiredPropType = require('react-docgen/dist/utils/isRequiredPropType').default
 const findIdentifier = require('./lib/visitors/findIdentifier');
 const getRoot = require('./lib/utils/getRoot');
+const getAst = require('./lib/utils/getAst');
 
 const {
   getPropType,
@@ -37,6 +27,7 @@ const createObject = Object.create
 
 const {
   types: { namedTypes: types },
+  builders: b,
 } = recast;
 
 function isPropTypesExpression(path) {
@@ -47,8 +38,9 @@ function isPropTypesExpression(path) {
   return false;
 }
 
-function amendPropTypes(getDescriptor, path) {
+function amendPropTypes(getDescriptor, path, documentation) {
   if (!types.ObjectExpression.check(path.node)) {
+    console.log('BAILING', path);
     return;
   }
 
@@ -66,66 +58,78 @@ function amendPropTypes(getDescriptor, path) {
           propDescriptor.required =
             type.name !== 'custom' && isRequiredPropType(valuePath);
         }
+        setPropDescription(documentation, propertyPath);
         break;
       }
       case types.SpreadElement.name: {
         const resolvedValuePath = resolveToValue(propertyPath.get('argument'));
         switch (resolvedValuePath.node.type) {
           case types.ObjectExpression.name: // normal object literal
-            amendPropTypes(getDescriptor, resolvedValuePath);
+            amendPropTypes(getDescriptor, resolvedValuePath, documentation);
             break;
         }
         break;
+      }
+      default: {
+        console.log('amendPropTypes NO CASE', propertyPath.node.type);
       }
     }
   });
 }
 
-function getPropTypeHandler(propName) {
-  return function(documentation, path) {
-    let propTypesPath = getMemberValuePath(path, propName);
-    if (!propTypesPath) {
-      return;
-    }
-    propTypesPath = resolveToValue(propTypesPath);
-    if (!propTypesPath) {
-      return;
-    }
-    let getDescriptor;
-    switch (propName) {
-      case 'childContextTypes':
-        getDescriptor = documentation.getChildContextDescriptor;
-        break;
-      case 'contextTypes':
-        getDescriptor = documentation.getContextDescriptor;
-        break;
-      default:
-        getDescriptor = documentation.getPropDescriptor;
-    }
-    amendPropTypes(getDescriptor.bind(documentation), propTypesPath);
-  };
-}
-
 
 function getExternalPropTypeHandler(propName) {
   return function getExternalPropTypeHandlerForFilePath(filepath) {
-    console.log('getExternalPropTypeHandler', propName, filepath);
+    // console.log('getExternalPropTypeHandler', propName, filepath);
     return function externalPropTypeHandler(documentation, path) {
+      let getDescriptor;
+      switch (propName) {
+        case 'childContextTypes':
+          getDescriptor = documentation.getChildContextDescriptor;
+          break;
+        case 'contextTypes':
+          getDescriptor = documentation.getContextDescriptor;
+          break;
+        default:
+          getDescriptor = documentation.getPropDescriptor;
+      }
+      getDescriptor = getDescriptor.bind(documentation);
+
       let propTypesPath = getMemberValuePath(path, propName);
       if (!propTypesPath) {
         return;
       }
 
       if (types.Identifier.check(propTypesPath.node)) {
-        // console.log('I AM AN IDENTIFIER', resolveToValue(propTypesPath));
-        console.log(recast.print(propTypesPath).code);
+        console.log('I AM AN IDENTIFIER', filepath, propTypesPath.parentPath);
+        console.log('in code', recast.print(propTypesPath).code);
         // console.log('getRoot', getRoot(propTypesPath));
         const identifier = findIdentifier(propTypesPath.node.name, getRoot(propTypesPath), filepath);
         // console.log('out findIdentifier', identifier);
-        console.log('out findIdentifier', recast.print(identifier).code);
+        const { code } = recast.print(identifier);
+        // const ast = getAst(code);
+        console.log('out findIdentifier', code);
+
+        // maybe don't need this assert
+        types.AssignmentExpression.assert(propTypesPath.parentPath.node);
+
+        propTypesPath.parentPath.value.right = identifier;
+        console.log('resolved', resolveToValue(propTypesPath.parentPath))
+
+        // recast.visit(identifier, {
+        //   visitIdentifier(path) {
+        //     console.log('VISITED IDENTIFIER', filepath, path);
+        //     this.traverse(path);
+        //   },
+        // });
+
+        amendPropTypes(getDescriptor, resolveToValue(propTypesPath.parentPath), documentation);
         return;
       }
 
+      // take the values and replace them in the original ast
+      // then reparse it or however that works
+      // find the propTypes on the component
 
       // console.log(propTypesPath);
       // console.log(recast.print(propTypesPath).code);
@@ -177,6 +181,32 @@ function getExternalPropTypeHandler(propName) {
   //   amendPropTypes(getDescriptor.bind(documentation), propTypesPath);
   // };
 }
+
+
+// function getPropTypeHandler(propName) {
+//   return function(documentation, path) {
+//     let propTypesPath = getMemberValuePath(path, propName);
+//     if (!propTypesPath) {
+//       return;
+//     }
+//     propTypesPath = resolveToValue(propTypesPath);
+//     if (!propTypesPath) {
+//       return;
+//     }
+//     let getDescriptor;
+//     switch (propName) {
+//       case 'childContextTypes':
+//         getDescriptor = documentation.getChildContextDescriptor;
+//         break;
+//       case 'contextTypes':
+//         getDescriptor = documentation.getContextDescriptor;
+//         break;
+//       default:
+//         getDescriptor = documentation.getPropDescriptor;
+//     }
+//     amendPropTypes(getDescriptor.bind(documentation), propTypesPath);
+//   };
+// }
 
 
 // export const propTypeHandler = getPropTypeHandler('propTypes');

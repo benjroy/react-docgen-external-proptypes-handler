@@ -1,7 +1,10 @@
 import PropTypes from 'prop-types';
 
 const propTypes = {
-  string: PropTypes.string,
+  /**
+   * Comment for external-propTypes-string.
+   */
+  'external-propTypes-string': PropTypes.string,
 };
 
 export default propTypes;

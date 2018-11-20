@@ -24,13 +24,13 @@ function processFilepath(filepath) {
   return docgen.parse(code, resolver, handlers, options);
 }
 
-const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-*.js'));
+// const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-*.js'));
 // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-no-*.js'));
 // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-spreads-nested.js'));
 // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-{spreads-nested,literal}.js'));
 // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-literal.js'));
 // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-imports-external-*.js'));
-// const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-imports-literal.js'));
+const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-imports-literal*.js'));
 // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-imports-literal-default.js'));
 
 
