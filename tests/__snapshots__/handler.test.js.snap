@@ -5,30 +5,35 @@ Object {
   "description": "",
   "displayName": "ComponentImportsExternalValuesForEnum",
   "methods": Array [],
-}
-`;
-
-exports[`react-docgen-external-proptypes-handler processes all props for component-imports-literal 1`] = `
-Object {
-  "composes": Array [
-    "./api-1",
-  ],
-  "description": "",
-  "displayName": "ComponentImportsLiteral",
-  "methods": Array [],
   "props": Object {
-    "api-1-bool": Object {
-      "description": "Comment for api-1-bool.",
+    "enum": Object {
+      "description": "",
       "required": false,
       "type": Object {
-        "name": "bool",
+        "name": "enum",
+        "value": Array [
+          Object {
+            "computed": true,
+            "value": "VALUES.STRING",
+          },
+          Object {
+            "computed": true,
+            "value": "VALUES.NUMBER",
+          },
+          Object {
+            "computed": true,
+            "value": "VALUES.BOOL",
+          },
+        ],
       },
     },
-    "api-1-node-required": Object {
-      "description": "Comment for api-1-node-required.",
-      "required": true,
+    "enumList": Object {
+      "description": "",
+      "required": false,
       "type": Object {
-        "name": "node",
+        "computed": true,
+        "name": "enum",
+        "value": "ENUM",
       },
     },
   },
@@ -37,6 +42,9 @@ Object {
 
 exports[`react-docgen-external-proptypes-handler processes all props for component-imports-literal-default 1`] = `
 Object {
+  "composes": Array [
+    "./external-propTypes",
+  ],
   "description": "",
   "displayName": "ComponentImportsLiteralDefault",
   "methods": Array [],
@@ -49,7 +57,7 @@ Object {
     "./api-1",
   ],
   "description": "",
-  "displayName": "ComponentImportsLiteral",
+  "displayName": "ComponentImportsLiteralNamed",
   "methods": Array [],
 }
 `;
@@ -61,12 +69,14 @@ Object {
   "methods": Array [],
   "props": Object {
     "bool": Object {
+      "description": "",
       "required": false,
       "type": Object {
         "name": "bool",
       },
     },
     "enum": Object {
+      "description": "",
       "required": false,
       "type": Object {
         "name": "enum",
@@ -87,6 +97,7 @@ Object {
       },
     },
     "enum-var-of-vars": Object {
+      "description": "",
       "required": false,
       "type": Object {
         "name": "enum",
@@ -107,6 +118,7 @@ Object {
       },
     },
     "enum-vars": Object {
+      "description": "",
       "required": false,
       "type": Object {
         "name": "enum",
@@ -126,19 +138,29 @@ Object {
         ],
       },
     },
+    "inline-object-spread-string": Object {
+      "description": "Comment for inline-object-spread-string.",
+      "required": false,
+      "type": Object {
+        "name": "string",
+      },
+    },
     "node": Object {
+      "description": "",
       "required": true,
       "type": Object {
         "name": "node",
       },
     },
     "number": Object {
+      "description": "",
       "required": false,
       "type": Object {
         "name": "number",
       },
     },
     "shape": Object {
+      "description": "",
       "required": false,
       "type": Object {
         "name": "shape",
@@ -169,6 +191,7 @@ Object {
       },
     },
     "string": Object {
+      "description": "",
       "required": false,
       "type": Object {
         "name": "string",
@@ -185,6 +208,7 @@ Object {
   "methods": Array [],
   "props": Object {
     "local-bool-spread": Object {
+      "description": "Comment for local-bool-spread.",
       "required": true,
       "type": Object {
         "name": "bool",
