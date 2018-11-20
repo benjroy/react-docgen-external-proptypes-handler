@@ -41,6 +41,8 @@ function isPropTypesExpression(path) {
 function amendPropTypes(getDescriptor, path, documentation) {
   if (!types.ObjectExpression.check(path.node)) {
     console.log('BAILING', path);
+    // temp error
+    throw new Error('bailing but should not have had to');
     return;
   }
 
@@ -61,7 +63,8 @@ function amendPropTypes(getDescriptor, path, documentation) {
         setPropDescription(documentation, propertyPath);
         break;
       }
-      case types.SpreadElement.name: {
+      case types.SpreadElement.name:
+      case types.SpreadProperty.name: {
         const resolvedValuePath = resolveToValue(propertyPath.get('argument'));
         switch (resolvedValuePath.node.type) {
           case types.ObjectExpression.name: // normal object literal
@@ -72,6 +75,8 @@ function amendPropTypes(getDescriptor, path, documentation) {
       }
       default: {
         console.log('amendPropTypes NO CASE', propertyPath.node.type);
+        // temp error
+        throw new Error('amendPropTypes NO CASE, should have had one');
       }
     }
   });

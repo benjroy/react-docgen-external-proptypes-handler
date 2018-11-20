@@ -24,8 +24,8 @@ function processFilepath(filepath) {
   return docgen.parse(code, resolver, handlers, options);
 }
 
-// const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-*.js'));
-const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-spread*.js'));
+const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-*.js'));
+// const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-spread*.js'));
 // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-no-*.js'));
 // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-local-*.js'));
 // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-spreads-nested.js'));
