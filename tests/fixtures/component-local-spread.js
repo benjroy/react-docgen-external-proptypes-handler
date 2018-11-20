@@ -37,6 +37,12 @@ const localDefaultProps = {
 
 ComponentLocalSpread.propTypes = {
   ...localProps,
+  ...{
+    /**
+     * Comment for inline-object-spread-string.
+     */
+    'inline-object-spread-string': PropTypes.string,
+  }
 };
 ComponentLocalSpread.defaultProps = {
   ...localDefaultProps, // these aren't picked up
