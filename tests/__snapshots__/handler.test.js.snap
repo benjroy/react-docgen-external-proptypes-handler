@@ -35,6 +35,25 @@ Object {
 }
 `;
 
+exports[`react-docgen-external-proptypes-handler processes all props for component-imports-literal-default 1`] = `
+Object {
+  "description": "",
+  "displayName": "ComponentImportsLiteralDefault",
+  "methods": Array [],
+}
+`;
+
+exports[`react-docgen-external-proptypes-handler processes all props for component-imports-literal-named 1`] = `
+Object {
+  "composes": Array [
+    "./api-1",
+  ],
+  "description": "",
+  "displayName": "ComponentImportsLiteral",
+  "methods": Array [],
+}
+`;
+
 exports[`react-docgen-external-proptypes-handler processes all props for component-local-spread 1`] = `
 Object {
   "description": "",
