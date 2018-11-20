@@ -1,12 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`react-docgen-external-proptypes-handler processes all props for component-literal 1`] = `
+exports[`react-docgen-external-proptypes-handler processes all props for component-imports-external-values-for-enum 1`] = `
+Object {
+  "description": "",
+  "displayName": "ComponentImportsExternalValuesForEnum",
+  "methods": Array [],
+}
+`;
+
+exports[`react-docgen-external-proptypes-handler processes all props for component-imports-literal 1`] = `
 Object {
   "composes": Array [
     "./api-1",
   ],
   "description": "",
-  "displayName": "ComponentLiteral",
+  "displayName": "ComponentImportsLiteral",
   "methods": Array [],
   "props": Object {
     "api-1-bool": Object {
@@ -21,6 +29,130 @@ Object {
       "required": true,
       "type": Object {
         "name": "node",
+      },
+    },
+  },
+}
+`;
+
+exports[`react-docgen-external-proptypes-handler processes all props for component-local-spread 1`] = `
+Object {
+  "description": "",
+  "displayName": "ComponentLocalSpread",
+  "methods": Array [],
+  "props": Object {
+    "bool": Object {
+      "required": false,
+      "type": Object {
+        "name": "bool",
+      },
+    },
+    "enum": Object {
+      "required": false,
+      "type": Object {
+        "name": "enum",
+        "value": Array [
+          Object {
+            "computed": false,
+            "value": "1",
+          },
+          Object {
+            "computed": false,
+            "value": "2",
+          },
+          Object {
+            "computed": false,
+            "value": "3",
+          },
+        ],
+      },
+    },
+    "enum-var-of-vars": Object {
+      "required": false,
+      "type": Object {
+        "name": "enum",
+        "value": Array [
+          Object {
+            "computed": false,
+            "value": "1",
+          },
+          Object {
+            "computed": false,
+            "value": "'two'",
+          },
+          Object {
+            "computed": false,
+            "value": "3",
+          },
+        ],
+      },
+    },
+    "enum-vars": Object {
+      "required": false,
+      "type": Object {
+        "name": "enum",
+        "value": Array [
+          Object {
+            "computed": false,
+            "value": "1",
+          },
+          Object {
+            "computed": false,
+            "value": "'two'",
+          },
+          Object {
+            "computed": false,
+            "value": "3",
+          },
+        ],
+      },
+    },
+    "node": Object {
+      "required": true,
+      "type": Object {
+        "name": "node",
+      },
+    },
+    "number": Object {
+      "required": false,
+      "type": Object {
+        "name": "number",
+      },
+    },
+    "shape": Object {
+      "required": false,
+      "type": Object {
+        "name": "shape",
+        "value": Object {
+          "LOCAL_ENUM": Object {
+            "name": "enum",
+            "required": false,
+            "value": Array [
+              Object {
+                "computed": false,
+                "value": "1",
+              },
+              Object {
+                "computed": false,
+                "value": "'two'",
+              },
+              Object {
+                "computed": false,
+                "value": "3",
+              },
+            ],
+          },
+          "LOCAL_ONE": Object {
+            "name": "number",
+            "required": false,
+          },
+        },
+      },
+    },
+    "string": Object {
+      "required": false,
+      "type": Object {
+        "name": "string",
       },
     },
   },

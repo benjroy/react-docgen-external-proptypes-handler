@@ -11,8 +11,8 @@ const CWD = process.cwd();
 
 function processFilepath(filepath) {
   const resolver = docgen.resolver.findExportedComponentDefinition;
-  // const handlers = docgen.defaultHandlers.concat(
-  const handlers = ([]).concat(
+  const handlers = docgen.defaultHandlers.concat(
+  // const handlers = ([]).concat(
     // externalProptypesHandler(filepath)
     externalPropTypeHandler(filepath)
   );
@@ -22,11 +22,12 @@ function processFilepath(filepath) {
   return docgen.parse(code, resolver, handlers, options);
 }
 
-// const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-*.js'));
+const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-*.js'));
+// const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-no-*.js'));
 // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-spreads-nested.js'));
 // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-{spreads-nested,literal}.js'));
 // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-literal.js'));
-const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-imports-external-*.js'));
+// const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-imports-external-*.js'));
 
 
 describe('react-docgen-external-proptypes-handler', () => TARGET_FILES.forEach(filepath => {

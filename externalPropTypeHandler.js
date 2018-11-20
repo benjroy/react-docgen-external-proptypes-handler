@@ -201,11 +201,18 @@ function getIdentifiers(ast) {
       const nodeType = node.init.type
 
       if (nodeType === types.Identifier.name) {
+        console.log('THIS NODE TYPE', node);
         if (identifiers[node.init.name]) {
-          identifiers[node.init.name].push(node.init.name);
+          identifiers[node.id.name].push(node.init.value);
         } else {
-          identifiers[node.init.name] = [node.init.name];
+          identifiers[node.id.name] = [node.init.value];
         }
+
+        // if (identifiers[node.init.name]) {
+        //   identifiers[node.init.name].push(node.init.name);
+        // } else {
+        //   identifiers[node.init.name] = [node.init.name];
+        // }
       } else if (nodeType === types.Literal.name) {
         if (identifiers[node.id.name]) {
           identifiers[node.id.name].push(node.init.value);
@@ -338,31 +345,53 @@ function resolveToImportedPaths(path, filepath) {
   console.log('imports', imports);
 
   const importedPaths = variableNames.reduce((memo, variableName) => {
-    if (!HOP.call(imports, variableName)) {
-      return memo;
-    }
-    const { modulePath, target } = imports[variableName];
-    // only process relative imports (not node_modules dependencies)
-    if (modulePath.startsWith('./')) {
-      const moduleFilePath = resolveImportModuleFilePath(filepath, modulePath);
-      const moduleSrc = getSrc(moduleFilePath);
-      const moduleAST = getAST(moduleSrc);
-      const moduleTarget = getIdentifiers(moduleAST)[target];
-      if (!moduleTarget) {
-        // TODO: better error, or none at all
-        throw new Error('no moduleTarget');
-      }
-      const moduleTargetPath = resolveToValue(moduleTarget.path);
-
-      memo.push({ moduleTargetPath, moduleFilePath });
-      console.log('moduleTargetPath', moduleTargetPath);
-      // TEMP
-      // memo.push(resolveToImportedPaths(targetPath, moduleFilePath));
+    const resolvedPath = resolveVariableNameToPathFollowingImports(variableName, { ast, imports, filepath });
+    if (resolvedPath) {
+      memo.push(resolvedPath);
     }
     return memo;
   }, []);
   console.log('importedPaths', importedPaths);
   return paths.concat(importedPaths);
+}
+
+function resolveVariableNameToPathFollowingImports(variableName, { ast, imports, filepath }) {
+  // const variableName = getNameOrValue(identifierPath); // local variable name
+
+  console.log('resolveVariableNameToPathFollowingImports', variableName);
+  if (!HOP.call(imports, variableName)) {
+    // TODO: aggregate properties from local values
+    return;
+  }
+  const { modulePath, target } = imports[variableName];
+  // only process relative imports (not node_modules dependencies)
+  if (!modulePath.startsWith('./')) {
+    return;
+  }
+
+  const moduleFilePath = resolveImportModuleFilePath(filepath, modulePath);
+  const moduleSrc = getSrc(moduleFilePath);
+  const moduleAST = getAST(moduleSrc);
+  console.log('imports[variableName]', imports[variableName]);
+  // const moduleIdentifiers = getIdentifierNodes(moduleAST)
+  const moduleIdentifiers = getIdentifiers(moduleAST)
+  console.log('moduleIdentifiers', moduleIdentifiers);
+  const moduleTarget = moduleIdentifiers[target];
+
+  if (!moduleTarget) {
+    // TODO: better error, or none at all
+    throw new Error('no moduleTarget');
+  }
+
+  const moduleTargetPath = resolveToValue(moduleTarget.path);
+
+  return { moduleTargetPath, moduleFilePath };
+  // const moduleTargetPath = moduleTarget.path;
+  // console.log('moduleTarget resolveIdentifierPathToValuesFollowingImports', moduleTargetPath);
+
+  // return resolveToValueFollowImports(moduleTargetPath, { ast: moduleAST, filepath: moduleFilePath });
+  // // return moduleTarget.path;
+
 }
 
 function getExternalPropTypeHandler(propName) {
