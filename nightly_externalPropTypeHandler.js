@@ -86,21 +86,32 @@ function amendPropTypes(getDescriptor, path, documentation) {
 // TODO: externalize
 function resolveExternalsInObjectExpression(path, filepath) {
   types.ObjectExpression.assert(path.node);
-  // console.log('resolveExternalsInObjectExpression', path.node.type);
+  console.log('resolveExternalsInObjectExpression', path.node.type);
 
   path.get('properties').each((propertyPath) => {
     switch (propertyPath.node.type) {
       case types.Property.name: {
-        if (!types.Identifier.check(propertyPath.get('key').value)) {
-          // temp error
-          console.log('property key should have been an identifier', propertyPath.get('key').value);
-          throw new Error('property key was not an identifier')
-          break;
-        }
+        const keyPath = propertyPath.get('key');
 
+        switch(keyPath.node.type) {
+          case types.Identifier.name: // Identifier might break if it is a different reference, but maybe that would be ArrayExpression in that case?
+          case types.Literal.name: {
+            break;
+          }
+          default: {
+            // temp error
+            // console.log('property key should have been an identifier', propertyPath.get('key').value);
+            console.log('property key should have been an Identifier or Literal', propertyPath);
+            console.log('additional', filepath, propertyPath.get('key'));
+            throw new Error('property key was not an identifier')
+            break;
+          }
+        }
 
         // console.log('propertyPath Property', propertyPath.get('key').value, '\n\n', propertyPath.node.kind, '\n\n', propertyPath.get('value'));
         // console.log('propertyPath code \n', recast.print(propertyPath).code);
+        
+        // temp logic, unused
         const valuePath = propertyPath.get('value');
         const propName = getPropertyName(propertyPath);
 
@@ -216,15 +227,16 @@ function getExternalPropTypeHandler(propName) {
         types.AssignmentExpression.assert(propTypesPath.parentPath.node);
 
         propTypesPath.parentPath.value.right = resolved.value;
+        // console.log('passed assert', resolveToValue(propTypesPath.parentPath));
 
         propTypesPath = resolveToValue(propTypesPath.parentPath);
-        return;
       } else {
         // console.log('NOT IDENTIFIER!', propTypesPath);
         propTypesPath = resolveToValue(propTypesPath);
       }
 
       if (!propTypesPath) {
+        console.log('why did this return', propTypesPath);
         return;
       }
 
