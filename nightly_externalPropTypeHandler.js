@@ -206,16 +206,8 @@ function amendPropTypes(getDescriptor, path, documentation, filepath) {
   });
 }
 
-function resolveExternalsInArrayExpression(path, filepath, options) {
-  types.ArrayExpression.assert(path.node);
-  console.log('resolveExternalsInArrayExpression');
-}
-
-function resolveExternalsInProperty(path, filepath, options) {
+function amendPropType(path, { getDescriptor, documentation }) {
   types.Property.assert(path.node);
-  console.log('resolveExternalsInProperty');
-
-  const { getDescriptor, documentation } = options;
 
   const propName = getPropertyName(path);
   const propDescriptor = getDescriptor(propName);
@@ -232,6 +224,18 @@ function resolveExternalsInProperty(path, filepath, options) {
   }
   setPropDescription(documentation, path);
 
+}
+
+function resolveExternalsInArrayExpression(path, filepath, options) {
+  types.ArrayExpression.assert(path.node);
+  console.log('resolveExternalsInArrayExpression');
+}
+
+function resolveExternalsInProperty(path, filepath, options) {
+  types.Property.assert(path.node);
+  console.log('resolveExternalsInProperty');
+
+  amendPropType(path, options);
 
   return;
 
