@@ -35,15 +35,15 @@ Object {
         "value": Array [
           Object {
             "computed": true,
-            "value": "STRING",
+            "value": "VALUES.STRING",
           },
           Object {
             "computed": true,
-            "value": "NUMBER",
+            "value": "VALUES.NUMBER",
           },
           Object {
             "computed": true,
-            "value": "BOOL",
+            "value": "VALUES.BOOL",
           },
         ],
       },
@@ -64,6 +64,33 @@ Object {
         "name": "node",
       },
     },
+    "api-external-values-shape-with-enum": Object {
+      "description": "Comment for api-external-values-enumList.",
+      "required": true,
+      "type": Object {
+        "name": "shape",
+        "value": Object {
+          "enum": Object {
+            "name": "enum",
+            "required": false,
+            "value": Array [
+              Object {
+                "computed": true,
+                "value": "VALUES.STRING",
+              },
+              Object {
+                "computed": true,
+                "value": "VALUES.NUMBER",
+              },
+              Object {
+                "computed": true,
+                "value": "VALUES.BOOL",
+              },
+            ],
+          },
+        },
+      },
+    },
   },
 }
 `;
@@ -81,8 +108,7 @@ Object {
       "description": "Comment for external-propTypes-string.",
       "required": false,
       "type": Object {
-        "name": "custom",
-        "raw": "PropTypes.string",
+        "name": "string",
       },
     },
   },
@@ -102,16 +128,14 @@ Object {
       "description": "Comment for api-1-bool.",
       "required": false,
       "type": Object {
-        "name": "custom",
-        "raw": "PropTypes.bool",
+        "name": "bool",
       },
     },
     "api-1-node-required": Object {
       "description": "Comment for api-1-node-required.",
-      "required": false,
+      "required": true,
       "type": Object {
-        "name": "custom",
-        "raw": "PropTypes.node.isRequired",
+        "name": "node",
       },
     },
   },

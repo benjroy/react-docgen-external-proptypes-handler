@@ -8,6 +8,11 @@ const isRequiredPropType = require('react-docgen/dist/utils/isRequiredPropType')
 const resolveIdentifierNameToExternalValue = require('./lib/utils/resolveIdentifierNameToExternalValue');
 const getRoot = require('./lib/utils/getRoot');
 const getAst = require('./lib/utils/getAst');
+const {
+  createExternalNodePath,
+  isExternalNodePath,
+  getExternalNodePathProps,
+} = require('./lib/utils/externalNodePath');
 
 const {
   getPropType,
@@ -33,6 +38,7 @@ const {
 function isPropTypesExpression(path) {
   const moduleName = resolveToModule(path);
   if (moduleName) {
+    // console.log('isPropTypesExpression moduleName', moduleName)
     return isReactModuleName(moduleName) || moduleName === 'ReactPropTypes';
   }
   return false;
@@ -49,8 +55,12 @@ function amendPropTypes(getDescriptor, path, documentation) {
   path.get('properties').each(function(propertyPath) {
     switch (propertyPath.node.type) {
       case types.Property.name: {
-        const propDescriptor = getDescriptor(getPropertyName(propertyPath));
-        const valuePath = propertyPath.get('value');
+        let propPath = propertyPath;
+        if (isExternalNodePath(propertyPath)) {
+          propPath = getExternalNodePathProps(propertyPath).path;
+        }
+        const propDescriptor = getDescriptor(getPropertyName(propPath));
+        const valuePath = propPath.get('value');
         const type = isPropTypesExpression(valuePath)
           ? getPropType(valuePath)
           : { name: 'custom', raw: printValue(valuePath) };
@@ -60,7 +70,7 @@ function amendPropTypes(getDescriptor, path, documentation) {
           propDescriptor.required =
             type.name !== 'custom' && isRequiredPropType(valuePath);
         }
-        setPropDescription(documentation, propertyPath);
+        setPropDescription(documentation, propPath);
         break;
       }
       case types.SpreadElement.name:
@@ -129,7 +139,27 @@ function resolveExternalsInObjectExpression(path, filepath) {
             // console.log('resolved code\n', recast.print(resolved).code);
             propertyPath.node.value = resolved.value;
             // console.log('prop path\n', propertyPath.node.value);
-            types.MemberExpression.assert(resolved.node);
+            types.MemberExpression.assert(resolved.node); // ooh could be call expression
+            break;
+          }
+          // case types.MemberExpression.name: {
+          //   console.log('Property value is MemberExpression', propName, '\n\n', valuePath, '\n\n', type, valuePath.node.name);
+          //   if (!isPropTypesExpression(valuePath)) {
+          //     console.log('___is not isPropTypesExpression(valuePath)', resolveToModule(valuePath));
+          //     throw new Error('should i throw here?');
+          //   }
+
+          //   const _type = getPropType(valuePath);
+          //   console.log('type', type)
+
+          //   break;
+          // }
+          // case types.CallExpression.name: {
+          //   console.log('Property value is CallExpression', propName, '\n\n', valuePath, '\n\n', type, valuePath.node.name);
+          //   break;
+          // }
+          default: {
+            // console.log('Property value is UNHANDLED type', propName, '\n\n', valuePath, '\n\n', type, valuePath.node.name);
             break;
           }
         }

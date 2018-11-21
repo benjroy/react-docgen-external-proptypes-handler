@@ -12,6 +12,7 @@ import { propTypes as propTypesApiExternalValues } from './api-external-values';
 const ComponentImportsExternalValuesForEnum = props => (<div>component-literal</div>);
 
 ComponentImportsExternalValuesForEnum.propTypes = propTypesApiExternalValues;
+// ComponentImportsExternalValuesForEnum.propTypes = { ...propTypesApiExternalValues };
 
 ComponentImportsExternalValuesForEnum.defaultProps = {
 

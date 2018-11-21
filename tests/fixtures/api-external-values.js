@@ -14,6 +14,12 @@ export const propTypes = {
    */
   'api-external-values-enumList': PropTypes.oneOf(ENUM),
   /**
+   * Comment for api-external-values-enumList.
+   */
+  'api-external-values-shape-with-enum': PropTypes.shape({
+    enum: PropTypes.oneOf([STRING, NUMBER, BOOL]),
+  }).isRequired,
+  /**
    * Comment for api-external-values-notAnEnum.
    */
   'api-external-values-notAnEnum': PropTypes.node.isRequired,
