@@ -19,7 +19,9 @@ export {
   ZERO,
   ONE,
   TWO,
-  THREE
+  THREE,
+  // temp
+  ENUM,
 };
 
 export default ENUM;
