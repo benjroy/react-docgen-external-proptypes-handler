@@ -86,15 +86,61 @@ function amendPropTypes(getDescriptor, path, documentation) {
 // TODO: externalize
 function resolveExternalsInObjectExpression(path, filepath) {
   types.ObjectExpression.assert(path.node);
-  console.log('resolveExternalsInObjectExpression', path.node.type);
+  // console.log('resolveExternalsInObjectExpression', path.node.type);
 
   path.get('properties').each((propertyPath) => {
     switch (propertyPath.node.type) {
       case types.Property.name: {
-        // console.log('propertyPath Property', propertyPath.node.key.value, propertyPath.node.kind, propertyPath.node.value);
-        // console.log('propertyPath code', recast.print(propertyPath).code);
+        if (!types.Identifier.check(propertyPath.get('key').value)) {
+          // temp error
+          console.log('property key should have been an identifier', propertyPath.get('key').value);
+          throw new Error('property key was not an identifier')
+          break;
+        }
+
+
+        // console.log('propertyPath Property', propertyPath.get('key').value, '\n\n', propertyPath.node.kind, '\n\n', propertyPath.get('value'));
+        // console.log('propertyPath code \n', recast.print(propertyPath).code);
+        const valuePath = propertyPath.get('value');
+        const propName = getPropertyName(propertyPath);
+
+        const type = isPropTypesExpression(valuePath)
+          ? getPropType(valuePath)
+          : { name: 'custom', raw: printValue(valuePath) };
+
+        // console.log('propertyPath Property', propName, '\n\n', valuePath, '\n\n', type);
+
+        switch(valuePath.node.type) {
+          case types.Identifier.name: {
+            // console.log('Property value is Identifier', propName, '\n\n', valuePath, '\n\n', type, valuePath.node.name);
+            const resolved = resolveIdentifierNameToExternalValue(valuePath.node.name, getRoot(propertyPath), filepath);
+            // console.log('resolved', resolved);
+            // console.log('resolved code\n', recast.print(resolved).code);
+            propertyPath.node.value = resolved.value;
+            // console.log('prop path\n', propertyPath.node.value);
+            types.MemberExpression.assert(resolved.node);
+            break;
+          }
+        }
         break;
       }
+      /*
+      case types.Property.name: {
+        const propDescriptor = getDescriptor(getPropertyName(propertyPath));
+        const valuePath = propertyPath.get('value');
+        const type = isPropTypesExpression(valuePath)
+          ? getPropType(valuePath)
+          : { name: 'custom', raw: printValue(valuePath) };
+
+        if (type) {
+          propDescriptor.type = type;
+          propDescriptor.required =
+            type.name !== 'custom' && isRequiredPropType(valuePath);
+        }
+        setPropDescription(documentation, propertyPath);
+        break;
+      }
+      */
       case types.SpreadProperty.name: {
         // console.log('SPREAD_PROPERTY code', recast.print(propertyPath).code);
         // console.log('SPREAD_PROPERTY', propertyPath, propertyPath.get('argument'));
