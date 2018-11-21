@@ -11,7 +11,7 @@ const getAst = require('./lib/utils/getAst');
 const {
   createExternalNodePath,
   isExternalNodePath,
-  getExternalNodePathProps,
+  getExternalNodePath,
 } = require('./lib/utils/externalNodePath');
 
 const {
@@ -57,7 +57,7 @@ function amendPropTypes(getDescriptor, path, documentation) {
       case types.Property.name: {
         let propPath = propertyPath;
         if (isExternalNodePath(propertyPath)) {
-          propPath = getExternalNodePathProps(propertyPath).path;
+          propPath = getExternalNodePath(propertyPath).path;
         }
         const propDescriptor = getDescriptor(getPropertyName(propPath));
         const valuePath = propPath.get('value');
