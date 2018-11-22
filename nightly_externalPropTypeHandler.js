@@ -237,7 +237,7 @@ function resolveExternalsInProperty(path, filepath, options) {
 
   amendPropType(path, options);
 
-  return path;
+  // return path;
 
   const keyPath = path.get('key');
   const valuePath = path.get('value');
@@ -245,7 +245,6 @@ function resolveExternalsInProperty(path, filepath, options) {
   switch(keyPath.node.type) {
     case types.Identifier.name: // Identifier might break if it is a different reference, but maybe that would be ArrayExpression in that case?
     case types.Literal.name: {
-      // break;
 
       console.log('resolveExternalsInProperty path', keyPath.node.type, path.get('value'));
 
@@ -255,33 +254,49 @@ function resolveExternalsInProperty(path, filepath, options) {
       const members = getMembers(valuePath);
       // console.log('i am enum members', members[0] );
 
-      // types.CallExpression.assert(valuePath.node);
-      if (!types.CallExpression.check(valuePath.node)) {
-        // only deal with enum and shape
-        break;
+      switch(valuePath.node.type) {
+        case types.Identifier.name: {
+          break;
+          console.log('Property value is Identifier', '\n\n', valuePath, '\n\n', valuePath.node.name);
+          const resolved = resolveIdentifierNameToExternalValue(valuePath.node.name, getRoot(path), filepath);
+          // console.log('resolved', resolved);
+          // console.log('resolved code\n', recast.print(resolved).code);
+          path.node.value = resolved.value;
+          // console.log('prop path\n', path.node.value);
+          types.MemberExpression.assert(resolved.node); // ooh could be call expression
+          break;
+        }
+
+        case types.CallExpression.name: {
+          console.log('i am enum or maybe shape valuePath:', valuePath);
+
+          const args = valuePath.get('arguments');
+          if (args.value.length !== 1) {
+            // TODO temp error
+            console.log('expected only one argument to computed enum', args);
+            throw new Error('expected only one argument to computed enum, got: ' + args.value.length);
+          }
+          break;
+          const identifierPath = args.get(0);
+          types.Identifier.assert(identifierPath.node);
+
+          console.log('identifierPath', identifierPath)
+          console.log('identifierPathResolvedValue', resolveToValue(identifierPath))
+          console.log('identifierPathModule', resolveToModule(identifierPath))
+          console.log('getNameOrValue(identifierPath)', getNameOrValue(identifierPath))
+
+
+          const resolved = resolveIdentifierNameToExternalValue(getNameOrValue(identifierPath), getRoot(path), filepath);
+          // console.log('path', getPropertyValuePath(path));
+          console.log('resolved', isExternalNodePath(path), resolved);
+
+        }
+
+        default: {
+          console.log('UNHANDLED valuePath.node.type', valuePath.node.type);
+          break;
+        }
       }
-      console.log('i am enum valuePath:', valuePath);
-
-      const args = valuePath.get('arguments');
-      if (args.value.length !== 1) {
-        // TODO temp error
-        console.log('expected only one argument to computed enum', args);
-        throw new Error('expected only one argument to computed enum, got: ' + args.value.length);
-      }
-
-      const identifierPath = args.get(0);
-      types.Identifier.assert(identifierPath.node);
-
-      console.log('identifierPath', identifierPath)
-      console.log('identifierPathResolvedValue', resolveToValue(identifierPath))
-      console.log('identifierPathModule', resolveToModule(identifierPath))
-      console.log('getNameOrValue(identifierPath)', getNameOrValue(identifierPath))
-
-
-      const resolved = resolveIdentifierNameToExternalValue(getNameOrValue(identifierPath), getRoot(path), filepath);
-      // console.log('path', getPropertyValuePath(path));
-      console.log('resolved', isExternalNodePath(path), resolved);
-
       break;
     }
     default: {
@@ -290,45 +305,6 @@ function resolveExternalsInProperty(path, filepath, options) {
       console.log('property key should have been an Identifier or Literal', path);
       console.log('additional', filepath, path.get('key'));
       throw new Error('property key was not an identifier')
-      break;
-    }
-  }
-
-  // console.log('path Property', path.get('key').value, '\n\n', path.node.kind, '\n\n', path.get('value'));
-  // console.log('path code \n', recast.print(path).code);
-
-  // console.log('path Property', propName, '\n\n', valuePath, '\n\n', type);
-
-  switch(valuePath.node.type) {
-    case types.Identifier.name: {
-      // break;
-      console.log('Property value is Identifier', propName, '\n\n', valuePath, '\n\n', type, valuePath.node.name);
-      const resolved = resolveIdentifierNameToExternalValue(valuePath.node.name, getRoot(path), filepath);
-      // console.log('resolved', resolved);
-      // console.log('resolved code\n', recast.print(resolved).code);
-      path.node.value = resolved.value;
-      // console.log('prop path\n', path.node.value);
-      types.MemberExpression.assert(resolved.node); // ooh could be call expression
-      break;
-    }
-    // case types.MemberExpression.name: {
-    //   console.log('Property value is MemberExpression', propName, '\n\n', valuePath, '\n\n', type, valuePath.node.name);
-    //   if (!isPropTypesExpression(valuePath)) {
-    //     console.log('___is not isPropTypesExpression(valuePath)', resolveToModule(valuePath));
-    //     throw new Error('should i throw here?');
-    //   }
-
-    //   const _type = getPropType(valuePath);
-    //   console.log('type', type)
-
-    //   break;
-    // }
-    // case types.CallExpression.name: {
-    //   console.log('Property value is CallExpression', propName, '\n\n', valuePath, '\n\n', type, valuePath.node.name);
-    //   break;
-    // }
-    default: {
-      // console.log('Property value is UNHANDLED type', propName, '\n\n', valuePath, '\n\n', type, valuePath.node.name);
       break;
     }
   }
