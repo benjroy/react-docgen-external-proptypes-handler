@@ -237,9 +237,10 @@ function resolveExternalsInProperty(path, filepath, options) {
 
   amendPropType(path, options);
 
-  return;
+  return path;
 
   const keyPath = path.get('key');
+  const valuePath = path.get('value');
 
   switch(keyPath.node.type) {
     case types.Identifier.name: // Identifier might break if it is a different reference, but maybe that would be ArrayExpression in that case?
@@ -248,7 +249,6 @@ function resolveExternalsInProperty(path, filepath, options) {
 
       console.log('resolveExternalsInProperty path', keyPath.node.type, path.get('value'));
 
-      const valuePath = path.get('value');
       // console.log('i am enum valuePath:', valuePath);
       const memberExpressionRoot = getMemberExpressionRoot(valuePath);
       // console.log('i am enum memberExpressionRoot', memberExpressionRoot);
@@ -333,6 +333,7 @@ function resolveExternalsInProperty(path, filepath, options) {
     }
   }
 
+  return path;
 }
 
 function resolveExternalsInSpreadProperty(path, filepath, options) {
@@ -375,34 +376,7 @@ function resolveExternalsInObjectExpression(path, filepath, options) {
   console.log('resolveExternalsInObjectExpression');
 
   path.get('properties').each((propertyPath) => {
-    // if everything runs through resolveExternals, then this block isn't necessary
-    let propPath = propertyPath;
-    if (isExternalNodePath(propertyPath)) {
-      const external = getExternalNodePath(propertyPath);
-      propPath = external.path;
-      // change scope of filepath
-      filepath = external.filepath;
-    }
-
-    switch (propPath.node.type) {
-      case types.Property.name: {
-        const resolved = resolveExternals(propPath, filepath, options);
-        console.log('resolvedProperty!', resolved);
-        // propPath.node.argument = resolved.value;
-        break;
-      }
-
-
-      case types.SpreadProperty.name: {
-        const resolved = resolveExternals(propPath, filepath, options);
-        propPath.node.argument = resolved.value;
-        break;
-      }
-      default: {
-        console.log('UNHANDELED propPath resolveExternalsInObjectExpression', propPath.node.type);
-        throw new Error('UNHANDELED resolveExternalsInObjectExpression property type switch');
-      }
-    }
+    resolveExternals(propertyPath, filepath, options);
   });
 
   return path;
@@ -427,11 +401,19 @@ function resolveExternals(path, filepath, options) {
       break;
     }
     case types.SpreadProperty.name: {
-      return resolveExternalsInSpreadProperty(path, filepath, options);
+      // return resolveExternalsInSpreadProperty(path, filepath, options);
+      const resolved = resolveExternalsInSpreadProperty(path, filepath, options);
+      path.node.argument = resolved.value;
+      return resolved;
       break;
     }
     case types.Property.name: {
-      return resolveExternalsInProperty(path, filepath, options);
+      // return resolveExternalsInProperty(path, filepath, options);
+      const resolved = resolveExternalsInProperty(path, filepath, options);
+      console.log('resolvedProperty!', path.value === resolved.value);
+      // might be unnecessary here as long as same path is returned from resolveExternalsInProperty
+      path.value = resolved.value;
+      return resolved;
       break;
     }
     default: {
