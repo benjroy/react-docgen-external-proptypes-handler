@@ -206,13 +206,43 @@ function amendPropTypes(getDescriptor, path, documentation, filepath) {
   });
 }
 
+// function amendPropDescriptor()
+
 function amendPropType(path, { getDescriptor, documentation }) {
   types.Property.assert(path.node);
 
   const propName = getPropertyName(path);
   const propDescriptor = getDescriptor(propName);
   // const propDescriptor = getDescriptor(getPropertyName(path));
-  const valuePath = path.get('value');
+  // const valuePath = path.get('value');
+  const valuePath = isExternalNodePath(path.get('value'))
+    ? getExternalNodePath(path.get('value')).path
+    : path.get('value')
+
+  console.log('amendPropType', isExternalNodePath(path), isExternalNodePath(valuePath), isPropTypesExpression(valuePath))
+  const type = isPropTypesExpression(valuePath)
+    ? getPropType(valuePath)
+    : { name: 'custom', raw: printValue(valuePath) };
+
+  if (type) {
+    propDescriptor.type = type;
+    propDescriptor.required =
+      type.name !== 'custom' && isRequiredPropType(valuePath);
+  }
+  setPropDescription(documentation, path);
+
+}
+
+function _amendPropType(valuePath, { getDescriptor, documentation }) {
+  const path = valuePath.parentPath;
+  console.log('valuePath', valuePath.parentPath)
+  types.Property.assert(path.node);
+
+  const propName = getPropertyName(path);
+  const propDescriptor = getDescriptor(propName);
+  // const propDescriptor = getDescriptor(getPropertyName(path));
+  // const valuePath = path.get('value');
+  console.log('amendPropType', isExternalNodePath(path), isExternalNodePath(valuePath), isPropTypesExpression(valuePath))
   const type = isPropTypesExpression(valuePath)
     ? getPropType(valuePath)
     : { name: 'custom', raw: printValue(valuePath) };
@@ -235,7 +265,7 @@ function resolveExternalsInProperty(path, filepath, options) {
   types.Property.assert(path.node);
   console.log('resolveExternalsInProperty');
 
-  amendPropType(path, options);
+  // amendPropType(path, options);
 
   // return path;
 
@@ -246,7 +276,7 @@ function resolveExternalsInProperty(path, filepath, options) {
     case types.Identifier.name: // Identifier might break if it is a different reference, but maybe that would be ArrayExpression in that case?
     case types.Literal.name: {
 
-      console.log('resolveExternalsInProperty path', keyPath.node.type, path.get('value'));
+      // console.log('resolveExternalsInProperty path', keyPath.node.type, path.get('value'));
 
       // console.log('i am enum valuePath:', valuePath);
       const memberExpressionRoot = getMemberExpressionRoot(valuePath);
@@ -256,14 +286,15 @@ function resolveExternalsInProperty(path, filepath, options) {
 
       switch(valuePath.node.type) {
         case types.Identifier.name: {
-          break;
-          console.log('Property value is Identifier', '\n\n', valuePath, '\n\n', valuePath.node.name);
+          // console.log('Property value is Identifier', '\n\n', valuePath, '\n\n', valuePath.node.name);
+          // console.log('Property value is Identifier code\n', recast.print(valuePath).code, '\n\n', filepath);
+
           const resolved = resolveIdentifierNameToExternalValue(valuePath.node.name, getRoot(path), filepath);
           // console.log('resolved', resolved);
           // console.log('resolved code\n', recast.print(resolved).code);
           path.node.value = resolved.value;
           // console.log('prop path\n', path.node.value);
-          types.MemberExpression.assert(resolved.node); // ooh could be call expression
+          // types.MemberExpression.assert(resolved.node); // ooh could be call expression
           break;
         }
 
@@ -276,11 +307,13 @@ function resolveExternalsInProperty(path, filepath, options) {
             console.log('expected only one argument to computed enum', args);
             throw new Error('expected only one argument to computed enum, got: ' + args.value.length);
           }
-          break;
+
           const identifierPath = args.get(0);
+          console.log('identifierPath', identifierPath)
+
+          break;
           types.Identifier.assert(identifierPath.node);
 
-          console.log('identifierPath', identifierPath)
           console.log('identifierPathResolvedValue', resolveToValue(identifierPath))
           console.log('identifierPathModule', resolveToModule(identifierPath))
           console.log('getNameOrValue(identifierPath)', getNameOrValue(identifierPath))
@@ -289,7 +322,16 @@ function resolveExternalsInProperty(path, filepath, options) {
           const resolved = resolveIdentifierNameToExternalValue(getNameOrValue(identifierPath), getRoot(path), filepath);
           // console.log('path', getPropertyValuePath(path));
           console.log('resolved', isExternalNodePath(path), resolved);
+          break;
+        }
 
+        case types.MemberExpression.name: {
+          if (isPropTypesExpression(valuePath)) {
+            break;
+          }
+          console.log('i am MemberExpression, not PropTypes, valuePath:', valuePath);
+          throw new Error('UNHANDLED non-PropTypes MemberExpression');
+          break;
         }
 
         default: {
@@ -308,6 +350,14 @@ function resolveExternalsInProperty(path, filepath, options) {
       break;
     }
   }
+
+  if (isExternalNodePath(path.get('value'))) {
+    // const { path } = getExternalNodePath(path.value);
+    console.log('YES I AM ', getExternalNodePath(path.value));
+  }
+  amendPropType(path, options);
+
+  // _amendPropType(path.get('value'), options);
 
   return path;
 }
@@ -386,9 +436,9 @@ function resolveExternals(path, filepath, options) {
     case types.Property.name: {
       // return resolveExternalsInProperty(path, filepath, options);
       const resolved = resolveExternalsInProperty(path, filepath, options);
-      console.log('resolvedProperty!', path.value === resolved.value);
+      console.log('resolvedProperty!', path.value === resolved.value, isExternalNodePath(resolved), isExternalNodePath(resolved.value));
       // might be unnecessary here as long as same path is returned from resolveExternalsInProperty
-      path.value = resolved.value;
+      // path.value = resolved.value;
       return resolved;
       break;
     }

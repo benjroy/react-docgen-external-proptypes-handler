@@ -10,8 +10,7 @@ Object {
       "description": "Comment for externalPropType.",
       "required": false,
       "type": Object {
-        "name": "custom",
-        "raw": "PropTypes.string",
+        "name": "string",
       },
     },
   },
@@ -27,27 +26,6 @@ Object {
   "displayName": "ComponentImportsExternalValuesForEnum",
   "methods": Array [],
   "props": Object {
-    "api-external-values-enum": Object {
-      "description": "Comment for api-external-values-enum.",
-      "required": false,
-      "type": Object {
-        "name": "enum",
-        "value": Array [
-          Object {
-            "computed": true,
-            "value": "VALUES.STRING",
-          },
-          Object {
-            "computed": true,
-            "value": "VALUES.NUMBER",
-          },
-          Object {
-            "computed": true,
-            "value": "VALUES.BOOL",
-          },
-        ],
-      },
-    },
     "api-external-values-enumList": Object {
       "description": "Comment for api-external-values-enumList.",
       "required": false,
@@ -62,33 +40,6 @@ Object {
       "required": true,
       "type": Object {
         "name": "node",
-      },
-    },
-    "api-external-values-shape-with-enum": Object {
-      "description": "Comment for api-external-values-enumList.",
-      "required": true,
-      "type": Object {
-        "name": "shape",
-        "value": Object {
-          "enum": Object {
-            "name": "enum",
-            "required": false,
-            "value": Array [
-              Object {
-                "computed": true,
-                "value": "VALUES.STRING",
-              },
-              Object {
-                "computed": true,
-                "value": "VALUES.NUMBER",
-              },
-              Object {
-                "computed": true,
-                "value": "VALUES.BOOL",
-              },
-            ],
-          },
-        },
       },
     },
   },
