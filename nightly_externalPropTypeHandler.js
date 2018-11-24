@@ -257,7 +257,7 @@ function resolveExternalsInArrayExpression(path, filepath, options) {
   types.ArrayExpression.assert(path.node);
   console.log('resolveExternalsInArrayExpression');
   path.get('elements').each((elPath) => {
-    console.log('elPath', elPath);
+    // console.log('elPath', elPath);
     switch (elPath.node.type) {
       case types.Identifier.name: {
         const resolved = resolveIdentifierNameToExternalValue(elPath.value.name, getRoot(elPath), filepath);
@@ -289,6 +289,7 @@ function resolveExternalsInCallExpression(path, filepath, options) {
         break;
       }
       default: {
+        console.log('CallExpression arg', argPath.node.type);
         resolveExternals(argPath, filepath, options);
         break;
       }
@@ -342,11 +343,13 @@ function resolveExternalsInProperty(path, filepath, options) {
   const keyPath = path.get('key');
   const valuePath = path.get('value');
 
+  console.log({ keyPath, valuePath })
+
   switch(keyPath.node.type) {
     case types.Identifier.name: // Identifier might break if it is a different reference, but maybe that would be ArrayExpression in that case?
     case types.Literal.name: {
 
-      // console.log('resolveExternalsInProperty path', keyPath.node.type, path.get('value'));
+      console.log('resolveExternalsInProperty path', keyPath.node.type);
 
       // console.log('i am enum valuePath:', valuePath);
       const memberExpressionRoot = getMemberExpressionRoot(valuePath);
@@ -357,7 +360,7 @@ function resolveExternalsInProperty(path, filepath, options) {
       switch(valuePath.node.type) {
         case types.Identifier.name: {
           // console.log('Property value is Identifier', '\n\n', valuePath, '\n\n', valuePath.node.name);
-          // console.log('Property value is Identifier code\n', recast.print(valuePath).code, '\n\n', filepath);
+          console.log('Property value is Identifier code\n', recast.print(valuePath).code, '\n\n', filepath);
 
           const resolved = resolveIdentifierNameToExternalValue(valuePath.node.name, getRoot(path), filepath);
           // console.log('resolved', resolved);
@@ -371,7 +374,7 @@ function resolveExternalsInProperty(path, filepath, options) {
         case types.CallExpression.name: {
           // console.log('i am enum or maybe shape valuePath:', valuePath);
           // break;
-          const resolved = resolveExternals(valuePath, filepath);
+          const resolved = resolveExternals(valuePath, filepath, options);
           // console.log('resolved i am enum or maybe shape valuePat', resolved);
           break;
           // const args = valuePath.get('arguments');
@@ -404,7 +407,17 @@ function resolveExternalsInProperty(path, filepath, options) {
         }
 
         case types.MemberExpression.name: {
+          console.log('I am MemberExpression', isPropTypesExpression(valuePath), valuePath);
           if (isPropTypesExpression(valuePath)) {
+            // .isRequired matched?
+            // const objectPath = valuePath.get('object');
+            resolveExternals(valuePath.get('property'), filepath, options);
+            resolveExternals(valuePath.get('object'), filepath, options);
+            // console.log('breaking memberExpression', resolveToValue(valuePath))
+            // console.log('2breaking memberExpression')
+            // console.log('3breaking memberExpression')
+            // console.log('4breaking memberExpression')
+            // console.log('5breaking memberExpression')
             break;
           }
           console.log('i am MemberExpression, not PropTypes, valuePath:', valuePath);
@@ -526,6 +539,8 @@ function resolveExternals(path, filepath, options) {
       // console.log('resolvedCallExpression!', path.value === resolved.value, isExternalNodePath(resolved));      
       return resolved;
     }
+    case types.MemberExpression.name:
+    case types.Identifier.name:
     case types.Literal.name: {
       return path;
     }

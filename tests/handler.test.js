@@ -105,7 +105,7 @@ describe('react-docgen-external-proptypes-handler', () => {
 
 
 
-  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-*.js'));
+  const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-*.js'));
   // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-spread*.js'));
   // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-no-*.js'));
   // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-local-*.js'));
@@ -116,7 +116,7 @@ describe('react-docgen-external-proptypes-handler', () => {
   // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-imports-external-prop*.js'));
   // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-imports-literal*.js'));
   // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-imports-literal-default.js'));
-  const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-*-enum*.js'));
+  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-*-enum*.js'));
 
   TARGET_FILES.forEach(filepath => {
     describe(filepath, () => test(filepath));
