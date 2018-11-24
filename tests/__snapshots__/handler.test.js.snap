@@ -1,23 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`react-docgen-external-proptypes-handler processes all props for component-imports-external-proptype 1`] = `
-Object {
-  "description": "",
-  "displayName": "ComponentImportsExternalPropType",
-  "methods": Array [],
-  "props": Object {
-    "externalPropType": Object {
-      "description": "Comment for externalPropType.",
-      "required": false,
-      "type": Object {
-        "name": "string",
-      },
-    },
-  },
-}
-`;
-
-exports[`react-docgen-external-proptypes-handler processes all props for component-imports-external-values-for-enum 1`] = `
+exports[`react-docgen-external-proptypes-handler /Users/ballen/code/react-docgen-external-proptypes-handler/tests/fixtures/component-imports-external-values-for-enum.js parses with default resolver/handlers and external handler for \${filepath} 1`] = `
 Object {
   "composes": Array [
     "./api-external-values",
@@ -30,9 +13,21 @@ Object {
       "description": "Comment for api-external-values-enumList.",
       "required": false,
       "type": Object {
-        "computed": true,
         "name": "enum",
-        "value": "ENUM",
+        "value": Array [
+          Object {
+            "computed": true,
+            "value": "VALUES.STRING",
+          },
+          Object {
+            "computed": true,
+            "value": "VALUES.NUMBER",
+          },
+          Object {
+            "computed": true,
+            "value": "VALUES.BOOL",
+          },
+        ],
       },
     },
     "api-external-values-notAnEnum": Object {
@@ -46,406 +41,35 @@ Object {
 }
 `;
 
-exports[`react-docgen-external-proptypes-handler processes all props for component-imports-literal-default 1`] = `
+exports[`react-docgen-external-proptypes-handler /Users/ballen/code/react-docgen-external-proptypes-handler/tests/fixtures/component-imports-external-values-for-enum.js parses with only external handlers 1`] = `
 Object {
-  "composes": Array [
-    "./external-propTypes",
-  ],
-  "description": "",
-  "displayName": "ComponentImportsLiteralDefault",
-  "methods": Array [],
   "props": Object {
-    "external-propTypes-string": Object {
-      "description": "Comment for external-propTypes-string.",
-      "required": false,
-      "type": Object {
-        "name": "string",
-      },
-    },
-  },
-}
-`;
-
-exports[`react-docgen-external-proptypes-handler processes all props for component-imports-literal-named 1`] = `
-Object {
-  "composes": Array [
-    "./api-1",
-  ],
-  "description": "",
-  "displayName": "ComponentImportsLiteralNamed",
-  "methods": Array [],
-  "props": Object {
-    "api-1-bool": Object {
-      "description": "Comment for api-1-bool.",
-      "required": false,
-      "type": Object {
-        "name": "bool",
-      },
-    },
-    "api-1-node-required": Object {
-      "description": "Comment for api-1-node-required.",
-      "required": true,
-      "type": Object {
-        "name": "node",
-      },
-    },
-  },
-}
-`;
-
-exports[`react-docgen-external-proptypes-handler processes all props for component-local-spread 1`] = `
-Object {
-  "description": "",
-  "displayName": "ComponentLocalSpread",
-  "methods": Array [],
-  "props": Object {
-    "bool": Object {
-      "description": "",
-      "required": false,
-      "type": Object {
-        "name": "bool",
-      },
-    },
-    "enum": Object {
-      "description": "",
-      "required": false,
-      "type": Object {
-        "name": "enum",
-        "value": Array [
-          Object {
-            "computed": false,
-            "value": "1",
-          },
-          Object {
-            "computed": false,
-            "value": "2",
-          },
-          Object {
-            "computed": false,
-            "value": "3",
-          },
-        ],
-      },
-    },
-    "enum-var-of-vars": Object {
-      "description": "",
-      "required": false,
-      "type": Object {
-        "name": "enum",
-        "value": Array [
-          Object {
-            "computed": false,
-            "value": "1",
-          },
-          Object {
-            "computed": false,
-            "value": "'two'",
-          },
-          Object {
-            "computed": false,
-            "value": "3",
-          },
-        ],
-      },
-    },
-    "enum-vars": Object {
-      "description": "",
-      "required": false,
-      "type": Object {
-        "name": "enum",
-        "value": Array [
-          Object {
-            "computed": false,
-            "value": "1",
-          },
-          Object {
-            "computed": false,
-            "value": "'two'",
-          },
-          Object {
-            "computed": false,
-            "value": "3",
-          },
-        ],
-      },
-    },
-    "inline-object-spread-string": Object {
-      "description": "Comment for inline-object-spread-string.",
-      "required": false,
-      "type": Object {
-        "name": "string",
-      },
-    },
-    "node": Object {
-      "description": "",
-      "required": true,
-      "type": Object {
-        "name": "node",
-      },
-    },
-    "number": Object {
-      "description": "",
-      "required": false,
-      "type": Object {
-        "name": "number",
-      },
-    },
-    "shape": Object {
-      "description": "",
-      "required": false,
-      "type": Object {
-        "name": "shape",
-        "value": Object {
-          "LOCAL_ENUM": Object {
-            "name": "enum",
-            "required": false,
-            "value": Array [
-              Object {
-                "computed": false,
-                "value": "1",
-              },
-              Object {
-                "computed": false,
-                "value": "'two'",
-              },
-              Object {
-                "computed": false,
-                "value": "3",
-              },
-            ],
-          },
-          "LOCAL_ONE": Object {
-            "name": "number",
-            "required": false,
-          },
-        },
-      },
-    },
-    "string": Object {
-      "description": "",
-      "required": false,
-      "type": Object {
-        "name": "string",
-      },
-    },
-  },
-}
-`;
-
-exports[`react-docgen-external-proptypes-handler processes all props for component-no-external-spread 1`] = `
-Object {
-  "description": "",
-  "displayName": "ComponentNoExternalSpread",
-  "methods": Array [],
-  "props": Object {
-    "local-bool-spread": Object {
-      "description": "Comment for local-bool-spread.",
-      "required": true,
-      "type": Object {
-        "name": "bool",
-      },
-    },
-    "local-enum": Object {
-      "defaultValue": Object {
-        "computed": false,
-        "value": "3",
-      },
-      "description": "Comment for local-enum.",
-      "required": false,
-      "type": Object {
-        "name": "enum",
-        "value": Array [
-          Object {
-            "computed": false,
-            "value": "9",
-          },
-          Object {
-            "computed": false,
-            "value": "'eight'",
-          },
-          Object {
-            "computed": false,
-            "value": "7",
-          },
-        ],
-      },
-    },
-    "local-enum-external-list": Object {
-      "description": "",
-      "required": false,
-      "type": Object {
-        "computed": true,
-        "name": "enum",
-        "value": "ENUM",
-      },
-    },
-    "local-enum-external-values": Object {
-      "description": "",
+    "api-external-values-enumList": Object {
+      "description": "Comment for api-external-values-enumList.",
       "required": false,
       "type": Object {
         "name": "enum",
         "value": Array [
           Object {
             "computed": true,
-            "value": "VALUES.ZERO",
+            "value": "VALUES.STRING",
           },
           Object {
             "computed": true,
-            "value": "VALUES.ONE",
+            "value": "VALUES.NUMBER",
           },
           Object {
             "computed": true,
-            "value": "VALUES.TWO",
-          },
-          Object {
-            "computed": true,
-            "value": "VALUES.THREE",
+            "value": "VALUES.BOOL",
           },
         ],
       },
     },
-    "local-node": Object {
-      "description": "Comment for local-node.",
+    "api-external-values-notAnEnum": Object {
+      "description": "Comment for api-external-values-notAnEnum.",
       "required": true,
       "type": Object {
         "name": "node",
-      },
-    },
-    "local-number": Object {
-      "description": "Comment for local-number.",
-      "required": false,
-      "type": Object {
-        "name": "number",
-      },
-    },
-    "local-string": Object {
-      "defaultValue": Object {
-        "computed": false,
-        "value": "'default-local-string'",
-      },
-      "description": "Comment for local-string.",
-      "required": false,
-      "type": Object {
-        "name": "string",
-      },
-    },
-  },
-}
-`;
-
-exports[`react-docgen-external-proptypes-handler processes all props for component-spreads 1`] = `
-Object {
-  "composes": Array [
-    "./api-1",
-    "./api-2",
-  ],
-  "description": "",
-  "displayName": "ComponentSpreads",
-  "methods": Array [],
-  "props": Object {
-    "api-1-bool": Object {
-      "description": "Comment for api-1-bool.",
-      "required": false,
-      "type": Object {
-        "name": "bool",
-      },
-    },
-    "api-1-node-required": Object {
-      "description": "Comment for api-1-node-required.",
-      "required": true,
-      "type": Object {
-        "name": "node",
-      },
-    },
-    "api-2-node-required": Object {
-      "description": "Comment for api-2-node-required.",
-      "required": true,
-      "type": Object {
-        "name": "node",
-      },
-    },
-    "api-2-string": Object {
-      "description": "Comment for api-2-string.",
-      "required": false,
-      "type": Object {
-        "name": "string",
-      },
-    },
-    "local-string": Object {
-      "defaultValue": Object {
-        "computed": false,
-        "value": "'default-local-string'",
-      },
-      "description": "",
-      "required": false,
-      "type": Object {
-        "name": "string",
-      },
-    },
-  },
-}
-`;
-
-exports[`react-docgen-external-proptypes-handler processes all props for component-spreads-nested 1`] = `
-Object {
-  "composes": Array [
-    "./api-3",
-  ],
-  "description": "",
-  "displayName": "ComponentSpreadsNested",
-  "methods": Array [],
-  "props": Object {
-    "api-1-bool": Object {
-      "description": "Comment for api-1-bool.",
-      "required": false,
-      "type": Object {
-        "name": "bool",
-      },
-    },
-    "api-1-node-required": Object {
-      "description": "Comment for api-1-node-required.",
-      "required": true,
-      "type": Object {
-        "name": "node",
-      },
-    },
-    "api-2-node-required": Object {
-      "description": "Comment for api-2-node-required.",
-      "required": true,
-      "type": Object {
-        "name": "node",
-      },
-    },
-    "api-2-string": Object {
-      "description": "Comment for api-2-string.",
-      "required": false,
-      "type": Object {
-        "name": "string",
-      },
-    },
-    "api-3-node-required": Object {
-      "description": "Comment for api-3-node-required.",
-      "required": true,
-      "type": Object {
-        "name": "node",
-      },
-    },
-    "api-3-number": Object {
-      "description": "Comment for api-3-number.",
-      "required": false,
-      "type": Object {
-        "name": "number",
-      },
-    },
-    "local-number": Object {
-      "defaultValue": Object {
-        "computed": false,
-        "value": "4242",
-      },
-      "description": "",
-      "required": false,
-      "type": Object {
-        "name": "number",
       },
     },
   },

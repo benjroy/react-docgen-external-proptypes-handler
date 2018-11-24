@@ -32,8 +32,6 @@ const {
 
 } = docgen.utils;
 
-// TODO change export assignment in module
-const resolveToExternalValue = resolveIdentifierNameToExternalValue.resolveToExternalValue;
 
 const HOP = Object.prototype.hasOwnProperty
 const createObject = Object.create
@@ -53,158 +51,157 @@ function isPropTypesExpression(path) {
   return false;
 }
 
-function replaceExternalValuesInPropDescriptor(propertyPath, propDescriptor, filepath) {
-  const { type } = propDescriptor;
-  const { name, value, raw, computed } = type;
+// function replaceExternalValuesInPropDescriptor(propertyPath, propDescriptor, filepath) {
+//   const { type } = propDescriptor;
+//   const { name, value, raw, computed } = type;
 
-  if (raw) {
-    console.log(name, raw, filepath, JSON.stringify(propDescriptor, null, 2));
-    return;
-  }
+//   if (raw) {
+//     console.log(name, raw, filepath, JSON.stringify(propDescriptor, null, 2));
+//     return;
+//   }
 
-  switch(type.name) {
-    case 'custom': {
-      console.log(name, 'not raw', filepath, JSON.stringify(propDescriptor, null, 2));
-      break;
-    }
-    case 'enum': {
-      if (computed) {
-        const values = value.split('.');
-        // const resolved = resolveIdentifierNameToExternalValue(values[0], getRoot(propertyPath), filepath);
-        // // console.log('propertyPath', getPropertyValuePath(propertyPath));
-        // console.log('resolved', name, resolved);
+//   switch(type.name) {
+//     case 'custom': {
+//       console.log(name, 'not raw', filepath, JSON.stringify(propDescriptor, null, 2));
+//       break;
+//     }
+//     case 'enum': {
+//       if (computed) {
+//         const values = value.split('.');
+//         // const resolved = resolveIdentifierNameToExternalValue(values[0], getRoot(propertyPath), filepath);
+//         // // console.log('propertyPath', getPropertyValuePath(propertyPath));
+//         // console.log('resolved', name, resolved);
 
-        const valuePath = propertyPath.get('value');
-        // console.log('i am enum valuePath:', valuePath);
-        const memberExpressionRoot = getMemberExpressionRoot(valuePath);
-        // console.log('i am enum memberExpressionRoot', memberExpressionRoot);
-        const members = getMembers(valuePath);
-        // console.log('i am enum members', members[0] );
+//         const valuePath = propertyPath.get('value');
+//         // console.log('i am enum valuePath:', valuePath);
+//         const memberExpressionRoot = getMemberExpressionRoot(valuePath);
+//         // console.log('i am enum memberExpressionRoot', memberExpressionRoot);
+//         const members = getMembers(valuePath);
+//         // console.log('i am enum members', members[0] );
 
-        types.CallExpression.assert(valuePath.node);
-        const args = valuePath.get('arguments');
-        if (args.value.length !== 1) {
-          // TODO temp error
-          console.log('expected only one argument to computed enum', args);
-          throw new Error('expected only one argument to computed enum, got: ' + args.value.length);
-        }
+//         types.CallExpression.assert(valuePath.node);
+//         const args = valuePath.get('arguments');
+//         if (args.value.length !== 1) {
+//           // TODO temp error
+//           console.log('expected only one argument to computed enum', args);
+//           throw new Error('expected only one argument to computed enum, got: ' + args.value.length);
+//         }
 
-        const identifierPath = args.get(0);
-        types.Identifier.assert(identifierPath.node);
-
-
-        // console.log('identifierPath', identifierPath)
-        // console.log('identifierPathResolvedValue', resolveToValue(identifierPath))
-        // console.log('identifierPathModule', resolveToModule(identifierPath))
+//         const identifierPath = args.get(0);
+//         types.Identifier.assert(identifierPath.node);
 
 
-        // const resolved = resolveIdentifierNameToExternalValue(getNameOrValue(identifierPath), getRoot(propertyPath), filepath);
-        // // console.log('propertyPath', getPropertyValuePath(propertyPath));
-        // console.log('resolved', name, resolved);
+//         // console.log('identifierPath', identifierPath)
+//         // console.log('identifierPathResolvedValue', resolveToValue(identifierPath))
+//         // console.log('identifierPathModule', resolveToModule(identifierPath))
 
-        // console.log('out resolveToExternalValue', resolveToExternalValue(identifierPath));
-          // getMemberExpressionRoot,
-          // getMembers,
-          // getMethodDocumentation,
-          // getParameterName,
-          // getPropertyValuePath,
+
+//         // const resolved = resolveIdentifierNameToExternalValue(getNameOrValue(identifierPath), getRoot(propertyPath), filepath);
+//         // // console.log('propertyPath', getPropertyValuePath(propertyPath));
+//         // console.log('resolved', name, resolved);
+
+//           // getMemberExpressionRoot,
+//           // getMembers,
+//           // getMethodDocumentation,
+//           // getParameterName,
+//           // getPropertyValuePath,
           
-        return;
-      }
-      console.log(name, filepath, JSON.stringify(propDescriptor, null, 2));
-      break;
-    }
-    case 'shape': {
-      console.log(name, filepath, JSON.stringify(propDescriptor, null, 2));
-      break;
-    }
-    case 'arrayOf':
-    case 'objectOf': {
-      console.log(name, filepath, JSON.stringify(propDescriptor, null, 2));
-      throw new Error('implement var replacement for ' + name);
-      break;
-    }
-    default: {
-      break;
-    }
-  }
-}
+//         return;
+//       }
+//       console.log(name, filepath, JSON.stringify(propDescriptor, null, 2));
+//       break;
+//     }
+//     case 'shape': {
+//       console.log(name, filepath, JSON.stringify(propDescriptor, null, 2));
+//       break;
+//     }
+//     case 'arrayOf':
+//     case 'objectOf': {
+//       console.log(name, filepath, JSON.stringify(propDescriptor, null, 2));
+//       throw new Error('implement var replacement for ' + name);
+//       break;
+//     }
+//     default: {
+//       break;
+//     }
+//   }
+// }
 
-function amendPropTypes(getDescriptor, path, documentation, filepath) {
-  if (!types.ObjectExpression.check(path.node)) {
-    console.log('BAILING', path);
-    // temp error
-    throw new Error('bailing but should not have had to');
-    return;
-  }
+// function amendPropTypes(getDescriptor, path, documentation, filepath) {
+//   if (!types.ObjectExpression.check(path.node)) {
+//     console.log('BAILING', path);
+//     // temp error
+//     throw new Error('bailing but should not have had to');
+//     return;
+//   }
 
-  path.get('properties').each(function(propertyPath) {
-    switch (propertyPath.node.type) {
-      case types.Property.name: {
-        let propPath = propertyPath;
-        if (isExternalNodePath(propertyPath)) {
-          const external = getExternalNodePath(propertyPath);
-          propPath = external.path;
-          // change scope of filepath
-          filepath = external.filepath;
-        }
-        const propName = getPropertyName(propPath);
-        const propDescriptor = getDescriptor(propName);
-        // const propDescriptor = getDescriptor(getPropertyName(propPath));
-        const valuePath = propPath.get('value');
-        const type = isPropTypesExpression(valuePath)
-          ? getPropType(valuePath)
-          : { name: 'custom', raw: printValue(valuePath) };
+//   path.get('properties').each(function(propertyPath) {
+//     switch (propertyPath.node.type) {
+//       case types.Property.name: {
+//         let propPath = propertyPath;
+//         if (isExternalNodePath(propertyPath)) {
+//           const external = getExternalNodePath(propertyPath);
+//           propPath = external.path;
+//           // change scope of filepath
+//           filepath = external.filepath;
+//         }
+//         const propName = getPropertyName(propPath);
+//         const propDescriptor = getDescriptor(propName);
+//         // const propDescriptor = getDescriptor(getPropertyName(propPath));
+//         const valuePath = propPath.get('value');
+//         const type = isPropTypesExpression(valuePath)
+//           ? getPropType(valuePath)
+//           : { name: 'custom', raw: printValue(valuePath) };
 
-        if (type) {
-          propDescriptor.type = type;
-          propDescriptor.required =
-            type.name !== 'custom' && isRequiredPropType(valuePath);
+//         if (type) {
+//           propDescriptor.type = type;
+//           propDescriptor.required =
+//             type.name !== 'custom' && isRequiredPropType(valuePath);
 
-          if (type.name === 'custom') {
-            console.log('fix me', type.name, JSON.stringify(propDescriptor, null, 2));
-          }
-          if (type.name === 'enum') {
-            // const propValuePath = getPropertyValuePath(path, propName);
-            // console.log('match?', 'propValuePath:', propValuePath, '\n\nvaluePath:', valuePath);
+//           if (type.name === 'custom') {
+//             console.log('fix me', type.name, JSON.stringify(propDescriptor, null, 2));
+//           }
+//           if (type.name === 'enum') {
+//             // const propValuePath = getPropertyValuePath(path, propName);
+//             // console.log('match?', 'propValuePath:', propValuePath, '\n\nvaluePath:', valuePath);
 
-            // console.log('i am enum valuePath:', valuePath);
-            // const memberExpressionRoot = getMemberExpressionRoot(valuePath);
-            // console.log('i am enum memberExpressionRoot', memberExpressionRoot);
-            // const members = getMembers(valuePath);
-            // console.log('i am enum members', members[0] );
+//             // console.log('i am enum valuePath:', valuePath);
+//             // const memberExpressionRoot = getMemberExpressionRoot(valuePath);
+//             // console.log('i am enum memberExpressionRoot', memberExpressionRoot);
+//             // const members = getMembers(valuePath);
+//             // console.log('i am enum members', members[0] );
 
 
-          // getMemberExpressionRoot,
-          // getMembers,
-          // getMethodDocumentation,
-          // getParameterName,
-          // getPropertyValuePath,
+//           // getMemberExpressionRoot,
+//           // getMembers,
+//           // getMethodDocumentation,
+//           // getParameterName,
+//           // getPropertyValuePath,
 
-          }
-          replaceExternalValuesInPropDescriptor(propPath, propDescriptor, filepath);
-        }
-        setPropDescription(documentation, propPath);
-        break;
-      }
-      case types.SpreadElement.name:
-      case types.SpreadProperty.name: {
-        const resolvedValuePath = resolveToValue(propertyPath.get('argument'));
-        switch (resolvedValuePath.node.type) {
-          case types.ObjectExpression.name: // normal object literal
-            amendPropTypes(getDescriptor, resolvedValuePath, documentation, filepath);
-            break;
-        }
-        break;
-      }
-      default: {
-        console.log('amendPropTypes NO CASE', propertyPath.node.type);
-        // temp error
-        throw new Error('amendPropTypes NO CASE, should have had one');
-      }
-    }
-  });
-}
+//           }
+//           replaceExternalValuesInPropDescriptor(propPath, propDescriptor, filepath);
+//         }
+//         setPropDescription(documentation, propPath);
+//         break;
+//       }
+//       case types.SpreadElement.name:
+//       case types.SpreadProperty.name: {
+//         const resolvedValuePath = resolveToValue(propertyPath.get('argument'));
+//         switch (resolvedValuePath.node.type) {
+//           case types.ObjectExpression.name: // normal object literal
+//             amendPropTypes(getDescriptor, resolvedValuePath, documentation, filepath);
+//             break;
+//         }
+//         break;
+//       }
+//       default: {
+//         console.log('amendPropTypes NO CASE', propertyPath.node.type);
+//         // temp error
+//         throw new Error('amendPropTypes NO CASE, should have had one');
+//       }
+//     }
+//   });
+// }
 
 // function amendPropDescriptor()
 
@@ -263,19 +260,29 @@ function resolveExternalsInArrayExpression(path, filepath, options) {
 
 function resolveExternalsInCallExpression(path, filepath, options) {
   types.CallExpression.assert(path.node);
-  console.log('resolveExternalsInCallExpression');
+  console.log('resolveExternalsInCallExpression', path.get('arguments'));
 
-  path.get('arguments').each((argPath) => {
+  path.get('arguments').each(function (argPath) {
     if (!types.Identifier.check(argPath.node)) {
       console.log('ARGUMENT NOT IDENTIFIER', argPath);
       return;
     }
-    console.log('argPath', argPath);
-    const resolved = resolveIdentifierNameToExternalValue(argPath.value.name, getRoot(argPath), filepath);
-    // console.log('path', getPropertyValuePath(path));
-    console.log('resolved', isExternalNodePath(path), resolved);
 
+    console.log('argPath', argPath);
+    console.log('this', this);
+    const resolved = resolveIdentifierNameToExternalValue(argPath.value.name, getRoot(argPath), filepath);
+    const external = getExternalNodePath(resolved);
+    // console.log('path', getPropertyValuePath(path));
+    // console.log('resolved', isExternalNodePath(path), resolved);
+    console.log('resolved CallExpression argument', isExternalNodePath(resolved), resolved);
+    // resolveExternals(external.path, external.filename, options);
+
+    // argPath.value = external.path.value;
+    // TODO: use .replace EVERYWHERE
+    argPath.replace(external.path.value);
   });
+
+  console.log('2 nCallExpress', path.get('arguments'))
 
   return path;
 
@@ -409,10 +416,10 @@ function resolveExternalsInProperty(path, filepath, options) {
     }
   }
 
-  if (isExternalNodePath(path.get('value'))) {
-    // const { path } = getExternalNodePath(path.value);
-    console.log('YES I AM ', getExternalNodePath(path.value));
-  }
+  // if (isExternalNodePath(path.get('value'))) {
+  //   // const { path } = getExternalNodePath(path.value);
+  //   console.log('YES I AM ', getExternalNodePath(path.value));
+  // }
   amendPropType(path, options);
 
   // _amendPropType(path.get('value'), options);
@@ -495,7 +502,7 @@ function resolveExternals(path, filepath, options) {
     case types.Property.name: {
       // return resolveExternalsInProperty(path, filepath, options);
       const resolved = resolveExternalsInProperty(path, filepath, options);
-      console.log('resolvedProperty!', path.value === resolved.value, isExternalNodePath(resolved), isExternalNodePath(resolved.value));
+      console.log('resolvedProperty!', path.value === resolved.value, isExternalNodePath(resolved));
       // might be unnecessary here as long as same path is returned from resolveExternalsInProperty
       // path.value = resolved.value;
       return resolved;
@@ -503,7 +510,7 @@ function resolveExternals(path, filepath, options) {
     }
     case types.CallExpression.name: {
       const resolved = resolveExternalsInCallExpression(path, filepath, options);
-      console.log('resolvedCallExpression!', path.value === resolved.value, isExternalNodePath(resolved), isExternalNodePath(resolved.value));      
+      console.log('resolvedCallExpression!', path.value === resolved.value, isExternalNodePath(resolved));      
       return resolved;
     }
     default: {
@@ -538,7 +545,6 @@ function getExternalPropTypeHandler(propName) {
 
       if (types.Identifier.check(propTypesPath.node)) {
         // console.log('I AM AN IDENTIFIER', filepath);
-        // console.log('out resolveToExternalValue', resolveToExternalValue(propTypesPath, filepath));
         // return;
         // console.log('in code', recast.print(propTypesPath).code);
         const resolved = resolveIdentifierNameToExternalValue(propTypesPath.node.name, getRoot(propTypesPath), filepath);
