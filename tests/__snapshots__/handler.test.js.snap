@@ -9,6 +9,27 @@ Object {
   "displayName": "ComponentImportsExternalValuesForEnum",
   "methods": Array [],
   "props": Object {
+    "api-external-values-enum": Object {
+      "description": "Comment for api-external-values-enum.",
+      "required": false,
+      "type": Object {
+        "name": "enum",
+        "value": Array [
+          Object {
+            "computed": false,
+            "value": "'external-values-string'",
+          },
+          Object {
+            "computed": false,
+            "value": "42",
+          },
+          Object {
+            "computed": false,
+            "value": "false",
+          },
+        ],
+      },
+    },
     "api-external-values-enumList": Object {
       "description": "Comment for api-external-values-enumList.",
       "required": false,
@@ -16,16 +37,20 @@ Object {
         "name": "enum",
         "value": Array [
           Object {
-            "computed": true,
-            "value": "VALUES.STRING",
+            "computed": false,
+            "value": "'external-values-string'",
           },
           Object {
-            "computed": true,
-            "value": "VALUES.NUMBER",
+            "computed": false,
+            "value": "42",
           },
           Object {
-            "computed": true,
-            "value": "VALUES.BOOL",
+            "computed": false,
+            "value": "false",
+          },
+          Object {
+            "computed": false,
+            "value": "4",
           },
         ],
       },
@@ -44,6 +69,27 @@ Object {
 exports[`react-docgen-external-proptypes-handler /Users/ballen/code/react-docgen-external-proptypes-handler/tests/fixtures/component-imports-external-values-for-enum.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
+    "api-external-values-enum": Object {
+      "description": "Comment for api-external-values-enum.",
+      "required": false,
+      "type": Object {
+        "name": "enum",
+        "value": Array [
+          Object {
+            "computed": false,
+            "value": "'external-values-string'",
+          },
+          Object {
+            "computed": false,
+            "value": "42",
+          },
+          Object {
+            "computed": false,
+            "value": "false",
+          },
+        ],
+      },
+    },
     "api-external-values-enumList": Object {
       "description": "Comment for api-external-values-enumList.",
       "required": false,
@@ -51,16 +97,20 @@ Object {
         "name": "enum",
         "value": Array [
           Object {
-            "computed": true,
-            "value": "VALUES.STRING",
+            "computed": false,
+            "value": "'external-values-string'",
           },
           Object {
-            "computed": true,
-            "value": "VALUES.NUMBER",
+            "computed": false,
+            "value": "42",
           },
           Object {
-            "computed": true,
-            "value": "VALUES.BOOL",
+            "computed": false,
+            "value": "false",
+          },
+          Object {
+            "computed": false,
+            "value": "4",
           },
         ],
       },

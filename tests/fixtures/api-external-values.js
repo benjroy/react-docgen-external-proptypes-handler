@@ -10,7 +10,7 @@ export const propTypes = {
   /**
    * Comment for api-external-values-enum.
    */
-  // 'api-external-values-enum': PropTypes.oneOf([STRING, NUMBER, BOOL]),
+  'api-external-values-enum': PropTypes.oneOf([STRING, NUMBER, BOOL]),
   /**
    * Comment for api-external-values-enumList.
    */

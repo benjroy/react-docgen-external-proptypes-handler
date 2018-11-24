@@ -280,23 +280,19 @@ function resolveExternalsInCallExpression(path, filepath, options) {
   console.log('resolveExternalsInCallExpression', path.get('arguments'));
 
   path.get('arguments').each((argPath) => {
-    if (!types.Identifier.check(argPath.node)) {
-      console.log('ARGUMENT NOT IDENTIFIER', argPath);
-      return;
+    switch (argPath.node.type) {
+      case types.Identifier.name: {
+        const resolved = resolveIdentifierNameToExternalValue(argPath.value.name, getRoot(argPath), filepath);
+        const external = getExternalNodePath(resolved);
+        resolveExternals(external.path, external.filepath, options);
+        argPath.replace(external.path.value);
+        break;
+      }
+      default: {
+        resolveExternals(argPath, filepath, options);
+        break;
+      }
     }
-
-    // console.log('argPath', argPath);
-    // console.log('this', this);
-    const resolved = resolveIdentifierNameToExternalValue(argPath.value.name, getRoot(argPath), filepath);
-    const external = getExternalNodePath(resolved);
-    // console.log('path', getPropertyValuePath(path));
-    // console.log('resolved', isExternalNodePath(path), resolved);
-    console.log('resolved CallExpression argument', isExternalNodePath(resolved), resolved);
-    resolveExternals(external.path, external.filepath, options);
-
-    // argPath.value = external.path.value;
-    // TODO: use .replace EVERYWHERE
-    argPath.replace(external.path.value);
   });
 
   // console.log('2 nCallExpress', path.get('arguments'))
