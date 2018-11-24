@@ -256,33 +256,50 @@ function _amendPropType(valuePath, { getDescriptor, documentation }) {
 function resolveExternalsInArrayExpression(path, filepath, options) {
   types.ArrayExpression.assert(path.node);
   console.log('resolveExternalsInArrayExpression');
+  path.get('elements').each((elPath) => {
+    console.log('elPath', elPath);
+    switch (elPath.node.type) {
+      case types.Identifier.name: {
+        const resolved = resolveIdentifierNameToExternalValue(elPath.value.name, getRoot(elPath), filepath);
+        const external = getExternalNodePath(resolved);
+        resolveExternals(external.path, external.filepath, options);
+        elPath.replace(external.path.value);
+        break;
+      }
+      default: {
+        resolveExternals(elPath, filepath, options);
+        break;
+      }
+    }
+  });
+  return path;
 }
 
 function resolveExternalsInCallExpression(path, filepath, options) {
   types.CallExpression.assert(path.node);
   console.log('resolveExternalsInCallExpression', path.get('arguments'));
 
-  path.get('arguments').each(function (argPath) {
+  path.get('arguments').each((argPath) => {
     if (!types.Identifier.check(argPath.node)) {
       console.log('ARGUMENT NOT IDENTIFIER', argPath);
       return;
     }
 
-    console.log('argPath', argPath);
-    console.log('this', this);
+    // console.log('argPath', argPath);
+    // console.log('this', this);
     const resolved = resolveIdentifierNameToExternalValue(argPath.value.name, getRoot(argPath), filepath);
     const external = getExternalNodePath(resolved);
     // console.log('path', getPropertyValuePath(path));
     // console.log('resolved', isExternalNodePath(path), resolved);
     console.log('resolved CallExpression argument', isExternalNodePath(resolved), resolved);
-    // resolveExternals(external.path, external.filename, options);
+    resolveExternals(external.path, external.filepath, options);
 
     // argPath.value = external.path.value;
     // TODO: use .replace EVERYWHERE
     argPath.replace(external.path.value);
   });
 
-  console.log('2 nCallExpress', path.get('arguments'))
+  // console.log('2 nCallExpress', path.get('arguments'))
 
   return path;
 
@@ -356,10 +373,10 @@ function resolveExternalsInProperty(path, filepath, options) {
         }
 
         case types.CallExpression.name: {
-          console.log('i am enum or maybe shape valuePath:', valuePath);
+          // console.log('i am enum or maybe shape valuePath:', valuePath);
           // break;
           const resolved = resolveExternals(valuePath, filepath);
-          console.log('resolved i am enum or maybe shape valuePat', resolved);
+          // console.log('resolved i am enum or maybe shape valuePat', resolved);
           break;
           // const args = valuePath.get('arguments');
           // console.log('args', args);
@@ -502,7 +519,7 @@ function resolveExternals(path, filepath, options) {
     case types.Property.name: {
       // return resolveExternalsInProperty(path, filepath, options);
       const resolved = resolveExternalsInProperty(path, filepath, options);
-      console.log('resolvedProperty!', path.value === resolved.value, isExternalNodePath(resolved));
+      // console.log('resolvedProperty!', path.value === resolved.value, isExternalNodePath(resolved));
       // might be unnecessary here as long as same path is returned from resolveExternalsInProperty
       // path.value = resolved.value;
       return resolved;
@@ -510,11 +527,15 @@ function resolveExternals(path, filepath, options) {
     }
     case types.CallExpression.name: {
       const resolved = resolveExternalsInCallExpression(path, filepath, options);
-      console.log('resolvedCallExpression!', path.value === resolved.value, isExternalNodePath(resolved));      
+      // console.log('resolvedCallExpression!', path.value === resolved.value, isExternalNodePath(resolved));      
       return resolved;
+    }
+    case types.Literal.name: {
+      return path;
     }
     default: {
       console.log('resolveExternals UNHANDLED', path.node.type);
+      // TODO: temp error
       throw new Error('resolveExternals UNHANDLED: ' + path.node.type);
     }
   }

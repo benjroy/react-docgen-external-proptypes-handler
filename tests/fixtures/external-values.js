@@ -2,7 +2,7 @@ const STRING = 'external-values-string'
 const BOOL = false;
 const NUMBER = 42;
 
-const ENUM = [STRING, NUMBER, BOOL];
+const ENUM = [STRING, NUMBER, BOOL, 4];
 
 const ZERO = 0;
 const ONE = 1;
