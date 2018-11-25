@@ -230,60 +230,58 @@ function resolveExternalsInProperty(path, filepath, options) {
   const keyPath = path.get('key');
   const valuePath = path.get('value');
 
-  switch(keyPath.node.type) {
-    case types.Identifier.name: // Identifier might break if it is a different reference, but maybe that would be ArrayExpression in that case?
-    case types.Literal.name: {
+  // pretty sure this block is unnecessary
+  if (
+    !types.Identifier.check(keyPath.node)
+    && !types.Literal.check(keyPath.node)
+  ) {
+    // temp error
+    // console.log('property key should have been an identifier', propertyPath.get('key').value);
+    console.log('property key should have been an Identifier or Literal', path);
+    console.log('additional', filepath, path.get('key'));
+    throw new Error('property key was not an identifier')
+    return;
+  }
 
-      console.log('resolveExternalsInProperty path', keyPath.node.type);
+  console.log('resolveExternalsInProperty path', keyPath.node.type);
 
-      // console.log('i am enum valuePath:', valuePath);
-      const memberExpressionRoot = getMemberExpressionRoot(valuePath);
-      // console.log('i am enum memberExpressionRoot', memberExpressionRoot);
-      const members = getMembers(valuePath);
-      // console.log('i am enum members', members[0] );
+  // console.log('i am enum valuePath:', valuePath);
+  const memberExpressionRoot = getMemberExpressionRoot(valuePath);
+  // console.log('i am enum memberExpressionRoot', memberExpressionRoot);
+  const members = getMembers(valuePath);
+  // console.log('i am enum members', members[0] );
 
-      switch(valuePath.node.type) {
-        case types.Identifier.name: {
-          // console.log('Property value is Identifier', '\n\n', valuePath, '\n\n', valuePath.node.name);
-          // console.log('Property value is Identifier code\n', recast.print(valuePath).code, '\n\n', filepath);
-          const resolvedValuePath = resolveIdentifierNameToExternalValue(valuePath.node.name, getRoot(path), filepath);
-          valuePath.replace(resolvedValuePath.value);
-          break;
-        }
-
-        case types.CallExpression.name: {
-          // console.log('i am enum or maybe shape valuePath:', valuePath);
-          // break;
-          const resolved = resolveExternals(valuePath, filepath, options);
-          // console.log('resolved i am enum or maybe shape valuePat', resolved);
-          break;
-        }
-
-        case types.MemberExpression.name: {
-          if (isPropTypesExpression(valuePath)) {
-            // .isRequired matched?
-            resolveExternals(valuePath.get('property'), filepath, options);
-            resolveExternals(valuePath.get('object'), filepath, options);
-            break;
-          }
-          console.log('i am MemberExpression, not PropTypes, valuePath:', valuePath);
-          throw new Error('UNHANDLED non-PropTypes MemberExpression');
-          break;
-        }
-
-        default: {
-          console.log('UNHANDLED valuePath.node.type', valuePath.node.type);
-          break;
-        }
-      }
+  switch(valuePath.node.type) {
+    case types.Identifier.name: {
+      // console.log('Property value is Identifier', '\n\n', valuePath, '\n\n', valuePath.node.name);
+      // console.log('Property value is Identifier code\n', recast.print(valuePath).code, '\n\n', filepath);
+      const resolvedValuePath = resolveIdentifierNameToExternalValue(valuePath.node.name, getRoot(path), filepath);
+      valuePath.replace(resolvedValuePath.value);
       break;
     }
+
+    case types.CallExpression.name: {
+      // console.log('i am enum or maybe shape valuePath:', valuePath);
+      // break;
+      const resolved = resolveExternals(valuePath, filepath, options);
+      // console.log('resolved i am enum or maybe shape valuePat', resolved);
+      break;
+    }
+
+    case types.MemberExpression.name: {
+      if (isPropTypesExpression(valuePath)) {
+        // .isRequired matched?
+        resolveExternals(valuePath.get('property'), filepath, options);
+        resolveExternals(valuePath.get('object'), filepath, options);
+        break;
+      }
+      console.log('i am MemberExpression, not PropTypes, valuePath:', valuePath);
+      throw new Error('UNHANDLED non-PropTypes MemberExpression');
+      break;
+    }
+
     default: {
-      // temp error
-      // console.log('property key should have been an identifier', propertyPath.get('key').value);
-      console.log('property key should have been an Identifier or Literal', path);
-      console.log('additional', filepath, path.get('key'));
-      throw new Error('property key was not an identifier')
+      console.log('UNHANDLED valuePath.node.type', valuePath.node.type);
       break;
     }
   }
