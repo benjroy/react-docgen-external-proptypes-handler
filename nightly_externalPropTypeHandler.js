@@ -195,26 +195,7 @@ function getExternalPropTypeHandler(propName) {
         return;
       }
 
-      if (types.Identifier.check(propTypesPath.node)) {
-        const resolved = resolveIdentifierNameToExternalValue(propTypesPath.node.name, getRoot(propTypesPath), filepath);
-        const { code } = recast.print(resolved.value);
-        // maybe don't need this assert
-        types.AssignmentExpression.assert(propTypesPath.parentPath.node);
-
-        propTypesPath.parentPath.value.right = resolved.value;
-        propTypesPath = resolveToValue(propTypesPath.parentPath);
-      } else {
-        propTypesPath = resolveToValue(propTypesPath);
-      }
-
-      if (!propTypesPath) {
-        console.log('why did this return', propTypesPath);
-        return;
-      }
-
-
       const resolved = resolveExternals(propTypesPath, filepath, { getDescriptor, documentation });
-
 
       // console.log(recast.print(propTypesPath).code);
 
