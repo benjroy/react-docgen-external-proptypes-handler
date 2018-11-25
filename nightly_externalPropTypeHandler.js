@@ -230,7 +230,6 @@ function resolveExternalsInProperty(path, filepath, options) {
   const keyPath = path.get('key');
   const valuePath = path.get('value');
 
-
   switch(keyPath.node.type) {
     case types.Identifier.name: // Identifier might break if it is a different reference, but maybe that would be ArrayExpression in that case?
     case types.Literal.name: {
@@ -247,13 +246,8 @@ function resolveExternalsInProperty(path, filepath, options) {
         case types.Identifier.name: {
           // console.log('Property value is Identifier', '\n\n', valuePath, '\n\n', valuePath.node.name);
           // console.log('Property value is Identifier code\n', recast.print(valuePath).code, '\n\n', filepath);
-
-          const resolved = resolveIdentifierNameToExternalValue(valuePath.node.name, getRoot(path), filepath);
-          // console.log('resolved', resolved);
-          // console.log('resolved code\n', recast.print(resolved).code);
-          path.node.value = resolved.value;
-          // console.log('prop path\n', path.node.value);
-          // types.MemberExpression.assert(resolved.node); // ooh could be call expression
+          const resolvedValuePath = resolveIdentifierNameToExternalValue(valuePath.node.name, getRoot(path), filepath);
+          valuePath.replace(resolvedValuePath.value);
           break;
         }
 
@@ -266,17 +260,10 @@ function resolveExternalsInProperty(path, filepath, options) {
         }
 
         case types.MemberExpression.name: {
-          // console.log('I am MemberExpression', isPropTypesExpression(valuePath), valuePath);
           if (isPropTypesExpression(valuePath)) {
             // .isRequired matched?
-            // const objectPath = valuePath.get('object');
             resolveExternals(valuePath.get('property'), filepath, options);
             resolveExternals(valuePath.get('object'), filepath, options);
-            // console.log('breaking memberExpression', resolveToValue(valuePath))
-            // console.log('2breaking memberExpression')
-            // console.log('3breaking memberExpression')
-            // console.log('4breaking memberExpression')
-            // console.log('5breaking memberExpression')
             break;
           }
           console.log('i am MemberExpression, not PropTypes, valuePath:', valuePath);

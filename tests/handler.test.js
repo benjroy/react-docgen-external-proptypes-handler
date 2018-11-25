@@ -1,9 +1,7 @@
 const fs = require('fs');
-const mockFs = require('mock-fs');
 const path = require('path');
 const glob = require('glob');
 const docgen = require('react-docgen');
-const { mapKeys } = require('lodash');
 const original_externalProptypesHandler = require("../index");
 // const externalPropTypeHandler = require("../externalPropTypeHandler").propTypeHandler;
 const nightly_externalPropTypeHandler = require("../nightly_externalPropTypeHandler").propTypeHandler;
@@ -40,69 +38,16 @@ describe('react-docgen-external-proptypes-handler', () => {
   };
 
   function test(filepath) {
-    it('parses with default resolver/handlers and external handler for ${filepath}', () => {
-      let info;
-      // expect(() => {
-        info = processFilepathWithDefaultHandlers(filepath);
-      // }).not.toThrowError();
-      expect(info).toMatchSnapshot();
-    });
+    // it('parses with default resolver/handlers and external handler for ${filepath}', () => {
+    //   const info = processFilepathWithDefaultHandlers(filepath);
+    //   expect(info).toMatchSnapshot();
+    // });
     
     it('parses with only external handlers', () => {
-      let info;
-      // expect(() => {
-        info = processFilepathWithHandler(filepath);
-      // }).not.toThrowError();
+      const info = processFilepathWithHandler(filepath);
       expect(info).toMatchSnapshot();
     });
   }
-
-  // function testWithMockFs(filename, source, mockFilesystem) {
-  //   const testFilepath = `${filename}.js`;
-  //   const testDir = 'tests/fixtures/mocks';
-  //   const mocks = mapKeys({
-  //     [testFilepath]: source,
-  //     ...mockFilesystem,
-  //   }, (val, key) => path.join('./' + testDir, key));
-  //   // const mocks = {
-  //   //   [testFilepath]: source,
-  //   //   ...mockFilesystem,
-  //   // };
-  //   console.log(mocks);
-  //   console.log(); // https://github.com/facebook/jest/issues/5792
-  //   mockFs(mocks);
-  //   try {
-  //     const output = test(path.join('./' + testDir, testFilepath));
-  //   } catch (err) {
-  //     mockFs.restore();
-  //     throw err;
-  //   }
-  //   mockFs.restore();
-  // }
-
-  // describe('destructures a namespace', () => {
-  //   testWithMockFs('destructures', `
-  //     import React from 'react';
-  //     import PropTypes from 'prop-types';
-  //     import propTypes from './external';
-
-  //     const Component = (props) => (<div />);
-
-  //     Component.propTypes = {
-  //       string: PropTypes.string,
-  //     };
-  //     export default Component;
-  //   `, {
-  //     'external.js': `
-  //       import PropTypes from 'prop-types';
-
-  //       export default {
-  //         string: PropTypes.string.isRequired;
-  //       };
-  //     `
-  //   })
-  // });
-
 
 
   const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-*.js'));
