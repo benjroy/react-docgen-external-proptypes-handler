@@ -6,7 +6,6 @@ const babylon = require('react-docgen/dist/babylon').default
 const setPropDescription = require('react-docgen/dist/utils/setPropDescription').default
 const isRequiredPropType = require('react-docgen/dist/utils/isRequiredPropType').default
 const resolveIdentifierNameToExternalValue = require('./lib/utils/resolveIdentifierNameToExternalValue');
-const getRoot = require('./lib/utils/getRoot');
 const getAst = require('./lib/utils/getAst');
 // const {
 //   // createExternalNodePath,
@@ -123,6 +122,7 @@ function resolveExternals({ path, filepath, ast, propExternals }) {
       });
       break;
     }
+
     case types.MemberExpression.name: {
       if (isPropTypesExpression(path)) {
         ([path.get('object'), path.get('property')]).forEach((targetPath) => {
@@ -175,7 +175,7 @@ function getExternalPropTypeHandler(propName) {
       const resolved = resolveExternals({
         path: propTypesPath,
         filepath,
-        ast: getRoot(propTypesPath),
+        ast: propTypesPath.scope.getGlobalScope().node,
         propExternals: {},
       });
       console.log('at end propExternals', resolved);
