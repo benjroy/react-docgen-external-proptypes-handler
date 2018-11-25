@@ -129,21 +129,45 @@ function isPropTypesExpression(path) {
 
 // function amendPropDescriptor()
 
+// function _amendPropType(valuePath, { getDescriptor, documentation }) {
+//   const path = valuePath.parentPath;
+//   console.log('valuePath', valuePath.parentPath)
+//   types.Property.assert(path.node);
+
+//   const propName = getPropertyName(path);
+//   const propDescriptor = getDescriptor(propName);
+//   // const propDescriptor = getDescriptor(getPropertyName(path));
+//   // const valuePath = path.get('value');
+//   console.log('amendPropType', isExternalNodePath(path), isExternalNodePath(valuePath), isPropTypesExpression(valuePath))
+//   const type = isPropTypesExpression(valuePath)
+//     ? getPropType(valuePath)
+//     : { name: 'custom', raw: printValue(valuePath) };
+
+//   if (type) {
+//     propDescriptor.type = type;
+//     propDescriptor.required =
+//       type.name !== 'custom' && isRequiredPropType(valuePath);
+//   }
+//   setPropDescription(documentation, path);
+
+// }
 function amendPropType(path, { getDescriptor, documentation }) {
   types.Property.assert(path.node);
 
   const propName = getPropertyName(path);
   const propDescriptor = getDescriptor(propName);
   // const propDescriptor = getDescriptor(getPropertyName(path));
-  // const valuePath = path.get('value');
-  const valuePath = isExternalNodePath(path.get('value'))
-    ? getExternalNodePath(path.get('value')).path
-    : path.get('value')
+  const valuePath = path.get('value');
+  // const valuePath = isExternalNodePath(path.get('value'))
+  //   ? getExternalNodePath(path.get('value')).path
+  //   : path.get('value');
 
-  console.log('amendPropType', isExternalNodePath(path), isExternalNodePath(valuePath), isPropTypesExpression(valuePath))
-  const type = isPropTypesExpression(valuePath)
-    ? getPropType(valuePath)
-    : { name: 'custom', raw: printValue(valuePath) };
+  console.log('amendPropType', isExternalNodePath(path), isExternalNodePath(valuePath))
+  const type = resolveExternalPropType(valuePath);
+
+  // const type = isExternalPropTypesExpression(valuePath)
+  //   ? getPropType(valuePath)
+  //   : { name: 'custom', raw: printValue(valuePath) };
 
   if (type) {
     propDescriptor.type = type;
@@ -154,27 +178,38 @@ function amendPropType(path, { getDescriptor, documentation }) {
 
 }
 
-function _amendPropType(valuePath, { getDescriptor, documentation }) {
-  const path = valuePath.parentPath;
-  console.log('valuePath', valuePath.parentPath)
-  types.Property.assert(path.node);
 
-  const propName = getPropertyName(path);
-  const propDescriptor = getDescriptor(propName);
-  // const propDescriptor = getDescriptor(getPropertyName(path));
-  // const valuePath = path.get('value');
-  console.log('amendPropType', isExternalNodePath(path), isExternalNodePath(valuePath), isPropTypesExpression(valuePath))
-  const type = isPropTypesExpression(valuePath)
-    ? getPropType(valuePath)
-    : { name: 'custom', raw: printValue(valuePath) };
-
-  if (type) {
-    propDescriptor.type = type;
-    propDescriptor.required =
-      type.name !== 'custom' && isRequiredPropType(valuePath);
+function resolveExternalPropType(path, options) {
+  if (isExternalNodePath(path)) {
+    const external = getExternalNodePath(path);
+    // change scope
+    console.log('I AM EXTERNAL', path)
+    // TODO: not this way
+    path = external.path;
+    // return resolveExternalPropType(external.path, external.filepath, options);
   }
-  setPropDescription(documentation, path);
 
+  const type = isPropTypesExpression(path)
+    ? getPropType(path)
+    : { name: 'custom', raw: printValue(path) };
+
+  return type;
+}
+
+function resolveExternalIdentifier(path, filepath, options) {
+  types.Identifier.assert(path.node);
+
+  const resolved = resolveIdentifierNameToExternalValue(path.value.name, getRoot(path), filepath);
+  console.log('resolveExternalIdentifier', path.value.name, resolved);
+  if (!resolved) {
+    console.log('NOT RESOLVED', path);
+  }
+  const external = getExternalNodePath(resolved);
+  resolveExternals(external.path, external.filepath, options);
+  path.replace(external.path.value);
+
+  // TODO: return { path, filepath, ast } here
+  return path;
 }
 
 function resolveExternalsInArrayExpression(path, filepath, options) {
@@ -182,19 +217,10 @@ function resolveExternalsInArrayExpression(path, filepath, options) {
   console.log('resolveExternalsInArrayExpression');
 
   path.get('elements').each((elPath) => {
-    switch (elPath.node.type) {
-      case types.Identifier.name: {
-        const resolved = resolveIdentifierNameToExternalValue(elPath.value.name, getRoot(elPath), filepath);
-        const external = getExternalNodePath(resolved);
-        resolveExternals(external.path, external.filepath, options);
-        elPath.replace(external.path.value);
-        break;
-      }
-      default: {
-        resolveExternals(elPath, filepath, options);
-        break;
-      }
-    }
+    // if (types.Identifier.check(elPath.node)) {
+    //   resolveExternalIdentifier(elPath, filepath, options);
+    // }
+    resolveExternals(elPath, filepath, options);
   });
   return path;
 }
@@ -204,22 +230,30 @@ function resolveExternalsInCallExpression(path, filepath, options) {
   console.log('resolveExternalsInCallExpression');
 
   path.get('arguments').each((argPath) => {
-    switch (argPath.node.type) {
-      case types.Identifier.name: {
-        const resolved = resolveIdentifierNameToExternalValue(argPath.value.name, getRoot(argPath), filepath);
-        const external = getExternalNodePath(resolved);
-        resolveExternals(external.path, external.filepath, options);
-        argPath.replace(external.path.value);
-        break;
-      }
-      default: {
-        resolveExternals(argPath, filepath, options);
-        break;
-      }
-    }
+    // if (types.Identifier.check(argPath.node)) {
+    //   resolveExternalIdentifier(argPath, filepath, options);
+    // }
+    resolveExternals(argPath, filepath, options);
   });
 
   return path;
+}
+
+function resolveExternalsInMemberExpression(path, filepath, options) {
+  types.MemberExpression.assert(path.node);
+
+  if (isPropTypesExpression(path)) {
+    (['object', 'property']).forEach((key) => {
+      const targetPath = path.get(key);
+      if (types.Identifier.check(targetPath.node)) {
+        return;
+      }
+      resolveExternals(targetPath, filepath, options);
+    });
+    return;
+  }
+  console.log('i am MemberExpression, not PropTypes, valuePath:', path);
+  throw new Error('UNHANDLED non-PropTypes MemberExpression');
 }
 
 function resolveExternalsInProperty(path, filepath, options) {
@@ -255,8 +289,11 @@ function resolveExternalsInProperty(path, filepath, options) {
     case types.Identifier.name: {
       // console.log('Property value is Identifier', '\n\n', valuePath, '\n\n', valuePath.node.name);
       // console.log('Property value is Identifier code\n', recast.print(valuePath).code, '\n\n', filepath);
-      const resolvedValuePath = resolveIdentifierNameToExternalValue(valuePath.node.name, getRoot(path), filepath);
-      valuePath.replace(resolvedValuePath.value);
+      // const resolvedValuePath = resolveIdentifierNameToExternalValue(valuePath.node.name, getRoot(path), filepath);
+      // valuePath.replace(resolvedValuePath.value);
+
+      // resolveExternalIdentifier(valuePath, filepath, options);
+      resolveExternals(valuePath, filepath, options);      
       break;
     }
 
@@ -269,19 +306,21 @@ function resolveExternalsInProperty(path, filepath, options) {
     }
 
     case types.MemberExpression.name: {
-      if (isPropTypesExpression(valuePath)) {
-        // .isRequired matched?
-        resolveExternals(valuePath.get('property'), filepath, options);
-        resolveExternals(valuePath.get('object'), filepath, options);
-        break;
-      }
-      console.log('i am MemberExpression, not PropTypes, valuePath:', valuePath);
-      throw new Error('UNHANDLED non-PropTypes MemberExpression');
+      resolveExternals(valuePath, filepath, options);
+      // if (isPropTypesExpression(valuePath)) {
+      //   // .isRequired matched?
+      //   resolveExternals(valuePath.get('property'), filepath, options);
+      //   resolveExternals(valuePath.get('object'), filepath, options);
+      //   break;
+      // }
+      // console.log('i am MemberExpression, not PropTypes, valuePath:', valuePath);
+      // throw new Error('UNHANDLED non-PropTypes MemberExpression');
       break;
     }
 
     default: {
       console.log('UNHANDLED valuePath.node.type', valuePath.node.type);
+      throw new Error('should not have hit');
       break;
     }
   }
@@ -295,29 +334,25 @@ function resolveExternalsInSpreadProperty(path, filepath, options) {
   types.SpreadProperty.assert(path.node);
   console.log('resolveExternalsInSpreadProperty');
 
-  let resolved;
+  const argPath = path.get('argument');
 
-  switch(path.node.argument.type) {
+  switch(argPath.node.type) {
     case types.Identifier.name: {
-      resolved = resolveIdentifierNameToExternalValue(path.node.argument.name, getRoot(path), filepath);
-      break;
-    }
-    case types.ObjectExpression.name: {
-      resolved = resolveToValue(path).get('argument');
+      // const { path, ast, filepath } = resolveIdentifierNameToExternalValue(path.node.argument.name, getRoot(path), filepath);
+      // resolved = resolveIdentifierNameToExternalValue(path.node.argument.name, getRoot(path), filepath);
+      // resolveExternalIdentifier(argPath, filepath, options);
+      resolveExternals(argPath, filepath, options);      
       break;
     }
     default: {
-      console.log('UNHANDLED SPREAD_PROPERTY argument type', propPath.node.argument.type);
-      throw new Error('there should be no unhandled spread_property');
+      resolveExternals(argPath, filepath, options);
     }
   }
-  // recurse to process and external references in the child pbject
-  resolveExternals(resolved, filepath, options);
+
   // overwrite the target value with the recursively processed ObjectExpression
   // propPath.node.argument = resolvedObjectExpression.value;
-  types.ObjectExpression.assert(resolved.node);
-
-  return resolved;
+  types.ObjectExpression.assert(argPath.node);
+  return path;
 }
 
 function resolveExternalsInObjectExpression(path, filepath, options) {
@@ -339,9 +374,14 @@ function resolveExternals(path, filepath, options) {
     path = external.path;
     // change scope of filepath
     filepath = external.filepath;
+
+    // return resolveExternals(external.path, external.filepath);
   }
 
   switch(path.node.type) {
+    case types.Identifier.name: {
+      return resolveExternalIdentifier(path, filepath, options);
+    }
     case types.ObjectExpression.name: {
       return resolveExternalsInObjectExpression(path, filepath, options);
     }
@@ -352,7 +392,8 @@ function resolveExternals(path, filepath, options) {
     case types.SpreadProperty.name: {
       // return resolveExternalsInSpreadProperty(path, filepath, options);
       const resolved = resolveExternalsInSpreadProperty(path, filepath, options);
-      path.node.argument = resolved.value;
+      // path.get('argument').replace(resolved.value);
+      // path.node.argument = resolved.value;
       return resolved;
       break;
     }
@@ -362,8 +403,10 @@ function resolveExternals(path, filepath, options) {
     case types.CallExpression.name: {
       return resolveExternalsInCallExpression(path, filepath, options);
     }
-    case types.MemberExpression.name:
-    case types.Identifier.name:
+    case types.MemberExpression.name: {
+      return resolveExternalsInMemberExpression(path, filepath, options);
+    }
+    // case types.Identifier.name:
     case types.Literal.name: {
       return path;
     }
@@ -430,7 +473,7 @@ function getExternalPropTypeHandler(propName) {
       // then reparse it or however that works
       // find the propTypes on the component
 
-      // console.log(recast.print(propTypesPath).code);
+      console.log(recast.print(propTypesPath).code);
 
 
       // propTypesPath = resolveToValue(propTypesPath);
