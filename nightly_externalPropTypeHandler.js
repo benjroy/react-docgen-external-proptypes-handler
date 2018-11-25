@@ -51,106 +51,6 @@ function isPropTypesExpression(path) {
   return false;
 }
 
-// function amendPropTypes(getDescriptor, path, documentation, filepath) {
-//   if (!types.ObjectExpression.check(path.node)) {
-//     console.log('BAILING', path);
-//     // temp error
-//     throw new Error('bailing but should not have had to');
-//     return;
-//   }
-
-//   path.get('properties').each(function(propertyPath) {
-//     switch (propertyPath.node.type) {
-//       case types.Property.name: {
-//         let propPath = propertyPath;
-//         if (isExternalNodePath(propertyPath)) {
-//           const external = getExternalNodePath(propertyPath);
-//           propPath = external.path;
-//           // change scope of filepath
-//           filepath = external.filepath;
-//         }
-//         const propName = getPropertyName(propPath);
-//         const propDescriptor = getDescriptor(propName);
-//         // const propDescriptor = getDescriptor(getPropertyName(propPath));
-//         const valuePath = propPath.get('value');
-//         const type = isPropTypesExpression(valuePath)
-//           ? getPropType(valuePath)
-//           : { name: 'custom', raw: printValue(valuePath) };
-
-//         if (type) {
-//           propDescriptor.type = type;
-//           propDescriptor.required =
-//             type.name !== 'custom' && isRequiredPropType(valuePath);
-
-//           if (type.name === 'custom') {
-//             console.log('fix me', type.name, JSON.stringify(propDescriptor, null, 2));
-//           }
-//           if (type.name === 'enum') {
-//             // const propValuePath = getPropertyValuePath(path, propName);
-//             // console.log('match?', 'propValuePath:', propValuePath, '\n\nvaluePath:', valuePath);
-
-//             // console.log('i am enum valuePath:', valuePath);
-//             // const memberExpressionRoot = getMemberExpressionRoot(valuePath);
-//             // console.log('i am enum memberExpressionRoot', memberExpressionRoot);
-//             // const members = getMembers(valuePath);
-//             // console.log('i am enum members', members[0] );
-
-
-//           // getMemberExpressionRoot,
-//           // getMembers,
-//           // getMethodDocumentation,
-//           // getParameterName,
-//           // getPropertyValuePath,
-
-//           }
-//           replaceExternalValuesInPropDescriptor(propPath, propDescriptor, filepath);
-//         }
-//         setPropDescription(documentation, propPath);
-//         break;
-//       }
-//       case types.SpreadElement.name:
-//       case types.SpreadProperty.name: {
-//         const resolvedValuePath = resolveToValue(propertyPath.get('argument'));
-//         switch (resolvedValuePath.node.type) {
-//           case types.ObjectExpression.name: // normal object literal
-//             amendPropTypes(getDescriptor, resolvedValuePath, documentation, filepath);
-//             break;
-//         }
-//         break;
-//       }
-//       default: {
-//         console.log('amendPropTypes NO CASE', propertyPath.node.type);
-//         // temp error
-//         throw new Error('amendPropTypes NO CASE, should have had one');
-//       }
-//     }
-//   });
-// }
-
-// function amendPropDescriptor()
-
-// function _amendPropType(valuePath, { getDescriptor, documentation }) {
-//   const path = valuePath.parentPath;
-//   console.log('valuePath', valuePath.parentPath)
-//   types.Property.assert(path.node);
-
-//   const propName = getPropertyName(path);
-//   const propDescriptor = getDescriptor(propName);
-//   // const propDescriptor = getDescriptor(getPropertyName(path));
-//   // const valuePath = path.get('value');
-//   console.log('amendPropType', isExternalNodePath(path), isExternalNodePath(valuePath), isPropTypesExpression(valuePath))
-//   const type = isPropTypesExpression(valuePath)
-//     ? getPropType(valuePath)
-//     : { name: 'custom', raw: printValue(valuePath) };
-
-//   if (type) {
-//     propDescriptor.type = type;
-//     propDescriptor.required =
-//       type.name !== 'custom' && isRequiredPropType(valuePath);
-//   }
-//   setPropDescription(documentation, path);
-
-// }
 function amendPropType(path, { getDescriptor, documentation }) {
   types.Property.assert(path.node);
 
@@ -200,10 +100,10 @@ function resolveExternalIdentifier(path, filepath, options) {
   types.Identifier.assert(path.node);
 
   const resolved = resolveIdentifierNameToExternalValue(path.value.name, getRoot(path), filepath);
-  console.log('resolveExternalIdentifier', path.value.name, resolved);
-  if (!resolved) {
-    console.log('NOT RESOLVED', path);
-  }
+  // console.log('resolveExternalIdentifier', path.value.name, resolved);
+  // if (!resolved) {
+  //   console.log('NOT RESOLVED', path);
+  // }
   const external = getExternalNodePath(resolved);
   resolveExternals(external.path, external.filepath, options);
   path.replace(external.path.value);
@@ -217,9 +117,6 @@ function resolveExternalsInArrayExpression(path, filepath, options) {
   console.log('resolveExternalsInArrayExpression');
 
   path.get('elements').each((elPath) => {
-    // if (types.Identifier.check(elPath.node)) {
-    //   resolveExternalIdentifier(elPath, filepath, options);
-    // }
     resolveExternals(elPath, filepath, options);
   });
   return path;
@@ -230,9 +127,6 @@ function resolveExternalsInCallExpression(path, filepath, options) {
   console.log('resolveExternalsInCallExpression');
 
   path.get('arguments').each((argPath) => {
-    // if (types.Identifier.check(argPath.node)) {
-    //   resolveExternalIdentifier(argPath, filepath, options);
-    // }
     resolveExternals(argPath, filepath, options);
   });
 
@@ -457,103 +351,17 @@ function getExternalPropTypeHandler(propName) {
         return;
       }
 
-      // return;
-      // _amendPropTypes()
 
       const resolved = resolveExternals(propTypesPath, filepath, { getDescriptor, documentation });
 
-      // console.log('RESOLVED EXTERNALS', filepath, recast.print(propTypesPath).code);
-
-      // amendPropTypes(getDescriptor, propTypesPath, documentation, filepath);
-      // amendPropTypes(getDescriptor, resolvedObjectExpression, documentation);
-
-
-
-      // take the values and replace them in the original ast
-      // then reparse it or however that works
-      // find the propTypes on the component
 
       console.log(recast.print(propTypesPath).code);
 
-
-      // propTypesPath = resolveToValue(propTypesPath);
-      // if (!propTypesPath) {
-      //   return;
-      // }
-
-
-      // let getDescriptor;
-      // switch (propName) {
-      //   case 'childContextTypes':
-      //     getDescriptor = documentation.getChildContextDescriptor;
-      //     break;
-      //   case 'contextTypes':
-      //     getDescriptor = documentation.getContextDescriptor;
-      //     break;
-      //   default:
-      //     getDescriptor = documentation.getPropDescriptor;
-      // }
-      // amendPropTypes(getDescriptor.bind(documentation), propTypesPath);
     };
   }
-
-  // return function(documentation, path) {
-  //   console.log('documentation', documentation);
-  //   console.log('path', path)
-  //   let propTypesPath = getMemberValuePath(path, propName);
-  //   if (!propTypesPath) {
-  //     return;
-  //   }
-  //   propTypesPath = resolveToValue(propTypesPath);
-  //   if (!propTypesPath) {
-  //     return;
-  //   }
-  //   let getDescriptor;
-  //   switch (propName) {
-  //     case 'childContextTypes':
-  //       getDescriptor = documentation.getChildContextDescriptor;
-  //       break;
-  //     case 'contextTypes':
-  //       getDescriptor = documentation.getContextDescriptor;
-  //       break;
-  //     default:
-  //       getDescriptor = documentation.getPropDescriptor;
-  //   }
-  //   amendPropTypes(getDescriptor.bind(documentation), propTypesPath);
-  // };
 }
 
 
-// function getPropTypeHandler(propName) {
-//   return function(documentation, path) {
-//     let propTypesPath = getMemberValuePath(path, propName);
-//     if (!propTypesPath) {
-//       return;
-//     }
-//     propTypesPath = resolveToValue(propTypesPath);
-//     if (!propTypesPath) {
-//       return;
-//     }
-//     let getDescriptor;
-//     switch (propName) {
-//       case 'childContextTypes':
-//         getDescriptor = documentation.getChildContextDescriptor;
-//         break;
-//       case 'contextTypes':
-//         getDescriptor = documentation.getContextDescriptor;
-//         break;
-//       default:
-//         getDescriptor = documentation.getPropDescriptor;
-//     }
-//     amendPropTypes(getDescriptor.bind(documentation), propTypesPath);
-//   };
-// }
-
-
-// export const propTypeHandler = getPropTypeHandler('propTypes');
-// export const contextTypeHandler = getPropTypeHandler('contextTypes');
-// export const childContextTypeHandler = getPropTypeHandler('childContextTypes');
-// module.exports = getPropTypeHandler('propTypes');
 module.exports.propTypeHandler = getExternalPropTypeHandler('propTypes');
 module.exports.contextTypeHandler = getExternalPropTypeHandler('contextTypes');
 module.exports.childContextTypeHandler = getExternalPropTypeHandler('childContextTypes');
