@@ -51,6 +51,7 @@ describe('react-docgen-external-proptypes-handler', () => {
 
 
   const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-*.js'));
+  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-imports-api-cjs*.js'));
   // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-spread*.js'));
   // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-no-*.js'));
   // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-local-*.js'));

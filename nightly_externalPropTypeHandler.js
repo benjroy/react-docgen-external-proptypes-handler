@@ -108,6 +108,7 @@ function resolveExternals(path, filepath, options) {
 
     // return resolveExternals(external.path, external.filepath);
   }
+  console.log('resolveExternals', path.node.type);
 
   switch(path.node.type) {
     case types.Literal.name: {
@@ -120,6 +121,7 @@ function resolveExternals(path, filepath, options) {
     }
     case types.Identifier.name: {
       const resolved = resolveIdentifierNameToExternalValue(path.value.name, getRoot(path), filepath);
+      console.log('resolved identifier', resolved);
       const external = getExternalNodePath(resolved);
       resolveExternals(external.path, external.filepath, options);
       path.replace(external.path.value);
@@ -164,7 +166,8 @@ function resolveExternals(path, filepath, options) {
       break;
     }
     default: {
-      console.log('resolveExternals UNHANDLED', path.node.type);
+      console.log('resolveExternals UNHANDLED', path.node);
+      console.log('2 resolveExternals UNHANDLED', path.node.type);
       // TODO: temp error
       throw new Error('resolveExternals UNHANDLED: ' + path.node.type);
     }

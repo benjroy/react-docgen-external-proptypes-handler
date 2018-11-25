@@ -1,5 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`react-docgen-external-proptypes-handler /Users/ballen/code/react-docgen-external-proptypes-handler/tests/fixtures/component-imports-api-cjs-named-exports.js parses with only external handlers 1`] = `
+Object {
+  "props": Object {
+    "cjs-api-named-exports-node-required": Object {
+      "description": "Comment for cjs-api-named-exports-node-required.",
+      "required": true,
+      "type": Object {
+        "name": "node",
+      },
+    },
+    "cjs-api-named-exports-string": Object {
+      "description": "Comment for cjs-api-named-exports-string.",
+      "required": false,
+      "type": Object {
+        "name": "string",
+      },
+    },
+  },
+}
+`;
+
 exports[`react-docgen-external-proptypes-handler /Users/ballen/code/react-docgen-external-proptypes-handler/tests/fixtures/component-imports-external-proptype.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
