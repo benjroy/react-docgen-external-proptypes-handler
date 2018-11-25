@@ -107,11 +107,10 @@ function resolveExternals({ path, filepath, ast, propExternals }) {
       break;
     }
     case types.Identifier.name: {
-      // const resolved = resolveIdentifierNameToExternalValue(path.value.name, getRoot(path), filepath);
-      // // console.log('resolved identifier', resolved);
-      // // const external = getExternalNodePath(resolved);
-      // external = getExternalNodePath(resolved);
-      external = resolveIdentifierNameToExternalValue(path.value.name, getRoot(path), filepath);
+      external = resolveIdentifierNameToExternalValue(path.value.name, {
+        ast: getRoot(path),
+        filepath
+      });
 
       // external = resolveExternals({
       const resolvedExternal = resolveExternals({
