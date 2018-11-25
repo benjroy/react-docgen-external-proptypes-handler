@@ -96,22 +96,6 @@ function resolveExternalPropType(path, options) {
   return type;
 }
 
-function resolveExternalIdentifier(path, filepath, options) {
-  types.Identifier.assert(path.node);
-
-  const resolved = resolveIdentifierNameToExternalValue(path.value.name, getRoot(path), filepath);
-  // console.log('resolveExternalIdentifier', path.value.name, resolved);
-  // if (!resolved) {
-  //   console.log('NOT RESOLVED', path);
-  // }
-  const external = getExternalNodePath(resolved);
-  resolveExternals(external.path, external.filepath, options);
-  path.replace(external.path.value);
-
-  // TODO: return { path, filepath, ast } here
-  return path;
-}
-
 
 function resolveExternals(path, filepath, options) {
   // console.log('resolveExternals', path);
@@ -135,7 +119,11 @@ function resolveExternals(path, filepath, options) {
       break;
     }
     case types.Identifier.name: {
-      return resolveExternalIdentifier(path, filepath, options);
+      const resolved = resolveIdentifierNameToExternalValue(path.value.name, getRoot(path), filepath);
+      const external = getExternalNodePath(resolved);
+      resolveExternals(external.path, external.filepath, options);
+      path.replace(external.path.value);
+      break;
     }
     case types.SpreadProperty.name: {
       resolveExternals(path.get('argument'), filepath, options);
