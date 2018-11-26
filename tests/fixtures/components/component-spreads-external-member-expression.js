@@ -13,7 +13,7 @@ ComponentSpreadsExternalMemberExpression.propTypes = {
   // ...propTypesApi3,
   // 'local-number': PropTypes.number,
   ...external.ComponentSpreadsNested.propTypes,
-  // ...ComponentImportsExternalValuesForEnum.propTypes,
+  ...ComponentImportsExternalValuesForEnum.propTypes,
 };
 ComponentSpreadsExternalMemberExpression.defaultProps = {
   // ...defaultPropsApi3,
