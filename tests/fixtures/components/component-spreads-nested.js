@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { propTypes as propTypesApi3, defaultProps as defaultPropsApi3 } from './api-3';
+import { propTypes as propTypesApi3, defaultProps as defaultPropsApi3 } from './assets/api-3';
 
 const ComponentSpreadsNested = props => (<div>component-spreads-nested</div>);
 

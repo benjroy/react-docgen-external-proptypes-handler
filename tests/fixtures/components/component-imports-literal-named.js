@@ -1,5 +1,5 @@
 import React from 'react';
-import { propTypes as propTypesApi, defaultProps as defaultPropsApi } from './api-1';
+import { propTypes as propTypesApi, defaultProps as defaultPropsApi } from './assets/api-1';
 
 const ComponentImportsLiteralNamed = props => (<div>component-literal</div>);
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import * as VALUES from './external-values';
+import * as VALUES from './assets/external-values';
 
 const { default: ENUM, ZERO, ONE, TWO, THREE } = VALUES;
 

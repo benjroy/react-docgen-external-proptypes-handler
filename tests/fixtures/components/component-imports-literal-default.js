@@ -1,5 +1,5 @@
 import React from 'react';
-import propTypes from './external-propTypes';
+import propTypes from './assets/external-propTypes';
 
 const ComponentImportsLiteralDefault = props => (<div>component-literal</div>);
 

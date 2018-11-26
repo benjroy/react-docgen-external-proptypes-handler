@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { propTypes as propTypesApi, defaultProps as defaultPropsApi } from './api-cjs-named-exports';
+import { propTypes as propTypesApi, defaultProps as defaultPropsApi } from './assets/api-cjs-named-exports';
 
 const ComponentImportsCjsNamedExports = props => (<div />);
 

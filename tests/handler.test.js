@@ -50,19 +50,19 @@ describe('react-docgen-external-proptypes-handler', () => {
   }
 
 
-  const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-*.js'));
-  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-imports-api-cjs*.js'));
-  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-spread*.js'));
-  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-no-*.js'));
-  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-local-*.js'));
-  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-spreads-nested.js'));
-  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-{spreads-nested,literal}.js'));
-  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-literal.js'));
-  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-imports-external-*.js'));
-  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-imports-external-prop*.js'));
-  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-imports-literal*.js'));
-  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-imports-literal-default.js'));
-  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/component-*-enum*.js'));
+  const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-*.js'));
+  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-imports-api-cjs*.js'));
+  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-spread*.js'));
+  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-no-*.js'));
+  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-local-*.js'));
+  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-spreads-nested.js'));
+  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-{spreads-nested,literal}.js'));
+  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-literal.js'));
+  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-imports-external-*.js'));
+  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-imports-external-prop*.js'));
+  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-imports-literal*.js'));
+  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-imports-literal-default.js'));
+  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-*-enum*.js'));
 
   TARGET_FILES.forEach(filepath => {
     describe(filepath, () => test(filepath));

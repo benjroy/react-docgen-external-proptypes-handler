@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { propTypes as propTypesApiExternalValues } from './api-external-values';
+import { propTypes as propTypesApiExternalValues } from './assets/api-external-values';
 // import * as VALUES from './external-values';
 // // import ENUM from './external-values';
 
