@@ -9,7 +9,7 @@ const ONE = 1;
 const TWO = 2;
 const THREE = 'three';
 
-const _ENUM = [ZERO, ONE, TWO, THREE];
+function FUNCTION() {};
 
 export {
   STRING,
@@ -20,8 +20,8 @@ export {
   ONE,
   TWO,
   THREE,
-  // temp
   ENUM,
+  FUNCTION,
 };
 
 export default ENUM;

@@ -10,14 +10,10 @@ const external = {
 };
 
 ComponentSpreadsExternalMemberExpression.propTypes = {
-  // ...propTypesApi3,
-  // 'local-number': PropTypes.number,
   ...ComponentSpreadsNested.propTypes,
   ...external.ReexportsImportedComponent.propTypes,
 };
 ComponentSpreadsExternalMemberExpression.defaultProps = {
-  // ...defaultPropsApi3,
-  // 'local-number': 4242,
   ...ComponentSpreadsNested.defaultProps,
   ...external.ReexportsImportedComponent.defaultProps,
 };

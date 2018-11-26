@@ -70,6 +70,9 @@ function resolveMemberExpressionExternals({ path, filepath, ast, propExternals }
     console.log('found object?', { objectPath, propertyPath });
     throw "what is this";
   }
+  if (types.CallExpression.check(objectPath.node)) {
+    return { path, filepath, ast, propExternals };
+  }
 
   const key = propertyPath.node.name;
   console.log('do it', key, objectPath);
@@ -93,7 +96,6 @@ function resolveMemberExpressionExternals({ path, filepath, ast, propExternals }
     // return valuePath;
     return resolved;
   } else {
-    // return;
     let external = resolveIdentifierNameToExternalValue(objectPath.value.name, { ast,filepath });
     if (types.Identifier.check(external.path.node)) {
       // TODO: this is brittle af

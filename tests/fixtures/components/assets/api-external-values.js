@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import * as VALUES from './external-values';
 
 const { default: ENUM, STRING, NUMBER, BOOL } = VALUES;
-// const { ENUM, STRING, NUMBER, BOOL } = VALUES;
-
 
 export const propTypes = {
   /**

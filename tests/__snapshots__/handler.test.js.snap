@@ -490,6 +490,20 @@ Object {
 }
 `;
 
+exports[`react-docgen-external-proptypes-handler /Users/ballen/code/react-docgen-external-proptypes-handler/tests/fixtures/components/component-spreads-call-expression.js parses with only external handlers 1`] = `
+Object {
+  "props": Object {
+    "localFunction": Object {
+      "description": "Description for localFunction",
+      "required": true,
+      "type": Object {
+        "name": "func",
+      },
+    },
+  },
+}
+`;
+
 exports[`react-docgen-external-proptypes-handler /Users/ballen/code/react-docgen-external-proptypes-handler/tests/fixtures/components/component-spreads-external-member-expression.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
