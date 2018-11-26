@@ -26,10 +26,6 @@ const {
 } = docgen.utils;
 
 
-const HOP = Object.prototype.hasOwnProperty
-const createObject = Object.create
-
-
 const {
   types: { namedTypes: types },
   builders: b,
@@ -69,32 +65,20 @@ function resolveMemberExpressionExternals({ path, filepath, ast, externalProps }
   }
 
   const key = propertyPath.node.name;
+  const external = (types.MemberExpression.check(objectPath.node))
+    ? resolveMemberExpressionExternals({ path: objectPath, filepath, ast, externalProps })
+    : resolveIdentifierNameToExternalValue(objectPath.value.name, { ast,filepath });
 
-  if (types.MemberExpression.check(objectPath.node)) {
-    const resolvedMemberExpression = resolveMemberExpressionExternals(
-      { path: objectPath, filepath, ast, externalProps }
-    );
+  const valuePath = getMemberValuePath(external.path, key);
 
-    const valuePath = getMemberValuePath(resolvedMemberExpression.path, key);
-
-    return resolveExternals({
-      ...resolvedMemberExpression,
-      // externalProps,
-      path: valuePath
-    });
-  } else {
-    let external = resolveIdentifierNameToExternalValue(objectPath.value.name, { ast,filepath });
-
-    const valuePath = getMemberValuePath(external.path, key);
-
-    return resolveExternals({
-      ...external,
-      externalProps,
-      path: valuePath
-    });
-  }
+  return resolveExternals({
+    ...external,
+    externalProps,
+    path: valuePath
+  });
 }
 
+// TODO: externalProps collector {} should turn into callback interface
 function resolveExternals({ path, filepath, ast, externalProps }) {
   switch(path.node.type) {
     case types.Property.name: {
