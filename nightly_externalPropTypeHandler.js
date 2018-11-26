@@ -6,12 +6,6 @@ const babylon = require('react-docgen/dist/babylon').default
 const setPropDescription = require('react-docgen/dist/utils/setPropDescription').default
 const isRequiredPropType = require('react-docgen/dist/utils/isRequiredPropType').default
 const resolveIdentifierNameToExternalValue = require('./lib/utils/resolveIdentifierNameToExternalValue');
-const getAst = require('./lib/utils/getAst');
-// const {
-//   // createExternalNodePath,
-//   // isExternalNodePath,
-//   getExternalNodePath,
-// } = require('./lib/utils/externalNodePath');
 
 const {
   getPropType,
