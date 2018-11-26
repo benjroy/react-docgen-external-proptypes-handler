@@ -75,7 +75,7 @@ function resolveMemberExpressionExternals({ path, filepath, ast, propExternals }
         { path: objectPath, filepath, ast, propExternals }
       );
       // console.log('recursive resolved targetPath', key);
-      // console.log('recursive resolved targetPath', recast.print(resolvedMemberExpression.path).code);
+      console.log('recursive resolved targetPath', key, recast.print(resolvedMemberExpression.ast).code);
       // return { ...resolved };
       const valuePath = getMemberValuePath(resolvedMemberExpression.path, key);
       const resolved = resolveExternals({
@@ -90,9 +90,14 @@ function resolveMemberExpressionExternals({ path, filepath, ast, propExternals }
       return resolved;
     } else {
       // return;
-      const external = resolveIdentifierNameToExternalValue(objectPath.value.name, { ast,filepath });
-      // console.log('found external', memberName, external);
-      console.log('found external code', recast.print(external.path).code);
+      let external = resolveIdentifierNameToExternalValue(objectPath.value.name, { ast,filepath });
+      if (types.Identifier.check(external.path.node)) {
+        // TODO: this is brittle af
+        external = resolveIdentifierNameToExternalValue(external.path.value.name, external);
+      }
+      // const external = resolveIdentifierNameToExternalValue(objectPath.value.name, { ast,filepath });
+      console.log('found external', key, memberName, external);
+      console.log('found external code', key, memberName, recast.print(external.ast).code);
       // const valuePath = memberName
       //   ? getMemberValuePath(external.path, key)
       //   : external.path;
