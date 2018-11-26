@@ -64,70 +64,34 @@ function resolveMemberExpressionExternals({ path, filepath, ast, propExternals }
   const objectPath = path.get('object');
   const propertyPath = path.get('property');
 
-  console.log(' property', propertyPath);
-
-  if (!types.Identifier.check(propertyPath.node)) {
-    console.log('found object?', { objectPath, propertyPath });
-    throw "what is this";
-  }
   if (types.CallExpression.check(objectPath.node)) {
     return { path, filepath, ast, propExternals };
   }
 
   const key = propertyPath.node.name;
-  console.log('do it', key, objectPath);
 
   if (types.MemberExpression.check(objectPath.node)) {
     const resolvedMemberExpression = resolveMemberExpressionExternals(
       { path: objectPath, filepath, ast, propExternals }
     );
-    // console.log('recursive resolved targetPath', key);
-    console.log('recursive resolved targetPath', key, recast.print(resolvedMemberExpression.ast).code);
-    // return { ...resolved };
+
     const valuePath = getMemberValuePath(resolvedMemberExpression.path, key);
-    const resolved = resolveExternals({
+
+    return resolveExternals({
       ...resolvedMemberExpression,
       // propExternals,
       path: valuePath
     });
-    console.log('recursive resolved valuePath', key);
-    console.log('recursive resolved valuePath', recast.print(resolved.path).code);
-    // console.log('recursive resolved valuePath', key, valuePath);
-    // return valuePath;
-    return resolved;
   } else {
     let external = resolveIdentifierNameToExternalValue(objectPath.value.name, { ast,filepath });
-    if (types.Identifier.check(external.path.node)) {
-      // TODO: this is brittle af
-      external = resolveIdentifierNameToExternalValue(external.path.value.name, external);
-    }
 
-    // temo try to trigger this
-    if (types.Identifier.check(external.path.node)) {
-      throw 'hit it';
-    }
-
-
-    // const external = resolveIdentifierNameToExternalValue(objectPath.value.name, { ast,filepath });
-    console.log('found external', key, memberName, external);
-    console.log('found external code', key, memberName, recast.print(external.ast).code);
-    // const valuePath = memberName
-    //   ? getMemberValuePath(external.path, key)
-    //   : external.path;
     const valuePath = getMemberValuePath(external.path, key);
-    console.log('found valuePath', memberName, key, valuePath);
-    console.log('found valuePath code', recast.print(valuePath).code);
-    const resolved = resolveExternals({
+
+    return resolveExternals({
       ...external,
       propExternals,
       path: valuePath
     });
-    // console.log('found resolved valuePath', memberName, resolved);
-    console.log('found resolved valuePath code', recast.print(resolved.path).code);
-
-    return { ...resolved,
-      path: resolved.path,
-    };
   }
 }
 
