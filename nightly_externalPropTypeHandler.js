@@ -57,6 +57,117 @@ function amendPropType(propName, valuePath, getDescriptor) {
   }
 }
 
+function resolveMemberExpressionExternals({ path, filepath, ast, propExternals }, memberName) {
+  console.log('resolveMemberExpressionExternals', memberName);
+  types.MemberExpression.assert(path.node);
+
+  const objectPath = path.get('object');
+  const propertyPath = path.get('property');
+
+  console.log(' property', propertyPath);
+
+  if (types.Identifier.check(propertyPath.node)) {
+    const key = propertyPath.node.name;
+    console.log('do it', key, objectPath);
+
+    if (types.MemberExpression.check(objectPath.node)) {
+      const resolvedMemberExpression = resolveMemberExpressionExternals(
+        { path: objectPath, filepath, ast, propExternals }
+      );
+      // console.log('recursive resolved targetPath', key);
+      // console.log('recursive resolved targetPath', recast.print(resolvedMemberExpression.path).code);
+      // return { ...resolved };
+      const valuePath = getMemberValuePath(resolvedMemberExpression.path, key);
+      const resolved = resolveExternals({
+        ...resolvedMemberExpression,
+        // propExternals,
+        path: valuePath
+      });
+      console.log('recursive resolved valuePath', key);
+      console.log('recursive resolved valuePath', recast.print(resolved.path).code);
+      // console.log('recursive resolved valuePath', key, valuePath);
+      // return valuePath;
+      return resolved;
+    } else {
+      // return;
+      const external = resolveIdentifierNameToExternalValue(objectPath.value.name, { ast,filepath });
+      // console.log('found external', memberName, external);
+      console.log('found external code', recast.print(external.path).code);
+      // const valuePath = memberName
+      //   ? getMemberValuePath(external.path, key)
+      //   : external.path;
+      const valuePath = getMemberValuePath(external.path, key);
+      // console.log('found valuePath', memberName, valuePath);
+      console.log('found valuePath code', recast.print(valuePath).code);
+      const resolved = resolveExternals({
+        ...external,
+        propExternals,
+        path: valuePath
+      });
+      // console.log('found resolved valuePath', memberName, resolved);
+      console.log('found resolved valuePath code', recast.print(resolved.path).code);
+
+      return { ...resolved,
+        path: resolved.path,
+      };
+
+      // if (memberName) {
+      //   // return getMemberValuePath(resolved.path, memberName);
+      //   return { filepath, ast, propExternals,
+      //     path: getMemberValuePath(resolved.path, memberName),
+      //   }
+      // }
+      // return { filepath, ast, propExternals,
+      //   path: resolved.path
+      // };
+
+      return;
+      // const resolved = resolveExternals({
+      //   ...external,
+      //   propExternals,
+      //   // path: valuePath
+      // });
+      // const valuePath = getMemberValuePath(external.path, key);
+      // const valuePath = memberName
+      //   ? getMemberValuePath(resolved.path, memberName)
+      //   : resolved.path;
+
+      console.log('found external', memberName, resolved.path);
+
+      console.log('where was i, targetPath root', recast.print(resolved.path).code);
+
+      // const matched = external.path.get('properties').filter(
+      //   propertyPath => {
+      //     // console.log('prop', key, propertyPath.get('key').node.name);
+      //     return key === propertyPath.get('key').node.name
+      //   }
+      // );
+
+
+      // const valuePath = matched[0].get('value');
+
+      resolveExternals({
+        ...resolved,
+        // ...external,
+        // propExternals,
+        path: valuePath
+      });
+      console.log('FIND ME', key, valuePath.node);
+
+      return valuePath;
+    }
+  } else {
+    console.log('found object?', { objectPath, propertyPath });
+    throw "what is this";
+  }
+
+  // const resolved = resolveExternals({
+  //   propExternals,
+  //   // resolve variable and spread ...{ path, ast, filepath }
+  //   ...resolveIdentifierNameToExternalValue(path.value.name, { ast,filepath }),
+  // });  
+}
+
 function resolveExternals({ path, filepath, ast, propExternals }) {
   // console.log('resolveExternals', path);
   if (!propExternals) {
@@ -64,6 +175,7 @@ function resolveExternals({ path, filepath, ast, propExternals }) {
   }
 
   switch(path.node.type) {
+    case types.ArrowFunctionExpression.name:
     case types.Literal.name: {
       break;
     }
@@ -128,8 +240,11 @@ function resolveExternals({ path, filepath, ast, propExternals }) {
         });
       } else {
         console.log('i am MemberExpression, not PropTypes, valuePath:', path);
+        const resolved = resolveMemberExpressionExternals({ path, filepath, ast, propExternals });
+        console.log('out resolveMemberExpressionExternals', resolved);
         // TODO: temp throw erropr
-        throw new Error('UNHANDLED non-PropTypes MemberExpression');
+        // throw new Error('UNHANDLED non-PropTypes MemberExpression');
+        path.replace(resolved.path.value);
       }
       break;
     }

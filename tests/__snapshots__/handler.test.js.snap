@@ -490,6 +490,62 @@ Object {
 }
 `;
 
+exports[`react-docgen-external-proptypes-handler /Users/ballen/code/react-docgen-external-proptypes-handler/tests/fixtures/components/component-spreads-external-member-expression.js parses with only external handlers 1`] = `
+Object {
+  "props": Object {
+    "api-1-bool": Object {
+      "description": "Comment for api-1-bool.",
+      "required": false,
+      "type": Object {
+        "name": "bool",
+      },
+    },
+    "api-1-node-required": Object {
+      "description": "Comment for api-1-node-required.",
+      "required": true,
+      "type": Object {
+        "name": "node",
+      },
+    },
+    "api-2-node-required": Object {
+      "description": "Comment for api-2-node-required.",
+      "required": true,
+      "type": Object {
+        "name": "node",
+      },
+    },
+    "api-2-string": Object {
+      "description": "Comment for api-2-string.",
+      "required": false,
+      "type": Object {
+        "name": "string",
+      },
+    },
+    "api-3-node-required": Object {
+      "description": "Comment for api-3-node-required.",
+      "required": true,
+      "type": Object {
+        "name": "node",
+      },
+    },
+    "api-3-number": Object {
+      "description": "Comment for api-3-number.",
+      "required": false,
+      "type": Object {
+        "name": "number",
+      },
+    },
+    "local-number": Object {
+      "description": "",
+      "required": false,
+      "type": Object {
+        "name": "number",
+      },
+    },
+  },
+}
+`;
+
 exports[`react-docgen-external-proptypes-handler /Users/ballen/code/react-docgen-external-proptypes-handler/tests/fixtures/components/component-spreads-nested.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
