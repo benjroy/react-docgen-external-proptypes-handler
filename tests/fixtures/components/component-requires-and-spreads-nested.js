@@ -1,8 +1,8 @@
 const React = require('React');
 const PropTypes = require('prop-types');
-const { propTypes: propTypesApi3, defaultProps: defaultPropsApi3 } = require('./assets/api-3');
-// const api3 = require('./assets/api-3');
-// const { propTypes: propTypesApi3, defaultProps: defaultPropsApi3 } = api3;
+// const { propTypes: propTypesApi3, defaultProps: defaultPropsApi3 } = require('./assets/api-3');
+const api3 = require('./assets/api-3');
+const { propTypes: propTypesApi3, defaultProps: defaultPropsApi3 } = api3;
 
 
 const ComponentRequiresAndSpreadsNested = props => (<div />);

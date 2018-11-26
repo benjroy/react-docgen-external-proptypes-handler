@@ -123,6 +123,7 @@ function resolveExternals({ path, filepath, ast, externalProps }) {
       break;
     }
     case types.CallExpression.name: {
+      console.log('resolveExternalsCallExpression', path);
       path.get('arguments').each((argPath) => {
         resolveExternals({ path: argPath, filepath, ast, externalProps });
       });
