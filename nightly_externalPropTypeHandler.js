@@ -97,10 +97,14 @@ function resolveExternals({ path, filepath, ast, externalProps }) {
       break;
     }
     case types.Identifier.name: {
+      console.log('resolveExternals Identifier', path.value.name);
+      const externalValue = resolveIdentifierNameToExternalValue(path.value.name, { ast,filepath });
+      console.log('resolveExternals Identifier externalValue', externalValue);
       const resolved = resolveExternals({
         externalProps,
         // resolve variable and spread ...{ path, ast, filepath }
-        ...resolveIdentifierNameToExternalValue(path.value.name, { ast,filepath }),
+        // ...resolveIdentifierNameToExternalValue(path.value.name, { ast,filepath }),
+        ...externalValue,
       });
       path.replace(resolved.path.value);
       return resolved;

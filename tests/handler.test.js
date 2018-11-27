@@ -50,8 +50,8 @@ describe('react-docgen-external-proptypes-handler', () => {
   }
 
 
-  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-*.js'));
-  const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-requires-and-spreads-nested.js'));
+  const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-*.js'));
+  // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-requires-and-spreads-nested.js'));
   // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-spreads-call-expression.js'));
   // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-spreads-external-member-expression.js'));
   // const TARGET_FILES = glob.sync(path.resolve(CWD, 'tests/fixtures/components/component-imports-api-cjs*.js'));
