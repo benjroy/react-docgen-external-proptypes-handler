@@ -6,6 +6,7 @@ const babylon = require('react-docgen/dist/babylon').default
 const setPropDescription = require('react-docgen/dist/utils/setPropDescription').default
 const isRequiredPropType = require('react-docgen/dist/utils/isRequiredPropType').default
 const resolveIdentifierNameToExternalValue = require('./lib/utils/resolveIdentifierNameToExternalValue');
+const isPropTypesExpression = require('./lib/utils/isPropTypesExpression');
 
 const {
   getPropType,
@@ -31,14 +32,14 @@ const {
   builders: b,
 } = recast;
 
-function isPropTypesExpression(path) {
-  const moduleName = resolveToModule(path);
-  if (moduleName) {
-    // console.log('isPropTypesExpression moduleName', moduleName)
-    return isReactModuleName(moduleName) || moduleName === 'ReactPropTypes';
-  }
-  return false;
-}
+// function isPropTypesExpression(path) {
+//   const moduleName = resolveToModule(path);
+//   if (moduleName) {
+//     // console.log('isPropTypesExpression moduleName', moduleName)
+//     return isReactModuleName(moduleName) || moduleName === 'ReactPropTypes';
+//   }
+//   return false;
+// }
 
 function amendPropType(propName, valuePath, getDescriptor) {
   const propDescriptor = getDescriptor(propName);
@@ -97,9 +98,9 @@ function resolveExternals({ path, filepath, ast, externalProps }) {
       break;
     }
     case types.Identifier.name: {
-      console.log('resolveExternals Identifier', path.value.name);
+      // console.log('resolveExternals Identifier', path.value.name);
       const externalValue = resolveIdentifierNameToExternalValue(path.value.name, { ast,filepath });
-      console.log('resolveExternals Identifier externalValue', externalValue);
+      // console.log('resolveExternals Identifier externalValue', externalValue);
       const resolved = resolveExternals({
         externalProps,
         // resolve variable and spread ...{ path, ast, filepath }
