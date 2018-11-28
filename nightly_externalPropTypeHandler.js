@@ -8,6 +8,9 @@ const isRequiredPropType = require('react-docgen/dist/utils/isRequiredPropType')
 const resolveIdentifierNameToExternalValue = require('./lib/utils/resolveIdentifierNameToExternalValue');
 const isPropTypesExpression = require('./lib/utils/isPropTypesExpression');
 
+const resolveToValueExternal = resolveIdentifierNameToExternalValue.resolveToValueExternal;
+
+
 const {
   getPropType,
   getPropertyName,
@@ -32,6 +35,8 @@ const {
   builders: b,
 } = recast;
 
+console.log('nightly external');
+
 // function isPropTypesExpression(path) {
 //   const moduleName = resolveToModule(path);
 //   if (moduleName) {
@@ -55,7 +60,7 @@ function amendPropType(propName, valuePath, getDescriptor) {
 }
 
 function resolveMemberExpressionExternals({ path, filepath, ast, externalProps }, memberName) {
-  console.log('resolveMemberExpressionExternals', memberName);
+  // console.log('resolveMemberExpressionExternals', memberName);
   types.MemberExpression.assert(path.node);
 
   const objectPath = path.get('object');
@@ -66,10 +71,12 @@ function resolveMemberExpressionExternals({ path, filepath, ast, externalProps }
   }
 
   const key = propertyPath.node.name;
-  const external = (types.MemberExpression.check(objectPath.node))
-    ? resolveMemberExpressionExternals({ path: objectPath, filepath, ast, externalProps })
-    : resolveIdentifierNameToExternalValue(objectPath.value.name, { ast,filepath });
+  // const external = (types.MemberExpression.check(objectPath.node));
+  //   ? resolveMemberExpressionExternals({ path: objectPath, filepath, ast, externalProps });
+  //   : resolveToValueExternal(objectPath, { ast,filepath });
+  //   // : resolveIdentifierNameToExternalValue(objectPath.value.name, { ast,filepath });
 
+  const external = resolveToValueExternal(objectPath, { ast,filepath })
   const valuePath = getMemberValuePath(external.path, key);
 
   return resolveExternals({
@@ -81,6 +88,7 @@ function resolveMemberExpressionExternals({ path, filepath, ast, externalProps }
 
 // TODO: externalProps collector {} should turn into callback interface
 function resolveExternals({ path, filepath, ast, externalProps }) {
+  console.log('resolve externals', path.node.type);
   switch(path.node.type) {
     case types.Property.name: {
       const resolved = resolveExternals({ path: path.get('value'), filepath, ast, externalProps });
@@ -99,13 +107,15 @@ function resolveExternals({ path, filepath, ast, externalProps }) {
     }
     case types.Identifier.name: {
       // console.log('resolveExternals Identifier', path.value.name);
-      const externalValue = resolveIdentifierNameToExternalValue(path.value.name, { ast,filepath });
+      // const externalValue = resolveToValueExternal(path, { ast,filepath });
+      // const externalValue = resolveIdentifierNameToExternalValue(path.value.name, { ast,filepath });
       // console.log('resolveExternals Identifier externalValue', externalValue);
       const resolved = resolveExternals({
         externalProps,
         // resolve variable and spread ...{ path, ast, filepath }
         // ...resolveIdentifierNameToExternalValue(path.value.name, { ast,filepath }),
-        ...externalValue,
+        // ...externalValue,
+        ...resolveToValueExternal(path, { ast,filepath }),
       });
       path.replace(resolved.path.value);
       return resolved;
@@ -128,7 +138,6 @@ function resolveExternals({ path, filepath, ast, externalProps }) {
       break;
     }
     case types.CallExpression.name: {
-      console.log('resolveExternalsCallExpression', path);
       path.get('arguments').each((argPath) => {
         resolveExternals({ path: argPath, filepath, ast, externalProps });
       });
@@ -146,7 +155,7 @@ function resolveExternals({ path, filepath, ast, externalProps }) {
         });
       } else {
         const resolved = resolveMemberExpressionExternals({ path, filepath, ast, externalProps });
-        path.replace(resolved.path.value);
+        // path.replace(resolved.path.value);
       }
       break;
     }
@@ -159,7 +168,7 @@ function resolveExternals({ path, filepath, ast, externalProps }) {
       console.log('resolveExternals UNHANDLED', path.node);
       console.log('2 resolveExternals UNHANDLED', path.node.type);
       // TODO: temp error
-      throw new Error('resolveExternals UNHANDLED: ' + path.node.type);
+      // throw new Error('resolveExternals UNHANDLED: ' + path.node.type);
     }
   }
 
@@ -168,8 +177,12 @@ function resolveExternals({ path, filepath, ast, externalProps }) {
 
 
 function getExternalPropTypeHandler(propName) {
+  console.log('getExternalPropTypeHandler', propName);
   return function getExternalPropTypeHandlerForFilePath(filepath) {
+    console.log('getExternalPropTypeHandlerForFilePath', filepath);
+
     return function externalPropTypeHandler(documentation, path) {
+      console.log('externalPropTypeHandler', filepath, path);
       let getDescriptor;
       switch (propName) {
         case 'childContextTypes':
@@ -182,11 +195,12 @@ function getExternalPropTypeHandler(propName) {
           getDescriptor = documentation.getPropDescriptor;
       }
       getDescriptor = getDescriptor.bind(documentation);
-
+      console.log('getting memberValuePath', propName);
       let propTypesPath = getMemberValuePath(path, propName);
       if (!propTypesPath) {
         return;
       }
+      console.log('got memberValuePath', propName);
 
       const resolved = resolveExternals({
         path: propTypesPath,
@@ -194,9 +208,9 @@ function getExternalPropTypeHandler(propName) {
         ast: propTypesPath.scope.getGlobalScope().node,
         externalProps: {},
       });
-      console.log('at end externalProps', resolved);
       // console.log(recast.print(propTypesPath).code);
       const externalProps = resolved.externalProps;
+      console.log('at end externalProps', { externalProps });
 
       Object.keys(externalProps).forEach(
         (propName) => {
