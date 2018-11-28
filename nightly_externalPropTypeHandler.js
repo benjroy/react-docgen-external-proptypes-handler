@@ -5,10 +5,9 @@ const docgen = require('react-docgen');
 const babylon = require('react-docgen/dist/babylon').default
 const setPropDescription = require('react-docgen/dist/utils/setPropDescription').default
 const isRequiredPropType = require('react-docgen/dist/utils/isRequiredPropType').default
-const resolveIdentifierNameToExternalValue = require('./lib/utils/resolveIdentifierNameToExternalValue');
+const resolveToValueExternal = require('./lib/utils/resolveToValueExternal');
 const isPropTypesExpression = require('./lib/utils/isPropTypesExpression');
 
-const resolveToValueExternal = resolveIdentifierNameToExternalValue.resolveToValueExternal;
 
 
 const {
