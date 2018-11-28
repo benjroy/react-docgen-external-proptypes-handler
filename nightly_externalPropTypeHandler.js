@@ -87,7 +87,7 @@ function resolveMemberExpressionExternals({ path, filepath, ast, externalProps }
 
 // TODO: externalProps collector {} should turn into callback interface
 function resolveExternals({ path, filepath, ast, externalProps }) {
-  console.log('resolve externals', path.node.type);
+  // console.log('resolve externals', path.node.type);
   switch(path.node.type) {
     case types.Property.name: {
       const resolved = resolveExternals({ path: path.get('value'), filepath, ast, externalProps });
@@ -176,12 +176,16 @@ function resolveExternals({ path, filepath, ast, externalProps }) {
 
 
 function getExternalPropTypeHandler(propName) {
-  console.log('getExternalPropTypeHandler', propName);
+  // console.log('getExternalPropTypeHandler', propName);
   return function getExternalPropTypeHandlerForFilePath(filepath) {
-    console.log('getExternalPropTypeHandlerForFilePath', filepath);
+    // console.log('getExternalPropTypeHandlerForFilePath', filepath);
+
+    if (!filepath.startsWith('/')) {
+      filepath = resolve(process.cwd(), filepath);
+    }
 
     return function externalPropTypeHandler(documentation, path) {
-      console.log('externalPropTypeHandler', filepath, path);
+      // console.log('externalPropTypeHandler', filepath, path);
       let getDescriptor;
       switch (propName) {
         case 'childContextTypes':
@@ -194,12 +198,12 @@ function getExternalPropTypeHandler(propName) {
           getDescriptor = documentation.getPropDescriptor;
       }
       getDescriptor = getDescriptor.bind(documentation);
-      console.log('getting memberValuePath', propName);
+      // console.log('getting memberValuePath', propName);
       let propTypesPath = getMemberValuePath(path, propName);
       if (!propTypesPath) {
         return;
       }
-      console.log('got memberValuePath', propName);
+      // console.log('got memberValuePath', propName);
 
       const resolved = resolveExternals({
         path: propTypesPath,
@@ -209,7 +213,7 @@ function getExternalPropTypeHandler(propName) {
       });
       // console.log(recast.print(propTypesPath).code);
       const externalProps = resolved.externalProps;
-      console.log('at end externalProps', { externalProps });
+      // console.log('at end externalProps', { externalProps });
 
       Object.keys(externalProps).forEach(
         (propName) => {
