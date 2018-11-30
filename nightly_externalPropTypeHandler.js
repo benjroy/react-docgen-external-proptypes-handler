@@ -89,7 +89,6 @@ function resolveExternals({ path, filepath, ast, externalProps }) {
   switch(path.node.type) {
     case types.Property.name: {
       const resolved = resolveToValueExternal(path.get('value'), { ast, filepath });
-
       resolveExternals({ ...resolved, externalProps });
 
       if (isPropTypesExpression(resolved.path)) {
@@ -105,13 +104,10 @@ function resolveExternals({ path, filepath, ast, externalProps }) {
       break;
     }
     case types.Identifier.name: {
-      const resolved = resolveExternals({
-        externalProps,
-        // resolve variable and spread ...{ path, ast, filepath }
-        ...resolveToValueExternal(path, { ast,filepath }),
-      });
+      const resolved = resolveToValueExternal(path, { ast,filepath });
+      resolveExternals({ ...resolved, externalProps });
       path.replace(resolved.path.value);
-      return resolved;
+      break;
     }
     case types.SpreadProperty.name: {
       resolveExternals({ path: path.get('argument'), filepath, ast, externalProps });
