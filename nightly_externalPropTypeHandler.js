@@ -40,16 +40,6 @@ const {
   builders: b,
 } = recast;
 
-console.log('nightly external');
-
-// function isPropTypesExpression(path) {
-//   const moduleName = resolveToModule(path);
-//   if (moduleName) {
-//     // console.log('isPropTypesExpression moduleName', moduleName)
-//     return isReactModuleName(moduleName) || moduleName === 'ReactPropTypes';
-//   }
-//   return false;
-// }
 
 function amendPropType(propName, valuePath, getDescriptor) {
   const propDescriptor = getDescriptor(propName);
@@ -65,29 +55,18 @@ function amendPropType(propName, valuePath, getDescriptor) {
 }
 
 function resolveMemberExpressionExternals({ path, filepath, ast, externalProps }, memberName) {
-  // console.log('resolveMemberExpressionExternals', memberName);
   types.MemberExpression.assert(path.node);
 
   const objectPath = path.get('object');
-  const propertyPath = path.get('property');
 
   if (types.CallExpression.check(objectPath.node)) {
     return { path, filepath, ast, externalProps };
   }
 
-  const key = propertyPath.node.name;
-  // const external = (types.MemberExpression.check(objectPath.node));
-  //   ? resolveMemberExpressionExternals({ path: objectPath, filepath, ast, externalProps });
-  //   : resolveToValueExternal(objectPath, { ast,filepath });
-  //   // : resolveIdentifierNameToExternalValue(objectPath.value.name, { ast,filepath });
-
-  // const external = resolveToValueExternal(objectPath, { ast,filepath })
   const external = resolveExternals({
     externalProps,
     ...resolveToValueExternal(objectPath, { ast,filepath })
   });
-
-  console.log('External', external.path.node)
 
   if (
     types.CallExpression.check(external.path.node) ||
@@ -96,23 +75,7 @@ function resolveMemberExpressionExternals({ path, filepath, ast, externalProps }
     return external;
   }
 
-  const valuePath = getMemberValuePath(external.path, key);
-
-  console.log('External valuePath', key, valuePath)
-
-  // const valuePath = (types.MemberExpression.check(external.path.node))
-  //   ? getMemberExpressionValuePath(external.path, key)
-  //   : getMemberValuePath(external.path, key);
-
-  // let valuePath;
-  // if (types.MemberExpression.check(external.path.node)) {
-  //   console.log('MemberExpression external.path.node', external.path.node);
-  //   console.log('MemberExpression external.path.node. CODE', recast.print(external.path.node).code);
-
-  //   valuePath = getMemberExpressionValuePath(external.path, key)
-  // } else {
-  //   valuePath = getMemberValuePath(external.path, key);
-  // }
+  const valuePath = getMemberValuePath(external.path, getNameOrValue(path.get('property')));
 
   return resolveExternals({
     ...external,
@@ -190,24 +153,8 @@ function resolveExternals({ path, filepath, ast, externalProps }) {
         });
       } else {
         const resolved = resolveMemberExpressionExternals({ path, filepath, ast, externalProps });
-        // // path.replace(resolved.path.value);
-        // const resolved = resolveToValueExternal(path, { ast, filepath });
-        // // console.log('resolved MEMBEREXPRESSION', resolved.path.node);
-        // console.log('resolved MEMBEREXPRESSION', resolved.filepath, recast.print(resolved.path.node).code);
-        // console.log('1 resolved MEMBEREXPRESSION', filepath, recast.print(path.node).code);
-        // console.log('22 resolved MEMBEREXPRESSION', resolved.filepath, resolved.path.node.type);
-        // console.log('333 matches component?', {
-        //   isReactComponentClass: isReactComponentClass(resolved.path),
-        //   isReactCreateClassCall: isReactCreateClassCall(resolved.path),
-        //   isReactComponentMethod: isReactComponentMethod(resolved.path),
-        //   isStatelessComponent: isStatelessComponent(resolved.path),
-        // });
 
-        // return resolved;
-        // return resolveExternals({
-        //   externalProps,
-        //   ...resolved,
-        // });
+
       }
       break;
     }
