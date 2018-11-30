@@ -54,7 +54,7 @@ function amendPropType(propName, valuePath, getDescriptor) {
   }
 }
 
-function resolveMemberExpressionExternals({ path, filepath, ast, externalProps }, memberName) {
+function _resolveMemberExpressionExternals({ path, filepath, ast, externalProps }, memberName) {
   types.MemberExpression.assert(path.node);
 
   const objectPath = path.get('object');
@@ -84,12 +84,13 @@ function resolveMemberExpressionExternals({ path, filepath, ast, externalProps }
   });
 }
 
-// TODO: externalProps collector {} should turn into callback interface
+// TODO: shouldn't need externalProps
 function resolveExternals({ path, filepath, ast, externalProps }) {
-  // console.log('resolve externals', path.node.type);
   switch(path.node.type) {
     case types.Property.name: {
-      const resolved = resolveExternals({ path: path.get('value'), filepath, ast, externalProps });
+      const resolved = resolveToValueExternal(path.get('value'), { ast, filepath });
+
+      resolveExternals({ ...resolved, externalProps });
 
       if (isPropTypesExpression(resolved.path)) {
         const propName = getPropertyName(path);
@@ -104,22 +105,16 @@ function resolveExternals({ path, filepath, ast, externalProps }) {
       break;
     }
     case types.Identifier.name: {
-      // console.log('resolveExternals Identifier', path.value.name);
-      // const externalValue = resolveToValueExternal(path, { ast,filepath });
-      // const externalValue = resolveIdentifierNameToExternalValue(path.value.name, { ast,filepath });
-      // console.log('resolveExternals Identifier externalValue', externalValue);
       const resolved = resolveExternals({
         externalProps,
         // resolve variable and spread ...{ path, ast, filepath }
-        // ...resolveIdentifierNameToExternalValue(path.value.name, { ast,filepath }),
-        // ...externalValue,
         ...resolveToValueExternal(path, { ast,filepath }),
       });
       path.replace(resolved.path.value);
       return resolved;
     }
     case types.SpreadProperty.name: {
-      return resolveExternals({ path: path.get('argument'), filepath, ast, externalProps });
+      resolveExternals({ path: path.get('argument'), filepath, ast, externalProps });
       break;
     }
 
@@ -152,23 +147,33 @@ function resolveExternals({ path, filepath, ast, externalProps }) {
           }
         });
       } else {
-        const resolved = resolveMemberExpressionExternals({ path, filepath, ast, externalProps });
+        if (types.CallExpression.check(path.node.object)) {
+          break;
+        }
 
+        const external = resolveToValueExternal(path.get('object'), { ast,filepath });
 
+        if (
+          types.CallExpression.check(external.path.node) ||
+          types.MemberExpression.check(external.path.node)
+        ) {
+          // return external;
+          break;
+        }
+
+        const valuePath = getMemberValuePath(external.path, getNameOrValue(path.get('property')));
+
+        resolveExternals({
+          ...external,
+          externalProps,
+          path: valuePath
+        });
+        break;
       }
       break;
     }
-
-    case types.ArrowFunctionExpression.name:
-    case types.Literal.name: {
-      break;
-    }
     default: {
-      console.log('resolveExternals UNHANDLED', path.node);
-      console.log('2 resolveExternals UNHANDLED', path.node.type);
-      console.log('3 resolveExternals UNHANDLED CODE', recast.print(path.node).code);
-      // TODO: temp error
-      // throw new Error('resolveExternals UNHANDLED: ' + path.node.type);
+      break;
     }
   }
 
@@ -177,16 +182,13 @@ function resolveExternals({ path, filepath, ast, externalProps }) {
 
 
 function getExternalPropTypeHandler(propName) {
-  // console.log('getExternalPropTypeHandler', propName);
   return function getExternalPropTypeHandlerForFilePath(filepath) {
-    // console.log('getExternalPropTypeHandlerForFilePath', filepath);
-
+    // relative filepaths are resolved to current working directory
     if (!filepath.startsWith('/')) {
       filepath = resolve(process.cwd(), filepath);
     }
 
     return function externalPropTypeHandler(documentation, path) {
-      // console.log('externalPropTypeHandler', filepath, path);
       let getDescriptor;
       switch (propName) {
         case 'childContextTypes':
@@ -199,22 +201,20 @@ function getExternalPropTypeHandler(propName) {
           getDescriptor = documentation.getPropDescriptor;
       }
       getDescriptor = getDescriptor.bind(documentation);
-      // console.log('getting memberValuePath', propName);
+
       let propTypesPath = getMemberValuePath(path, propName);
       if (!propTypesPath) {
         return;
       }
-      // console.log('got memberValuePath', propName);
+
+      const externalProps = {};
 
       const resolved = resolveExternals({
         path: propTypesPath,
         filepath,
         ast: propTypesPath.scope.getGlobalScope().node,
-        externalProps: {},
+        externalProps
       });
-      // console.log(recast.print(propTypesPath).code);
-      const externalProps = resolved.externalProps;
-      // console.log('at end externalProps', { externalProps });
 
       Object.keys(externalProps).forEach(
         (propName) => {
