@@ -124,7 +124,6 @@ function resolveExternals({ path, filepath, externalProps }) {
           types.CallExpression.check(external.path.node) ||
           types.MemberExpression.check(external.path.node)
         ) {
-          // return external;
           break;
         }
 
