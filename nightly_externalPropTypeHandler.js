@@ -54,35 +54,6 @@ function amendPropType(propName, valuePath, getDescriptor) {
   }
 }
 
-function _resolveMemberExpressionExternals({ path, filepath, ast, externalProps }, memberName) {
-  types.MemberExpression.assert(path.node);
-
-  const objectPath = path.get('object');
-
-  if (types.CallExpression.check(objectPath.node)) {
-    return { path, filepath, ast, externalProps };
-  }
-
-  const external = resolveExternals({
-    externalProps,
-    ...resolveToValueExternal(objectPath, { ast,filepath })
-  });
-
-  if (
-    types.CallExpression.check(external.path.node) ||
-    types.MemberExpression.check(external.path.node)
-  ) {
-    return external;
-  }
-
-  const valuePath = getMemberValuePath(external.path, getNameOrValue(path.get('property')));
-
-  return resolveExternals({
-    ...external,
-    externalProps,
-    path: valuePath
-  });
-}
 
 // TODO: shouldn't need externalProps
 function resolveExternals({ path, filepath, ast, externalProps }) {
