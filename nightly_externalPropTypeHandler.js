@@ -122,7 +122,10 @@ function resolveExternals({ path, filepath, externalProps }) {
 
         if (
           types.CallExpression.check(external.path.node) ||
-          types.MemberExpression.check(external.path.node)
+          types.MemberExpression.check(external.path.node) ||
+          // TODO: make resolveToValueExternal able to read
+          // `export default myClassName { ... }`
+          types.Identifier.check(external.path.node)
         ) {
           break;
         }

@@ -45,6 +45,20 @@ Object {
         "name": "number",
       },
     },
+    "localBool": Object {
+      "description": "Description for localBool in ComponentClassSpreadsExternalMemberExpression",
+      "required": true,
+      "type": Object {
+        "name": "bool",
+      },
+    },
+    "localNumber": Object {
+      "description": "Description for localNumber in ComponentClassSpreadsNested",
+      "required": true,
+      "type": Object {
+        "name": "number",
+      },
+    },
   },
 }
 `;
@@ -90,6 +104,13 @@ Object {
     "api-3-number": Object {
       "description": "Comment for api-3-number.",
       "required": false,
+      "type": Object {
+        "name": "number",
+      },
+    },
+    "localNumber": Object {
+      "description": "Description for localNumber in ComponentClassSpreadsNested",
+      "required": true,
       "type": Object {
         "name": "number",
       },

@@ -6,6 +6,10 @@ class ComponentClassSpreadsNested {
 
   static propTypes = {
     ...propTypesApi3,
+    /**
+     * Description for localNumber in ComponentClassSpreadsNested
+     */
+    localNumber: PropTypes.number.isRequired,
   };
 
   render() {
