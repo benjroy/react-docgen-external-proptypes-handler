@@ -14,12 +14,12 @@
     "url": "git+https://github.com/siddharthkp/react-docgen-external-proptypes-handler.git"
   },
   "keywords": [],
-  "author": "siddharthkp",
+  "author": "benjroy",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/siddharthkp/react-docgen-external-proptypes-handler/issues"
+    "url": "https://github.com/benjroy/react-docgen-external-proptypes-handler/issues"
   },
-  "homepage": "https://github.com/siddharthkp/react-docgen-external-proptypes-handler#readme",
+  "homepage": "https://github.com/benjroy/react-docgen-external-proptypes-handler#readme",
   "devDependencies": {
     "@babel/cli": "^7.2.0",
     "@babel/core": "^7.2.0",
