@@ -160,16 +160,16 @@ function getExternalPropTypeHandler(propName) {
 
       const externalProps = {};
 
-      const resolved = resolveExternals({
+      resolveExternals({
         path: propTypesPath,
         filepath,
         externalProps,
       });
 
-      Object.keys(externalProps).forEach(propName => {
-        const { propertyPath, valuePath } = externalProps[propName];
+      Object.keys(externalProps).forEach(propName_ => {
+        const { propertyPath, valuePath } = externalProps[propName_];
 
-        amendPropType(propName, valuePath, getDescriptor);
+        amendPropType(propName_, valuePath, getDescriptor);
         setPropDescription(documentation, propertyPath);
       });
     };
@@ -177,5 +177,5 @@ function getExternalPropTypeHandler(propName) {
 }
 
 export const externalPropTypeHandler = getExternalPropTypeHandler('propTypes');
-export const externalContextTypeHandler = getExternalPropTypeHandler('contextTypes');
-export const externalChildContextTypeHandler = getExternalPropTypeHandler('childContextTypes');
+export const externalContextTypeHandler = getExternalPropTypeHandler('contextTypes'); // eslint-disable-line prettier/prettier
+export const externalChildContextTypeHandler = getExternalPropTypeHandler('childContextTypes'); // eslint-disable-line prettier/prettier
