@@ -1,6 +1,7 @@
 const fs = require('fs');
 const docgen = require('react-docgen');
 const resolveExportDeclaration = require('react-docgen/dist/utils/resolveExportDeclaration').default
+import { Array as toArrayExternal } from './expressionTo';
 // TODO: replicate this in repo
 const traverseShallow = require('react-docgen/dist/utils/traverse').traverseShallow;
 const recast = require('recast');
@@ -195,77 +196,6 @@ function resolveExternalImport(variable, importDeclarationPath, filepath) {
   }
   return { ...external, path: valuePath };
 }
-
-
-// modified version of react-docgen/dist/utils/expressionTo.js's toArray 
-/**
- * Creates a string representation of a member expression.
- */
-function toStringExternal(path, { filepath }) {
-  return toArrayExternal(path, { filepath }).join('.');
-}
-
-// modified version of react-docgen/dist/utils/expressionTo.js's toArray 
-/**
- * Splits a MemberExpression or CallExpression into parts.
- * E.g. foo.bar.baz becomes ['foo', 'bar', 'baz']
- */
-function toArrayExternal(path, { filepath }) {
-  const parts = [path];
-  let result = [];
-
-  while (parts.length > 0) {
-    path = parts.shift();
-    const node = path.node;
-    if (n.CallExpression.check(node)) {
-      parts.push(path.get('callee'));
-      continue;
-    } else if (n.MemberExpression.check(node)) {
-      parts.push(path.get('object'));
-      if (node.computed) {
-        const resolved = resolveToValueExternal(path.get('property'), { filepath });
-        if (resolved && resolved.path !== undefined) {
-          result = result.concat(toArrayExternal(resolved.path, resolved));
-        } else {
-          result.push('<computed>');
-        }
-      } else {
-        result.push(node.property.name);
-      }
-      continue;
-    } else if (n.Identifier.check(node)) {
-      result.push(node.name);
-      continue;
-    } else if (n.Literal.check(node)) {
-      result.push(node.raw);
-      continue;
-    } else if (n.ThisExpression.check(node)) {
-      result.push('this');
-      continue;
-    } else if (n.ObjectExpression.check(node)) {
-      const properties = path.get('properties').map(function(property) {
-        return (
-          toStringExternal(property.get('key'), { filepath }) + ': ' + toStringExternal(property.get('value'), { filepath })
-        );
-      });
-      result.push('{' + properties.join(', ') + '}');
-      continue;
-    } else if (n.ArrayExpression.check(node)) {
-      result.push(
-        '[' +
-          path
-            .get('elements')
-            .map(toString)
-            .join(', ') +
-          ']',
-      );
-      continue;
-    }
-  }
-
-  return result.reverse();
-}
-
 
 // internal from docgen.utils.resolveToValue
 function buildMemberExpressionFromPattern(path) {

@@ -9,21 +9,20 @@
  * @flow
  *
  */
-
 /*eslint no-loop-func: 0, no-use-before-define: 0*/
-
-import resolveToValue from './resolveToValue';
+import resolveToValueExternal from './resolveToValueExternal';
 import recast from 'recast';
-
+import { utils } from 'react-docgen';
+const { resolveToValue } = utils;
 const {
   types: { namedTypes: types },
 } = recast;
-
+// modified version of react-docgen/dist/utils/expressionTo.js's toArray
 /**
  * Splits a MemberExpression or CallExpression into parts.
  * E.g. foo.bar.baz becomes ['foo', 'bar', 'baz']
  */
-function toArray(path: NodePath): Array<string> {
+function toArrayExternal(path, { filepath }) {
   const parts = [path];
   let result = [];
 
@@ -36,9 +35,9 @@ function toArray(path: NodePath): Array<string> {
     } else if (types.MemberExpression.check(node)) {
       parts.push(path.get('object'));
       if (node.computed) {
-        const resolvedPath = resolveToValue(path.get('property'));
-        if (resolvedPath !== undefined) {
-          result = result.concat(toArray(resolvedPath));
+        const resolved = resolveToValueExternal(path.get('property'), { filepath });
+        if (resolved && resolved.path !== undefined) {
+          result = result.concat(toArrayExternal(resolved.path, resolved));
         } else {
           result.push('<computed>');
         }
@@ -58,7 +57,7 @@ function toArray(path: NodePath): Array<string> {
     } else if (types.ObjectExpression.check(node)) {
       const properties = path.get('properties').map(function(property) {
         return (
-          toString(property.get('key')) + ': ' + toString(property.get('value'))
+          toStringExternal(property.get('key'), { filepath }) + ': ' + toStringExternal(property.get('value'), { filepath })
         );
       });
       result.push('{' + properties.join(', ') + '}');
@@ -78,12 +77,11 @@ function toArray(path: NodePath): Array<string> {
 
   return result.reverse();
 }
-
+// modified version of react-docgen/dist/utils/expressionTo.js's toString
 /**
  * Creates a string representation of a member expression.
  */
-function toString(path: NodePath): string {
-  return toArray(path).join('.');
+function toStringExternal(path, { filepath }) {
+  return toArrayExternal(path, { filepath }).join('.');
 }
-
-export { toString as String, toArray as Array };
+export { toStringExternal as String, toArrayExternal as Array };
