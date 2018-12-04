@@ -1,11 +1,7 @@
-const fs = require('fs');
-const { resolve, dirname } = require('path');
 const recast = require('recast')
 const docgen = require('react-docgen');
-const babylon = require('react-docgen/dist/babylon').default
 const setPropDescription = require('react-docgen/dist/utils/setPropDescription').default
 const isRequiredPropType = require('react-docgen/dist/utils/isRequiredPropType').default
-const getMemberExpressionValuePath = require('react-docgen/dist/utils/getMemberExpressionValuePath').default
 import resolveToValueExternal from '../utils/resolveToValueExternal';
 import isPropTypesExpression from '../utils/isPropTypesExpression';
 
@@ -15,29 +11,15 @@ const {
   getPropType,
   getPropertyName,
   getMemberValuePath,
-  isReactModuleName,
   printValue,
-  resolveToModule,
-  resolveToValue,
   // appended
   getNameOrValue,
-  getMemberExpressionRoot,
-  getMembers,
-  getMethodDocumentation,
-  getParameterName,
-  getPropertyValuePath,
-  // more appended
-  isReactComponentClass,
-  isReactCreateClassCall,
-  isReactComponentMethod,
-  isStatelessComponent,
 
 } = docgen.utils;
 
 
 const {
   types: { namedTypes: types },
-  builders: b,
 } = recast;
 
 
@@ -154,7 +136,7 @@ function getExternalPropTypeHandler(propName) {
   return function getExternalPropTypeHandlerForFilePath(filepath) {
     // relative filepaths are resolved to current working directory
     if (!filepath.startsWith('/')) {
-      filepath = resolve(process.cwd(), filepath);
+      filepath = require('path').resolve(process.cwd(), filepath);
     }
 
     return function externalPropTypeHandler(documentation, path) {
