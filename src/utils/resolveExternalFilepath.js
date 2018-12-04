@@ -1,5 +1,5 @@
-const fs = require('fs');
-const { resolve, dirname } = require('path');
+import fs from 'fs';
+import { resolve, dirname } from 'path';
 
 /**
  * Resolves propTypes source file path relative to current component,
@@ -10,7 +10,7 @@ const { resolve, dirname } = require('path');
  * @param  {String} modulePath Relative file path of a dependent component
  * @return {String} Resolved file path if file exist else null
  */
-module.exports = function resolveExternalFilepath(filepath, modulePath) {
+export default function resolveExternalFilepath(filepath, modulePath) {
   if (!modulePath.startsWith('.') && !modulePath.startsWith('/')) {
     return require.resolve(modulePath, { paths: [filepath, process.cwd()] });
   }
