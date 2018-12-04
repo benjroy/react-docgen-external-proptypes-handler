@@ -11,10 +11,7 @@ const { resolve, dirname } = require('path');
  * @return {String} Resolved file path if file exist else null
  */
 module.exports = function resolveExternalFilepath(filepath, modulePath) {
-  if (
-    !modulePath.startsWith('.') &&
-    !modulePath.startsWith('/')
-  ) {
+  if (!modulePath.startsWith('.') && !modulePath.startsWith('/')) {
     return require.resolve(modulePath, { paths: [filepath, process.cwd()] });
   }
 
@@ -31,8 +28,12 @@ module.exports = function resolveExternalFilepath(filepath, modulePath) {
     }
   }
 
-  throw new Error(`Could not resolve one of filepaths: \n\t${extensions.map(ext => `${srcPath}.${ext}`).join('\n\t')}`);
-}
+  throw new Error(
+    `Could not resolve one of filepaths: \n\t${extensions
+      .map(ext => `${srcPath}.${ext}`)
+      .join('\n\t')}`,
+  );
+};
 
 // Thanks for the inspiration, @pasupuletics  https://github.com/pasupuletics/learning/blob/37d10ba5d2a9decb2d33e66441976e92910c7e26/react-docgen-external-proptypes-handler.js#L111
 // and thanks for publishing, @siddharthkp    https://github.com/reactjs/react-docgen/issues/33#issuecomment-388288992
