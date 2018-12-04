@@ -46,7 +46,6 @@
     "testRegex": "/__tests__/.*-test\\.js$"
   },
   "dependencies": {
-    "babylon": "~5.8.38",
     "react-docgen": "2.21.0",
     "recast": "^0.12.9"
   }
