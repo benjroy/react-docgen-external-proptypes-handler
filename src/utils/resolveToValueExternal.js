@@ -8,10 +8,6 @@ const types = require('recast').types;
 const babylon = require('react-docgen/dist/babylon').default;
 const resolveExternalFilepath = require('./resolveExternalFilepath');
 const isPropTypesExpression = require('./isPropTypesExpression');
-const getDestructuredVariableDeclarator = require('./getDestructuredVariableDeclarator');
-
-//temp
-const _getDestructuredVariableDeclarator = getDestructuredVariableDeclarator._getDestructuredVariableDeclarator
 
 const {
   namedTypes: n,
