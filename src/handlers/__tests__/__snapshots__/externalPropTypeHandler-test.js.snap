@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`react-docgen-external-proptypes-handler tests/fixtures/components/component-class-spreads-external-member-expression.js parses with only external handlers 1`] = `
+exports[`react-docgen-external-proptypes-handler component-class-spreads-external-member-expression.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
     "api-1-bool": Object {
@@ -63,7 +63,7 @@ Object {
 }
 `;
 
-exports[`react-docgen-external-proptypes-handler tests/fixtures/components/component-class-spreads-nested.js parses with only external handlers 1`] = `
+exports[`react-docgen-external-proptypes-handler component-class-spreads-nested.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
     "api-1-bool": Object {
@@ -119,7 +119,7 @@ Object {
 }
 `;
 
-exports[`react-docgen-external-proptypes-handler tests/fixtures/components/component-imports-api-cjs-named-exports.js parses with only external handlers 1`] = `
+exports[`react-docgen-external-proptypes-handler component-imports-api-cjs-named-exports.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
     "cjs-api-named-exports-node-required": Object {
@@ -140,7 +140,7 @@ Object {
 }
 `;
 
-exports[`react-docgen-external-proptypes-handler tests/fixtures/components/component-imports-external-proptype.js parses with only external handlers 1`] = `
+exports[`react-docgen-external-proptypes-handler component-imports-external-proptype.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
     "externalPropType": Object {
@@ -154,7 +154,7 @@ Object {
 }
 `;
 
-exports[`react-docgen-external-proptypes-handler tests/fixtures/components/component-imports-external-values-for-enum.js parses with only external handlers 1`] = `
+exports[`react-docgen-external-proptypes-handler component-imports-external-values-for-enum.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
     "api-external-values-enum": Object {
@@ -262,7 +262,7 @@ Object {
 }
 `;
 
-exports[`react-docgen-external-proptypes-handler tests/fixtures/components/component-imports-literal-default.js parses with only external handlers 1`] = `
+exports[`react-docgen-external-proptypes-handler component-imports-literal-default.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
     "external-propTypes-string": Object {
@@ -276,7 +276,7 @@ Object {
 }
 `;
 
-exports[`react-docgen-external-proptypes-handler tests/fixtures/components/component-imports-literal-named.js parses with only external handlers 1`] = `
+exports[`react-docgen-external-proptypes-handler component-imports-literal-named.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
     "api-1-bool": Object {
@@ -297,7 +297,7 @@ Object {
 }
 `;
 
-exports[`react-docgen-external-proptypes-handler tests/fixtures/components/component-imports-node-module.js parses with only external handlers 1`] = `
+exports[`react-docgen-external-proptypes-handler component-imports-node-module.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
     "localBool": Object {
@@ -318,7 +318,7 @@ Object {
 }
 `;
 
-exports[`react-docgen-external-proptypes-handler tests/fixtures/components/component-local-spread.js parses with only external handlers 1`] = `
+exports[`react-docgen-external-proptypes-handler component-local-spread.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
     "LOCAL_ENUM": Object {
@@ -482,7 +482,7 @@ Object {
 }
 `;
 
-exports[`react-docgen-external-proptypes-handler tests/fixtures/components/component-no-external-spread.js parses with only external handlers 1`] = `
+exports[`react-docgen-external-proptypes-handler component-no-external-spread.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
     "local-bool-spread": Object {
@@ -588,7 +588,7 @@ Object {
 }
 `;
 
-exports[`react-docgen-external-proptypes-handler tests/fixtures/components/component-requires-and-spreads-nested.js parses with only external handlers 1`] = `
+exports[`react-docgen-external-proptypes-handler component-requires-and-spreads-nested.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
     "api-1-bool": Object {
@@ -644,7 +644,7 @@ Object {
 }
 `;
 
-exports[`react-docgen-external-proptypes-handler tests/fixtures/components/component-spreads.js parses with only external handlers 1`] = `
+exports[`react-docgen-external-proptypes-handler component-spreads.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
     "api-1-bool": Object {
@@ -686,7 +686,7 @@ Object {
 }
 `;
 
-exports[`react-docgen-external-proptypes-handler tests/fixtures/components/component-spreads-call-expression.js parses with only external handlers 1`] = `
+exports[`react-docgen-external-proptypes-handler component-spreads-call-expression.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
     "localFunction": Object {
@@ -700,7 +700,7 @@ Object {
 }
 `;
 
-exports[`react-docgen-external-proptypes-handler tests/fixtures/components/component-spreads-external-member-expression.js parses with only external handlers 1`] = `
+exports[`react-docgen-external-proptypes-handler component-spreads-external-member-expression.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
     "api-1-bool": Object {
@@ -857,7 +857,7 @@ Object {
 }
 `;
 
-exports[`react-docgen-external-proptypes-handler tests/fixtures/components/component-spreads-nested.js parses with only external handlers 1`] = `
+exports[`react-docgen-external-proptypes-handler component-spreads-nested.js parses with only external handlers 1`] = `
 Object {
   "props": Object {
     "api-1-bool": Object {

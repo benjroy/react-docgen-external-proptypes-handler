@@ -198,6 +198,6 @@ function getExternalPropTypeHandler(propName) {
 }
 
 
-module.exports.propTypeHandler = getExternalPropTypeHandler('propTypes');
-module.exports.contextTypeHandler = getExternalPropTypeHandler('contextTypes');
-module.exports.childContextTypeHandler = getExternalPropTypeHandler('childContextTypes');
+module.exports.externalPropTypeHandler = getExternalPropTypeHandler('propTypes');
+module.exports.externalContextTypeHandler = getExternalPropTypeHandler('contextTypes');
+module.exports.externalChildContextTypeHandler = getExternalPropTypeHandler('childContextTypes');
