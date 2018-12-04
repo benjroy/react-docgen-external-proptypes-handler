@@ -43,6 +43,7 @@ function buildMemberExpressionFromPattern(path) {
   return null;
 }
 
+// slightly modified version of internal method from docgen.utils.resolveToValue
 // paths: array of NodePath's
 // path: NodePath
 function findScopePathExternal(paths, path, { filepath }) {
@@ -102,6 +103,7 @@ function findScopePathExternal(paths, path, { filepath }) {
   return null;
 }
 
+// slightly modified version of internal method from docgen.utils.resolveToValue
 /**
  * Tries to find the last value assigned to `name` in the scope created by
  * `scope`. We are not descending into any statements (blocks).
@@ -132,12 +134,13 @@ function findLastAssignedValueExternal(scope, name, { filepath }) {
   return resolveToValueExternal(results.pop(), { filepath });
 }
 
+// slightly modified version of docgen.utils.resolveToValue
 /**
  * If the path is an identifier, it is resolved in the scope chain.
  * If it is an assignment expression, it resolves to the right hand side.
  * If it is a member expression it is resolved to it's initialization value.
  *
- * Else the path itself is returned.
+ * Else the path itself is returned. (really it is { path, filepath })
  */
 export default function resolveToValueExternal(path, { filepath }) {
   const node = path.node;
