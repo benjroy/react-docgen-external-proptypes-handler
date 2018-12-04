@@ -5,6 +5,7 @@
   "scripts": {
     "build": "rimraf dist/ && babel src/ --out-dir dist/ --ignore **/__tests__,**/__mocks__,**/src/types.js",
     "lint": "eslint . --report-unused-disable-directives",
+    "lint-file": "eslint --report-unused-disable-directives",
     "fix-lint": "npm run lint -- --fix",
     "test": "jest"
   },
@@ -44,5 +45,8 @@
       "src"
     ],
     "testRegex": "/__tests__/.*-test\\.js$"
+  },
+  "dependencies": {
+    "babylon": "~5.8.38"
   }
 }
