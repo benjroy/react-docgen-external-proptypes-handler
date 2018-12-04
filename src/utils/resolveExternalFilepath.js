@@ -33,7 +33,7 @@ export default function resolveExternalFilepath(filepath, modulePath) {
       .map(ext => `${srcPath}.${ext}`)
       .join('\n\t')}`,
   );
-};
+}
 
 // Thanks for the inspiration, @pasupuletics  https://github.com/pasupuletics/learning/blob/37d10ba5d2a9decb2d33e66441976e92910c7e26/react-docgen-external-proptypes-handler.js#L111
 // and thanks for publishing, @siddharthkp    https://github.com/reactjs/react-docgen/issues/33#issuecomment-388288992
