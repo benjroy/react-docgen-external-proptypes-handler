@@ -12,8 +12,6 @@
 /*eslint no-loop-func: 0, no-use-before-define: 0*/
 import resolveToValueExternal from './resolveToValueExternal';
 import recast from 'recast';
-import { utils } from 'react-docgen';
-const { resolveToValue } = utils;
 const {
   types: { namedTypes: types },
 } = recast;
@@ -35,7 +33,7 @@ function toArrayExternal(path, { filepath }) {
     } else if (types.MemberExpression.check(node)) {
       parts.push(path.get('object'));
       if (node.computed) {
-        const resolved = resolveToValueExternal(path.get('property'), { filepath });
+        const resolved = resolveToValueExternal(path.get('property'), { filepath }); // eslint-disable-line prettier/prettier
         if (resolved && resolved.path !== undefined) {
           result = result.concat(toArrayExternal(resolved.path, resolved));
         } else {
@@ -57,7 +55,7 @@ function toArrayExternal(path, { filepath }) {
     } else if (types.ObjectExpression.check(node)) {
       const properties = path.get('properties').map(function(property) {
         return (
-          toStringExternal(property.get('key'), { filepath }) + ': ' + toStringExternal(property.get('value'), { filepath })
+          toStringExternal(property.get('key'), { filepath }) + ': ' + toStringExternal(property.get('value'), { filepath }) // eslint-disable-line prettier/prettier
         );
       });
       result.push('{' + properties.join(', ') + '}');
