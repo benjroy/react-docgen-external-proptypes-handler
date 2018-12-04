@@ -8,11 +8,7 @@ import recast from 'recast';
 const {
   types: { builders, namedTypes: types },
 } = recast;
-const {
-  getNameOrValue,
-  isExportsOrModuleAssignment,
-  getMembers
-} = utils;
+const { getNameOrValue, isExportsOrModuleAssignment, getMembers } = utils;
 
 // converts:
 //  `export default class foobar {}`
@@ -20,7 +16,7 @@ const {
 //  `export defaut function foobar() {}`
 // by putting the expression on it's own line
 // and exporting default it's identifier
-// i.e. 
+// i.e.
 //  class foobar {}
 //  export default foobar;
 function reassignExportDefaultExpression(ast) {
@@ -35,7 +31,7 @@ function reassignExportDefaultExpression(ast) {
         path.get('declaration').replace(node.declaration.id);
       }
       return false;
-    }
+    },
   });
 }
 
@@ -52,7 +48,10 @@ function recastExternalFilepath(externalFilepath, baseFilepath) {
   };
 }
 
-export default function resolveNamespaceExternal(externalFilepath, baseFilepath) {
+export default function resolveNamespaceExternal(
+  externalFilepath,
+  baseFilepath,
+) {
   const __EXPORTS__ = '__EXPORTS__';
 
   const external = recastExternalFilepath(externalFilepath, baseFilepath);
@@ -63,7 +62,7 @@ export default function resolveNamespaceExternal(externalFilepath, baseFilepath)
 
   const addNamespaceExport = (key, valuePath) => {
     namespace.push([key, valuePath]);
-  }
+  };
 
   // TODO: use traverseShallow
   recast.types.visit(external.ast, {
@@ -72,13 +71,13 @@ export default function resolveNamespaceExternal(externalFilepath, baseFilepath)
         const expressionPath = path.get('expression');
         const valuePath = expressionPath.get('right');
         const keys = getMembers(expressionPath.get('left')).reduce(
-          (memo, { path, computed, argumentsPath }) => {
-            if (path.node.name !== 'exports') {
-              memo.push(path.node.name);
+          (memo, { path: memberPath }) => {
+            if (memberPath.node.name !== 'exports') {
+              memo.push(memberPath.node.name);
             }
             return memo;
           },
-          []
+          [],
         );
         // module.exports = { ... }
         if (!keys.length) {
@@ -92,7 +91,7 @@ export default function resolveNamespaceExternal(externalFilepath, baseFilepath)
         // don't process module.exports.foo.bar... = ...;
       }
 
-      this.traverse(path)
+      this.traverse(path);
     },
     visitExportDefaultDeclaration(path) {
       addNamespaceExport('default', path.get('declaration'));
@@ -110,8 +109,11 @@ export default function resolveNamespaceExternal(externalFilepath, baseFilepath)
       const declaration = path.get('declaration');
 
       if (declaration.value) {
-        declaration.get('declarations').each(declaration => {
-          addNamespaceExport(getNameOrValue(declaration.get('id')), declaration.get('init'));
+        declaration.get('declarations').each(declarationPath => {
+          addNamespaceExport(
+            getNameOrValue(declarationPath.get('id')),
+            declarationPath.get('init'),
+          );
         });
       }
 
@@ -119,21 +121,31 @@ export default function resolveNamespaceExternal(externalFilepath, baseFilepath)
     },
   });
 
-  const namespaceObjectExpression = (keyValuePaths) =>
+  const namespaceObjectExpression = keyValuePaths =>
     builders.objectExpression(
       keyValuePaths.map(([key, valuePath]) =>
-        builders.objectProperty(builders.identifier(key), valuePath.node)
-      )
+        builders.objectProperty(builders.identifier(key), valuePath.node),
+      ),
     );
 
-  if (defaultModuleExports && types.ObjectExpression.check(defaultModuleExports.node)) {
+  if (
+    defaultModuleExports &&
+    types.ObjectExpression.check(defaultModuleExports.node)
+  ) {
     // TODO: there is an ordering bug here.
     // TODO: make sure that the order of definitions
     // TODO: default/named order is right
-    defaultModuleExports.get('properties').each(
-      propertyPath => addNamespaceExport(propertyPath.get('key').node.name, propertyPath.get('value'))
-    );
-    addNamespaceExport('default', { node: namespaceObjectExpression(namespace) });
+    defaultModuleExports
+      .get('properties')
+      .each(propertyPath =>
+        addNamespaceExport(
+          propertyPath.get('key').node.name,
+          propertyPath.get('value'),
+        ),
+      );
+    addNamespaceExport('default', {
+      node: namespaceObjectExpression(namespace),
+    });
   }
 
   // inject the namespace valuepaths
@@ -141,28 +153,44 @@ export default function resolveNamespaceExternal(externalFilepath, baseFilepath)
     builders.variableDeclaration('const', [
       builders.variableDeclarator(
         builders.identifier(__EXPORTS__),
-        namespaceObjectExpression(namespace)
-      )
-    ])
+        namespaceObjectExpression(namespace),
+      ),
+    ]),
   );
 
   // find the injected value and return it.
-  return resolveIdentifierNameToExternalValue(__EXPORTS__, external.ast, external.filepath);
+  return resolveIdentifierNameToExternalValue(
+    __EXPORTS__,
+    external.ast,
+    external.filepath,
+  );
 }
 
-export function resolveExternalNamespaceImport(importDeclarationPath, baseFilepath) {
+export function resolveExternalNamespaceImport(
+  importDeclarationPath,
+  baseFilepath,
+) {
   types.ImportDeclaration.assert(importDeclarationPath.node);
   const source = importDeclarationPath.node.source;
   types.Literal.assert(source);
   return resolveNamespaceExternal(source.value, baseFilepath);
 }
 
-export function resolveExternalImport(variable, importDeclarationPath, filepath) {
-  const external = resolveExternalNamespaceImport(importDeclarationPath, filepath);
-
-  const matched = external.path.get('properties').filter(
-    propertyPath => variable === getNameOrValue(propertyPath.get('key'))
+export function resolveExternalImport(
+  variable,
+  importDeclarationPath,
+  filepath,
+) {
+  const external = resolveExternalNamespaceImport(
+    importDeclarationPath,
+    filepath,
   );
+
+  const matched = external.path
+    .get('properties')
+    .filter(
+      propertyPath => variable === getNameOrValue(propertyPath.get('key')),
+    );
   const valuePath = matched[0].get('value');
 
   if (types.Identifier.check(valuePath.node)) {
@@ -171,10 +199,8 @@ export function resolveExternalImport(variable, importDeclarationPath, filepath)
   return { ...external, path: valuePath };
 }
 
-
-
 function resolveIdentifierNameToExternalValue(name, ast, filepath) {
-  var result = false;
+  let result = false;
   traverseShallow(ast, {
     visitIdentifier(path) {
       if (path.node.name === name) {
