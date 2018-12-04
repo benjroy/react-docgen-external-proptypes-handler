@@ -1,8 +1,11 @@
 import { utils } from 'react-docgen';
 import recast from 'recast';
-import { Array as toArrayExternal } from './expressionTo';
 import { traverseShallow } from 'react-docgen/dist/utils/traverse';
-import resolveNamespaceExternal, { resolveExternalNamespaceImport, resolveExternalImport } from './resolveImportedNamespace';
+import { Array as toArrayExternal } from './expressionTo';
+import resolveNamespaceExternal, {
+  resolveExternalNamespaceImport,
+  resolveExternalImport,
+} from './resolveImportedNamespace';
 import isPropTypesExpression from './isPropTypesExpression';
 
 const {
@@ -16,7 +19,6 @@ const {
   getMemberExpressionRoot,
   getPropertyValuePath,
 } = utils;
-
 
 // internal from docgen.utils.resolveToValue
 function buildMemberExpressionFromPattern(path) {
@@ -58,25 +60,33 @@ function findScopePathExternal(paths, path, { filepath }) {
   } else if (types.ImportDefaultSpecifier.check(parentPath.node)) {
     const importDeclarationPath = resolveToValue(path).parentPath;
 
-    const resolved = resolveExternalImport('default', importDeclarationPath, filepath);
+    const resolved = resolveExternalImport(
+      'default',
+      importDeclarationPath,
+      filepath,
+    );
     return resolveToValueExternal(resolved.path, resolved);
-
   } else if (types.ImportSpecifier.check(parentPath.node)) {
     const variable = parentPath.value.imported.name;
     const importDeclarationPath = resolveToValue(path).parentPath;
 
-    const resolved = resolveExternalImport(variable, importDeclarationPath, filepath);
+    const resolved = resolveExternalImport(
+      variable,
+      importDeclarationPath,
+      filepath,
+    );
     return resolveToValueExternal(resolved.path, resolved);
-
   } else if (types.ImportNamespaceSpecifier.check(parentPath.node)) {
     const importDeclarationPath = resolveToValue(path).parentPath;
     types.ImportDeclaration.assert(importDeclarationPath.node);
     const importSourceLiteralPath = importDeclarationPath.get('source');
     types.Literal.assert(importSourceLiteralPath.node);
 
-    const resolved = resolveExternalNamespaceImport(importDeclarationPath, filepath);
+    const resolved = resolveExternalNamespaceImport(
+      importDeclarationPath,
+      filepath,
+    );
     return resolveToValueExternal(resolved.path, resolved);
-
   } else if (types.Property.check(parentPath.node)) {
     // must be inside a pattern
     const memberExpressionPath = buildMemberExpressionFromPattern(parentPath);
@@ -137,18 +147,21 @@ export default function resolveToValueExternal(path, { filepath }) {
     }
   } else if (types.CallExpression.check(node)) {
     if (
-      node.callee
-      && types.Identifier.check(node.callee)
-      && 'require' === getNameOrValue(path.get('callee'))
+      node.callee &&
+      types.Identifier.check(node.callee) &&
+      'require' === getNameOrValue(path.get('callee'))
     ) {
-      const external = resolveNamespaceExternal(resolveToModule(path), filepath);
+      const external = resolveNamespaceExternal(
+        resolveToModule(path),
+        filepath,
+      );
       return resolveToValueExternal(external.path, external);
     }
   } else if (types.MemberExpression.check(node)) {
     if (isPropTypesExpression(path)) {
       return { path, filepath };
     }
-    const resolved = resolveToValueExternal(getMemberExpressionRoot(path), { filepath });
+    const resolved = resolveToValueExternal(getMemberExpressionRoot(path), { filepath }); // eslint-disable-line prettier/prettier
     if (types.ObjectExpression.check(resolved.path.node)) {
       let propertyPath = resolved.path;
       for (const propertyName of toArrayExternal(path, { filepath }).slice(1)) {
