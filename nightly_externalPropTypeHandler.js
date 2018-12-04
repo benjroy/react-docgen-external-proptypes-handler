@@ -6,8 +6,8 @@ const babylon = require('react-docgen/dist/babylon').default
 const setPropDescription = require('react-docgen/dist/utils/setPropDescription').default
 const isRequiredPropType = require('react-docgen/dist/utils/isRequiredPropType').default
 const getMemberExpressionValuePath = require('react-docgen/dist/utils/getMemberExpressionValuePath').default
-const resolveToValueExternal = require('./lib/utils/resolveToValueExternal');
-const isPropTypesExpression = require('./lib/utils/isPropTypesExpression');
+const resolveToValueExternal = require('./src/utils/resolveToValueExternal');
+const isPropTypesExpression = require('./src/utils/isPropTypesExpression');
 
 
 
