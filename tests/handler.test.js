@@ -2,9 +2,10 @@ const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
 const docgen = require('react-docgen');
-const original_externalProptypesHandler = require("../index");
+// const original_externalProptypesHandler = require("../index");
 // const externalPropTypeHandler = require("../externalPropTypeHandler").propTypeHandler;
-const nightly_externalPropTypeHandler = require("../nightly_externalPropTypeHandler").propTypeHandler;
+// const nightly_externalPropTypeHandler = require("../nightly_externalPropTypeHandler").propTypeHandler;
+const nightly_externalPropTypeHandler = require("../src/handlers/externalPropTypeHandler").propTypeHandler;
 
 const { expect } = global;
 
