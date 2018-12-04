@@ -1,22 +1,16 @@
 const fs = require('fs');
 const docgen = require('react-docgen');
 const resolveExportDeclaration = require('react-docgen/dist/utils/resolveExportDeclaration').default
-import resolveNamespaceExternal, { resolveExternalNamespaceImport, resolveExternalImport } from './resolveImportedNamespace';
+import recast from 'recast';
 import { Array as toArrayExternal } from './expressionTo';
 import { traverseShallow } from 'react-docgen/dist/utils/traverse';
-// TODO: replicate this in repo
-// const traverseShallow = require('react-docgen/dist/utils/traverse').traverseShallow;
-const recast = require('recast');
-const types = require('recast').types;
-const babylon = require('react-docgen/dist/babylon').default;
-// const resolveExternalFilepath = require('./resolveExternalFilepath');
-const isPropTypesExpression = require('./isPropTypesExpression');
+import babylon from 'react-docgen/dist/babylon';
+import resolveNamespaceExternal, { resolveExternalNamespaceImport, resolveExternalImport } from './resolveImportedNamespace';
+import isPropTypesExpression from './isPropTypesExpression';
 
 const {
-  namedTypes: n,
-  builders: b,
-  NodePath,
-} = types;
+  types: { builders, namedTypes: types, NodePath },
+} = recast;
 
 const {
   getPropType,
@@ -46,21 +40,21 @@ const {
 // internal from docgen.utils.resolveToValue
 function buildMemberExpressionFromPattern(path) {
   const node = path.node;
-  if (n.Property.check(node)) {
+  if (types.Property.check(node)) {
     const objPath = buildMemberExpressionFromPattern(path.parent);
     if (objPath) {
       return new NodePath(
-        b.memberExpression(
+        builders.memberExpression(
           objPath.node,
           node.key,
-          n.Literal.check(node.key),
+          types.Literal.check(node.key),
         ),
         objPath,
       );
     }
-  } else if (n.ObjectPattern.check(node)) {
+  } else if (types.ObjectPattern.check(node)) {
     return buildMemberExpressionFromPattern(path.parent);
-  } else if (n.VariableDeclarator.check(node)) {
+  } else if (types.VariableDeclarator.check(node)) {
     return path.get('init');
   }
   return null;
@@ -76,33 +70,33 @@ function findScopePathExternal(paths, path, { filepath }) {
   const parentPath = resultPath.parent;
 
   if (
-    n.VariableDeclarator.check(parentPath.node) ||
-    n.TypeAlias.check(parentPath.node)
+    types.VariableDeclarator.check(parentPath.node) ||
+    types.TypeAlias.check(parentPath.node)
   ) {
     resultPath = parentPath;
-  } else if (n.ImportDefaultSpecifier.check(parentPath.node)) {
+  } else if (types.ImportDefaultSpecifier.check(parentPath.node)) {
     const importDeclarationPath = resolveToValue(path).parentPath;
 
     const resolved = resolveExternalImport('default', importDeclarationPath, filepath);
     return resolveToValueExternal(resolved.path, resolved);
 
-  } else if (n.ImportSpecifier.check(parentPath.node)) {
+  } else if (types.ImportSpecifier.check(parentPath.node)) {
     const variable = parentPath.value.imported.name;
     const importDeclarationPath = resolveToValue(path).parentPath;
 
     const resolved = resolveExternalImport(variable, importDeclarationPath, filepath);
     return resolveToValueExternal(resolved.path, resolved);
 
-  } else if (n.ImportNamespaceSpecifier.check(parentPath.node)) {
+  } else if (types.ImportNamespaceSpecifier.check(parentPath.node)) {
     const importDeclarationPath = resolveToValue(path).parentPath;
-    n.ImportDeclaration.assert(importDeclarationPath.node);
+    types.ImportDeclaration.assert(importDeclarationPath.node);
     const importSourceLiteralPath = importDeclarationPath.get('source');
-    n.Literal.assert(importSourceLiteralPath.node);
+    types.Literal.assert(importSourceLiteralPath.node);
 
     const resolved = resolveExternalNamespaceImport(importDeclarationPath, filepath);
     return resolveToValueExternal(resolved.path, resolved);
 
-  } else if (n.Property.check(parentPath.node)) {
+  } else if (types.Property.check(parentPath.node)) {
     // must be inside a pattern
     const memberExpressionPath = buildMemberExpressionFromPattern(parentPath);
     if (memberExpressionPath) {
@@ -130,7 +124,7 @@ function findLastAssignedValueExternal(scope, name, { filepath }) {
       // Skip anything that is not an assignment to a variable with the
       // passed name.
       if (
-        !n.Identifier.check(node.left) ||
+        !types.Identifier.check(node.left) ||
         node.left.name !== name ||
         node.operator !== '='
       ) {
@@ -156,28 +150,28 @@ function findLastAssignedValueExternal(scope, name, { filepath }) {
  */
 export default function resolveToValueExternal(path, { filepath }) {
   const node = path.node;
-  if (n.VariableDeclarator.check(node)) {
+  if (types.VariableDeclarator.check(node)) {
     if (node.init) {
       return resolveToValueExternal(path.get('init'), { filepath });
     }
-  } else if (n.CallExpression.check(node)) {
+  } else if (types.CallExpression.check(node)) {
     if (
       node.callee
-      && n.Identifier.check(node.callee)
+      && types.Identifier.check(node.callee)
       && 'require' === getNameOrValue(path.get('callee'))
     ) {
       const external = resolveNamespaceExternal(resolveToModule(path), filepath);
       return resolveToValueExternal(external.path, external);
     }
-  } else if (n.MemberExpression.check(node)) {
+  } else if (types.MemberExpression.check(node)) {
     if (isPropTypesExpression(path)) {
       return { path, filepath };
     }
     const resolved = resolveToValueExternal(getMemberExpressionRoot(path), { filepath });
-    if (n.ObjectExpression.check(resolved.path.node)) {
+    if (types.ObjectExpression.check(resolved.path.node)) {
       let propertyPath = resolved.path;
       for (const propertyName of toArrayExternal(path, { filepath }).slice(1)) {
-        if (propertyPath && n.ObjectExpression.check(propertyPath.node)) {
+        if (propertyPath && types.ObjectExpression.check(propertyPath.node)) {
           propertyPath = getPropertyValuePath(propertyPath, propertyName);
         }
         if (!propertyPath) {
@@ -187,17 +181,17 @@ export default function resolveToValueExternal(path, { filepath }) {
       }
       return { ...resolved, path: propertyPath };
     }
-  } else if (n.AssignmentExpression.check(node)) {
+  } else if (types.AssignmentExpression.check(node)) {
     if (node.operator === '=') {
       return resolveToValueExternal(path.get('right'), { filepath });
     }
-  } else if (n.TypeCastExpression.check(node)) {
+  } else if (types.TypeCastExpression.check(node)) {
     return resolveToValueExternal(path.get('expression'), { filepath });
-  } else if (n.Identifier.check(node)) {
+  } else if (types.Identifier.check(node)) {
     if (
-      (n.ClassDeclaration.check(path.parentPath.node) ||
-        n.ClassExpression.check(path.parentPath.node) ||
-        n.Function.check(path.parentPath.node)) &&
+      (types.ClassDeclaration.check(path.parentPath.node) ||
+        types.ClassExpression.check(path.parentPath.node) ||
+        types.Function.check(path.parentPath.node)) &&
       path.parentPath.get('id') === path
     ) {
       return { path: path.parentPath, filepath };

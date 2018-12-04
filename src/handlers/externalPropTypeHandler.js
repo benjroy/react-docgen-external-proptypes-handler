@@ -7,7 +7,7 @@ const setPropDescription = require('react-docgen/dist/utils/setPropDescription')
 const isRequiredPropType = require('react-docgen/dist/utils/isRequiredPropType').default
 const getMemberExpressionValuePath = require('react-docgen/dist/utils/getMemberExpressionValuePath').default
 import resolveToValueExternal from '../utils/resolveToValueExternal';
-const isPropTypesExpression = require('../utils/isPropTypesExpression');
+import isPropTypesExpression from '../utils/isPropTypesExpression';
 
 
 
