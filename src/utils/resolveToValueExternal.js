@@ -1,10 +1,7 @@
-const fs = require('fs');
-const docgen = require('react-docgen');
-const resolveExportDeclaration = require('react-docgen/dist/utils/resolveExportDeclaration').default
+import { utils } from 'react-docgen';
 import recast from 'recast';
 import { Array as toArrayExternal } from './expressionTo';
 import { traverseShallow } from 'react-docgen/dist/utils/traverse';
-import babylon from 'react-docgen/dist/babylon';
 import resolveNamespaceExternal, { resolveExternalNamespaceImport, resolveExternalImport } from './resolveImportedNamespace';
 import isPropTypesExpression from './isPropTypesExpression';
 
@@ -13,28 +10,12 @@ const {
 } = recast;
 
 const {
-  getPropType,
-  getPropertyName,
-  getMemberValuePath,
-  isReactModuleName,
-  printValue,
   resolveToModule,
   resolveToValue,
-  // appended
-  isExportsOrModuleAssignment,
   getNameOrValue,
   getMemberExpressionRoot,
-  getMembers,
-  getMethodDocumentation,
-  getParameterName,
   getPropertyValuePath,
-  // more appended
-  isReactComponentClass,
-  isReactCreateClassCall,
-  isReactComponentMethod,
-  isStatelessComponent,
-
-} = docgen.utils;
+} = utils;
 
 
 // internal from docgen.utils.resolveToValue
