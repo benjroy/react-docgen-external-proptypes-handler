@@ -1,0 +1,2 @@
+# Added so npm does not ignore files in .gitignore
+!/dist/
