@@ -48,7 +48,7 @@ function recastExternalFilepath(externalFilepath, baseFilepath) {
   };
 }
 
-export default function resolveNamespaceExternal(
+export default function resolveImportedNamespace(
   externalFilepath,
   baseFilepath,
 ) {
@@ -173,7 +173,7 @@ export function resolveExternalNamespaceImport(
   types.ImportDeclaration.assert(importDeclarationPath.node);
   const source = importDeclarationPath.node.source;
   types.Literal.assert(source);
-  return resolveNamespaceExternal(source.value, baseFilepath);
+  return resolveImportedNamespace(source.value, baseFilepath);
 }
 
 export function resolveExternalImport(

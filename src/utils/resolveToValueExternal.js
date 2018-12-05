@@ -2,7 +2,7 @@ import { utils } from 'react-docgen';
 import recast from 'recast';
 import { traverseShallow } from 'react-docgen/dist/utils/traverse';
 import { Array as toArrayExternal } from './expressionTo';
-import resolveNamespaceExternal, {
+import resolveImportedNamespace, {
   resolveExternalNamespaceImport,
   resolveExternalImport,
 } from './resolveImportedNamespace';
@@ -154,7 +154,7 @@ export default function resolveToValueExternal(path, { filepath }) {
       types.Identifier.check(node.callee) &&
       'require' === getNameOrValue(path.get('callee'))
     ) {
-      const external = resolveNamespaceExternal(
+      const external = resolveImportedNamespace(
         resolveToModule(path),
         filepath,
       );
