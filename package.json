@@ -1,7 +1,7 @@
 {
   "name": "react-docgen-imported-proptype-handler",
   "version": "1.0.0",
-  "description": "evaluate variables from external files for react-docgen",
+  "description": "evaluate imported variables for react-docgen",
   "scripts": {
     "build": "rimraf dist/ && babel src/ --out-dir dist/ --ignore **/__tests__,**/__mocks__,**/src/types.js",
     "lint": "eslint . --report-unused-disable-directives",
