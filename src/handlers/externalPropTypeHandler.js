@@ -20,59 +20,56 @@ const {
   types: { namedTypes: types },
 } = recast;
 
-function amendPropType(propName, valuePath, getDescriptor) {
-  const propDescriptor = getDescriptor(propName);
-  const type = isPropTypesExpression(valuePath)
-    ? getPropType(valuePath)
-    : { name: 'custom', raw: printValue(valuePath) };
 
-  if (type) {
-    propDescriptor.type = type;
-    propDescriptor.required =
-      type.name !== 'custom' && isRequiredPropType(valuePath);
-  }
-}
-
-function resolveExternals({ path, filepath }, options) {
+function amendPropTypes({ path, filepath }, options) {
   switch (path.node.type) {
     case types.Property.name: {
       const resolved = resolveToValueExternal(path.get('value'), { filepath });
-      resolveExternals({ ...resolved }, options);
+      amendPropTypes(resolved, options);
 
       if (isPropTypesExpression(resolved.path)) {
         const { documentation, getDescriptor } = options;
         const propName = getPropertyName(path);
+        const propDescriptor = getDescriptor(propName);
+        const type = isPropTypesExpression(resolved.path)
+          ? getPropType(resolved.path)
+          : { name: 'custom', raw: printValue(resolved.path) };
 
-        amendPropType(propName, resolved.path, getDescriptor);
+        if (type) {
+          propDescriptor.type = type;
+          propDescriptor.required =
+            type.name !== 'custom' && isRequiredPropType(resolved.path);
+        }
+
         setPropDescription(documentation, path);
       }
       break;
     }
     case types.Identifier.name: {
       const resolved = resolveToValueExternal(path, { filepath });
-      resolveExternals(resolved, options);
+      amendPropTypes(resolved, options);
       path.replace(resolved.path.value);
       break;
     }
     case types.SpreadProperty.name: {
-      resolveExternals({ path: path.get('argument'), filepath }, options);
+      amendPropTypes({ path: path.get('argument'), filepath }, options);
       break;
     }
     case types.ObjectExpression.name: {
       path.get('properties').each(propertyPath => {
-        resolveExternals({ path: propertyPath, filepath }, options);
+        amendPropTypes({ path: propertyPath, filepath }, options);
       });
       break;
     }
     case types.ArrayExpression.name: {
       path.get('elements').each(elPath => {
-        resolveExternals({ path: elPath, filepath }, options);
+        amendPropTypes({ path: elPath, filepath }, options);
       });
       break;
     }
     case types.CallExpression.name: {
       path.get('arguments').each(argPath => {
-        resolveExternals({ path: argPath, filepath }, options);
+        amendPropTypes({ path: argPath, filepath }, options);
       });
       break;
     }
@@ -82,7 +79,7 @@ function resolveExternals({ path, filepath }, options) {
           if (!types.Identifier.check(targetPath.node)) {
             // recurse into .oneOf([ ... ]), .shape({ ... })
             // and other PropTypes CallExpressions
-            resolveExternals({ path: targetPath, filepath }, options);
+            amendPropTypes({ path: targetPath, filepath }, options);
           }
         });
       } else if (!types.CallExpression.check(path.node.object)) {
@@ -98,7 +95,7 @@ function resolveExternals({ path, filepath }, options) {
           break;
         }
 
-        resolveExternals({
+        amendPropTypes({
           path: getMemberValuePath(resolved.path, getNameOrValue(path.get('property'))),
           filepath: resolved.filepath,
         }, options);
@@ -138,7 +135,7 @@ function getExternalPropTypeHandler(propName) {
         return;
       }
 
-      resolveExternals({ path: propTypesPath, filepath }, { documentation, getDescriptor });
+      amendPropTypes({ path: propTypesPath, filepath }, { documentation, getDescriptor });
     };
   };
 }
