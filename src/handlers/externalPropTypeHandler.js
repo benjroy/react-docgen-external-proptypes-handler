@@ -33,93 +33,75 @@ function amendPropType(propName, valuePath, getDescriptor) {
   }
 }
 
-// TODO: shouldn't need externalProps
-function resolveExternals({ path, filepath, externalProps }) {
+function resolveExternals({ path, filepath }, options) {
   switch (path.node.type) {
     case types.Property.name: {
       const resolved = resolveToValueExternal(path.get('value'), { filepath });
-      resolveExternals({ ...resolved, externalProps });
+      resolveExternals({ ...resolved }, options);
 
       if (isPropTypesExpression(resolved.path)) {
+        const { documentation, getDescriptor } = options;
         const propName = getPropertyName(path);
 
-        Object.assign(externalProps, {
-          [propName]: {
-            propertyPath: path,
-            valuePath: resolved.path,
-          },
-        });
+        amendPropType(propName, resolved.path, getDescriptor);
+        setPropDescription(documentation, path);
       }
       break;
     }
     case types.Identifier.name: {
       const resolved = resolveToValueExternal(path, { filepath });
-      resolveExternals({ ...resolved, externalProps });
+      resolveExternals(resolved, options);
       path.replace(resolved.path.value);
       break;
     }
     case types.SpreadProperty.name: {
-      resolveExternals({ path: path.get('argument'), filepath, externalProps });
+      resolveExternals({ path: path.get('argument'), filepath }, options);
       break;
     }
-
     case types.ObjectExpression.name: {
       path.get('properties').each(propertyPath => {
-        resolveExternals({ path: propertyPath, filepath, externalProps });
+        resolveExternals({ path: propertyPath, filepath }, options);
       });
       break;
     }
     case types.ArrayExpression.name: {
       path.get('elements').each(elPath => {
-        resolveExternals({ path: elPath, filepath, externalProps });
+        resolveExternals({ path: elPath, filepath }, options);
       });
       break;
     }
     case types.CallExpression.name: {
       path.get('arguments').each(argPath => {
-        resolveExternals({ path: argPath, filepath, externalProps });
+        resolveExternals({ path: argPath, filepath }, options);
       });
       break;
     }
-
     case types.MemberExpression.name: {
       if (isPropTypesExpression(path)) {
         [path.get('object'), path.get('property')].forEach(targetPath => {
           if (!types.Identifier.check(targetPath.node)) {
             // recurse into .oneOf([ ... ]), .shape({ ... })
             // and other PropTypes CallExpressions
-            resolveExternals({ path: targetPath, filepath, externalProps });
+            resolveExternals({ path: targetPath, filepath }, options);
           }
         });
-      } else {
-        if (types.CallExpression.check(path.node.object)) {
-          break;
-        }
-
-        const external = resolveToValueExternal(path.get('object'), {
-          filepath,
-        });
+      } else if (!types.CallExpression.check(path.node.object)) {
+        const resolved = resolveToValueExternal(path.get('object'), { filepath });
 
         if (
-          types.CallExpression.check(external.path.node) ||
-          types.MemberExpression.check(external.path.node) ||
+          types.CallExpression.check(resolved.path.node) ||
+          types.MemberExpression.check(resolved.path.node) ||
           // TODO: make resolveToValueExternal able to read
           // `export default myClassName { ... }`
-          types.Identifier.check(external.path.node)
+          types.Identifier.check(resolved.path.node)
         ) {
           break;
         }
 
-        const valuePath = getMemberValuePath(
-          external.path,
-          getNameOrValue(path.get('property')),
-        );
-
         resolveExternals({
-          ...external,
-          externalProps,
-          path: valuePath,
-        });
+          path: getMemberValuePath(resolved.path, getNameOrValue(path.get('property'))),
+          filepath: resolved.filepath,
+        }, options);
         break;
       }
       break;
@@ -128,8 +110,6 @@ function resolveExternals({ path, filepath, externalProps }) {
       break;
     }
   }
-
-  return { path, filepath, externalProps };
 }
 
 function getExternalPropTypeHandler(propName) {
@@ -158,20 +138,7 @@ function getExternalPropTypeHandler(propName) {
         return;
       }
 
-      const externalProps = {};
-
-      resolveExternals({
-        path: propTypesPath,
-        filepath,
-        externalProps,
-      });
-
-      Object.keys(externalProps).forEach(propName_ => {
-        const { propertyPath, valuePath } = externalProps[propName_];
-
-        amendPropType(propName_, valuePath, getDescriptor);
-        setPropDescription(documentation, propertyPath);
-      });
+      resolveExternals({ path: propTypesPath, filepath }, { documentation, getDescriptor });
     };
   };
 }
