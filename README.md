@@ -1,4 +1,4 @@
-# imported variables for `handler` for `react-docgen`
+# `react-docgen` `handler` for processing imported variables
 
 ## Install
 ```
