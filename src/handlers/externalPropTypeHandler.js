@@ -20,12 +20,11 @@ const {
   types: { namedTypes: types },
 } = recast;
 
-
-function amendPropTypes({ path, filepath }, options) {
+function amendPropTypes(path, filepath, options) {
   switch (path.node.type) {
     case types.Property.name: {
       const resolved = resolveToValueExternal(path.get('value'), { filepath });
-      amendPropTypes(resolved, options);
+      amendPropTypes(resolved.path, resolved.filepath, options);
 
       if (isPropTypesExpression(resolved.path)) {
         const { documentation, getDescriptor } = options;
@@ -47,29 +46,29 @@ function amendPropTypes({ path, filepath }, options) {
     }
     case types.Identifier.name: {
       const resolved = resolveToValueExternal(path, { filepath });
-      amendPropTypes(resolved, options);
+      amendPropTypes(resolved.path, resolved.filepath, options);
       path.replace(resolved.path.value);
       break;
     }
     case types.SpreadProperty.name: {
-      amendPropTypes({ path: path.get('argument'), filepath }, options);
+      amendPropTypes(path.get('argument'), filepath, options);
       break;
     }
     case types.ObjectExpression.name: {
       path.get('properties').each(propertyPath => {
-        amendPropTypes({ path: propertyPath, filepath }, options);
+        amendPropTypes(propertyPath, filepath, options);
       });
       break;
     }
     case types.ArrayExpression.name: {
       path.get('elements').each(elPath => {
-        amendPropTypes({ path: elPath, filepath }, options);
+        amendPropTypes(elPath, filepath, options);
       });
       break;
     }
     case types.CallExpression.name: {
       path.get('arguments').each(argPath => {
-        amendPropTypes({ path: argPath, filepath }, options);
+        amendPropTypes(argPath, filepath, options);
       });
       break;
     }
@@ -79,11 +78,11 @@ function amendPropTypes({ path, filepath }, options) {
           if (!types.Identifier.check(targetPath.node)) {
             // recurse into .oneOf([ ... ]), .shape({ ... })
             // and other PropTypes CallExpressions
-            amendPropTypes({ path: targetPath, filepath }, options);
+            amendPropTypes(targetPath, filepath, options);
           }
         });
       } else if (!types.CallExpression.check(path.node.object)) {
-        const resolved = resolveToValueExternal(path.get('object'), { filepath });
+        const resolved = resolveToValueExternal(path.get('object'), { filepath }); // eslint-disable-line prettier/prettier
 
         if (
           types.CallExpression.check(resolved.path.node) ||
@@ -95,10 +94,14 @@ function amendPropTypes({ path, filepath }, options) {
           break;
         }
 
-        amendPropTypes({
-          path: getMemberValuePath(resolved.path, getNameOrValue(path.get('property'))),
-          filepath: resolved.filepath,
-        }, options);
+        amendPropTypes(
+          getMemberValuePath(
+            resolved.path,
+            getNameOrValue(path.get('property')),
+          ),
+          resolved.filepath,
+          options,
+        );
         break;
       }
       break;
@@ -135,7 +138,7 @@ function getExternalPropTypeHandler(propName) {
         return;
       }
 
-      amendPropTypes({ path: propTypesPath, filepath }, { documentation, getDescriptor });
+      amendPropTypes(propTypesPath, filepath, { documentation, getDescriptor });
     };
   };
 }
