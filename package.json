@@ -1,6 +1,6 @@
 {
   "name": "react-docgen-imported-proptype-handler",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "evaluate imported variables for react-docgen",
   "scripts": {
     "build": "rimraf dist/ && babel src/ --out-dir dist/ --ignore **/__tests__,**/__mocks__,**/src/types.js",
@@ -27,7 +27,6 @@
     "@babel/core": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.2.0",
     "@babel/preset-env": "^7.2.0",
-    "@babel/runtime": "^7.2.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
@@ -47,6 +46,7 @@
     "testRegex": "/__tests__/.*-test\\.js$"
   },
   "dependencies": {
+    "@babel/runtime": "^7.2.0",
     "react-docgen": "2.21.0",
     "recast": "^0.12.9"
   }
