@@ -17,6 +17,3 @@ const defaultProps = {
 
 module.exports.propTypes = propTypes;
 module.exports.defaultProps = defaultProps;
-// module.exports = { propTypes, defaultProps };
-
-// module.exports.defaultProps__ = defaultProps;
