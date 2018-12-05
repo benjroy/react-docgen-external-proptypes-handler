@@ -5,7 +5,4 @@ import {
 } from './handlers';
 
 export default importedPropTypeHandler;
-export {
-  importedContextTypeHandler,
-  importedChildContextTypeHandler,
-};
+export { importedContextTypeHandler, importedChildContextTypeHandler };
