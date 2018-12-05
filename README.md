@@ -1,8 +1,24 @@
+
 # `react-docgen` `handler` for processing imported variables
 
 ## Install
-```
+```bash
+# install peer dependencies
+npm install react-docgen@2.21.0 recast@0.12.9 --save-dev
+# install this handler
 npm install react-docgen-imported-proptype-handler --save-dev
+```
+##### peerDependencies
+*note: it is necessary for this `handler` and `react-docgen` to share the same `recast` dependency*
+```bash
+npm ls recast
+```
+*should show `recast` as `deduped` under `react-docgen`*
+```
+<project name>@<project version>
+├─┬ react-docgen@2.21.0
+│ └── recast@0.12.9  deduped
+└── recast@0.12.9
 ```
 
 ### Usage example
