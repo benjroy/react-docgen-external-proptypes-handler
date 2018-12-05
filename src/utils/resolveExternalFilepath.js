@@ -8,7 +8,7 @@ import { resolve, dirname } from 'path';
  * @method resolveExternalFilepath
  * @param  {String} filepath  Relative file path of the component
  * @param  {String} modulePath Relative file path of a dependent component
- * @return {String} Resolved file path if file exist else null
+ * @return {String} Resolved file path if file exists, else error thrown
  */
 export default function resolveExternalFilepath(filepath, modulePath) {
   if (!modulePath.startsWith('.') && !modulePath.startsWith('/')) {
@@ -26,11 +26,14 @@ export default function resolveExternalFilepath(filepath, modulePath) {
     if (fs.existsSync(`${srcPath}.${ext}`)) {
       return `${srcPath}.${ext}`;
     }
+    if (fs.existsSync(`${srcPath}/index.${ext}`)) {
+      return `${srcPath}/index.${ext}`;
+    }
   }
 
   throw new Error(
     `Could not resolve one of filepaths: \n\t${extensions
-      .map(ext => `${srcPath}.${ext}`)
+      .map(ext => `${srcPath}.${ext}\n\t${srcPath}/index.${ext}`)
       .join('\n\t')}`,
   );
 }
