@@ -112,14 +112,14 @@ function amendPropTypes(path, filepath, options) {
   }
 }
 
-function getExternalPropTypeHandler(propName) {
-  return function getExternalPropTypeHandlerForFilePath(filepath) {
+function getImportedPropTypeHandler(propName) {
+  return function getImportedPropTypeHandlerForFilePath(filepath) {
     // relative filepaths are resolved to current working directory
     if (!filepath.startsWith('/')) {
       filepath = require('path').resolve(process.cwd(), filepath);
     }
 
-    return function externalPropTypeHandler(documentation, path) {
+    return function importedPropTypeHandler(documentation, path) {
       let getDescriptor;
       switch (propName) {
         case 'childContextTypes':
@@ -143,6 +143,6 @@ function getExternalPropTypeHandler(propName) {
   };
 }
 
-export const externalPropTypeHandler = getExternalPropTypeHandler('propTypes');
-export const externalContextTypeHandler = getExternalPropTypeHandler('contextTypes'); // eslint-disable-line prettier/prettier
-export const externalChildContextTypeHandler = getExternalPropTypeHandler('childContextTypes'); // eslint-disable-line prettier/prettier
+export const importedPropTypeHandler = getImportedPropTypeHandler('propTypes');
+export const importedContextTypeHandler = getImportedPropTypeHandler('contextTypes'); // eslint-disable-line prettier/prettier
+export const importedChildContextTypeHandler = getImportedPropTypeHandler('childContextTypes'); // eslint-disable-line prettier/prettier

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import glob from 'glob';
-import { externalPropTypeHandler } from '../externalPropTypeHandler';
+import { importedPropTypeHandler } from '../importedPropTypeHandler';
 import { parse, resolver } from 'react-docgen';
 
 const { findExportedComponentDefinition } = resolver;
@@ -11,13 +11,13 @@ const TARGET_FILES = glob.sync(
   path.resolve(__dirname, 'fixtures/components/component-*.js'),
 );
 
-describe('react-docgen-external-proptypes-handler', () => {
+describe('react-docgen-imported-proptype-handler', () => {
   function test(filepath) {
-    it('parses with only external handlers', () => {
+    it('parses with only imported handlers', () => {
       const info = parse(
         fs.readFileSync(filepath, 'utf8'),
         findExportedComponentDefinition,
-        [externalPropTypeHandler(filepath)],
+        [importedPropTypeHandler(filepath)],
         {},
       );
       expect(info).toMatchSnapshot();

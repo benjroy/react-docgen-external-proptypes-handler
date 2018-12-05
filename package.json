@@ -1,5 +1,5 @@
 {
-  "name": "react-docgen-imported-proptypes-handler",
+  "name": "react-docgen-imported-proptype-handler",
   "version": "1.0.0",
   "description": "evaluate variables from external files for react-docgen",
   "scripts": {
@@ -12,15 +12,15 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/benjroy/react-docgen-imported-proptypes-handler.git"
+    "url": "git+https://github.com/benjroy/react-docgen-imported-proptype-handler.git"
   },
   "keywords": [],
   "author": "benjroy",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/benjroy/react-docgen-imported-proptypes-handler/issues"
+    "url": "https://github.com/benjroy/react-docgen-imported-proptype-handler/issues"
   },
-  "homepage": "https://github.com/benjroy/react-docgen-imported-proptypes-handler#readme",
+  "homepage": "https://github.com/benjroy/react-docgen-imported-proptype-handler#readme",
   "devDependencies": {
     "@babel/cli": "^7.2.0",
     "@babel/core": "^7.2.0",

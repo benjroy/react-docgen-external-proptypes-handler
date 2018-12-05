@@ -1,11 +1,11 @@
 import {
-  externalPropTypeHandler,
-  externalContextTypeHandler,
-  externalChildContextTypeHandler,
+  importedPropTypeHandler,
+  importedContextTypeHandler,
+  importedChildContextTypeHandler,
 } from './handlers';
 
-export default externalPropTypeHandler;
+export default importedPropTypeHandler;
 export {
-  externalContextTypeHandler,
-  externalChildContextTypeHandler,
+  importedContextTypeHandler,
+  importedChildContextTypeHandler,
 };
