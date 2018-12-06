@@ -11,8 +11,6 @@ const {
   getPropType,
   getPropertyName,
   getMemberValuePath,
-  printValue,
-  // appended
   getNameOrValue,
 } = docgen.utils;
 
