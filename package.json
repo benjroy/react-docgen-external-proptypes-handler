@@ -1,6 +1,6 @@
 {
   "name": "react-docgen-imported-proptype-handler",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "evaluate imported variables for react-docgen",
   "scripts": {
     "build": "rimraf dist/ && babel src/ --out-dir dist/ --ignore **/__tests__,**/__mocks__,**/src/types.js",

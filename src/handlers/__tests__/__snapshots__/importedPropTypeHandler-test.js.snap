@@ -220,6 +220,64 @@ Object {
 exports[`react-docgen-imported-proptype-handler component-imports-external-values-for-enum.js parses with only imported handlers 1`] = `
 Object {
   "props": Object {
+    "api-external-values-arrayOf-enum": Object {
+      "description": "Comment for api-external-values-arrayOf-enum.",
+      "required": true,
+      "type": Object {
+        "name": "arrayOf",
+        "value": Object {
+          "name": "enum",
+          "value": Array [
+            Object {
+              "computed": false,
+              "value": "'external-values-string'",
+            },
+            Object {
+              "computed": false,
+              "value": "42",
+            },
+            Object {
+              "computed": false,
+              "value": "false",
+            },
+          ],
+        },
+      },
+    },
+    "api-external-values-arrayOf-shape-with-enum": Object {
+      "description": "Comment for api-external-values-arrayOf-enum.",
+      "required": true,
+      "type": Object {
+        "name": "arrayOf",
+        "value": Object {
+          "name": "shape",
+          "value": Object {
+            "enum3": Object {
+              "name": "enum",
+              "required": false,
+              "value": Array [
+                Object {
+                  "computed": false,
+                  "value": "'external-values-string'",
+                },
+                Object {
+                  "computed": false,
+                  "value": "42",
+                },
+                Object {
+                  "computed": false,
+                  "value": "false",
+                },
+              ],
+            },
+            "number3": Object {
+              "name": "number",
+              "required": true,
+            },
+          },
+        },
+      },
+    },
     "api-external-values-enum": Object {
       "description": "Comment for api-external-values-enum.",
       "required": false,
@@ -273,12 +331,127 @@ Object {
         "name": "node",
       },
     },
+    "api-external-values-objectOf-enum": Object {
+      "description": "Comment for api-external-values-objectOf-enum.",
+      "required": true,
+      "type": Object {
+        "name": "objectOf",
+        "value": Object {
+          "name": "enum",
+          "value": Array [
+            Object {
+              "computed": false,
+              "value": "'external-values-string'",
+            },
+            Object {
+              "computed": false,
+              "value": "42",
+            },
+            Object {
+              "computed": false,
+              "value": "false",
+            },
+          ],
+        },
+      },
+    },
+    "api-external-values-objectOf-shape-with-enum": Object {
+      "description": "api-external-values-objectOf-shape-with-enum.",
+      "required": true,
+      "type": Object {
+        "name": "objectOf",
+        "value": Object {
+          "name": "shape",
+          "value": Object {
+            "enum2": Object {
+              "name": "enum",
+              "required": false,
+              "value": Array [
+                Object {
+                  "computed": false,
+                  "value": "'external-values-string'",
+                },
+                Object {
+                  "computed": false,
+                  "value": "42",
+                },
+                Object {
+                  "computed": false,
+                  "value": "false",
+                },
+              ],
+            },
+            "number2": Object {
+              "name": "number",
+              "required": true,
+            },
+          },
+        },
+      },
+    },
+    "api-external-values-oneOfType-with-enum-and-shape": Object {
+      "description": "Comment for api-external-values-oneOfType-with-enum-and-shape.",
+      "required": true,
+      "type": Object {
+        "name": "union",
+        "value": Array [
+          Object {
+            "name": "enum",
+            "value": Array [
+              Object {
+                "computed": false,
+                "value": "'external-values-string'",
+              },
+              Object {
+                "computed": false,
+                "value": "42",
+              },
+              Object {
+                "computed": false,
+                "value": "false",
+              },
+            ],
+          },
+          Object {
+            "name": "shape",
+            "value": Object {
+              "enum1": Object {
+                "name": "enum",
+                "required": false,
+                "value": Array [
+                  Object {
+                    "computed": false,
+                    "value": "'external-values-string'",
+                  },
+                  Object {
+                    "computed": false,
+                    "value": "42",
+                  },
+                  Object {
+                    "computed": false,
+                    "value": "false",
+                  },
+                ],
+              },
+              "number1": Object {
+                "name": "number",
+                "required": true,
+              },
+            },
+          },
+        ],
+      },
+    },
     "api-external-values-shape-with-enum": Object {
       "description": "Comment for api-external-values-enumList.",
       "required": true,
       "type": Object {
         "name": "shape",
         "value": Object {
+          "bool": Object {
+            "name": "bool",
+            "required": true,
+          },
           "enum": Object {
             "name": "enum",
             "required": false,
@@ -298,27 +471,6 @@ Object {
             ],
           },
         },
-      },
-    },
-    "enum": Object {
-      "description": "",
-      "required": false,
-      "type": Object {
-        "name": "enum",
-        "value": Array [
-          Object {
-            "computed": false,
-            "value": "'external-values-string'",
-          },
-          Object {
-            "computed": false,
-            "value": "42",
-          },
-          Object {
-            "computed": false,
-            "value": "false",
-          },
-        ],
       },
     },
   },
@@ -384,34 +536,6 @@ Object {
 exports[`react-docgen-imported-proptype-handler component-local-spread.js parses with only imported handlers 1`] = `
 Object {
   "props": Object {
-    "LOCAL_ENUM": Object {
-      "description": "",
-      "required": false,
-      "type": Object {
-        "name": "enum",
-        "value": Array [
-          Object {
-            "computed": false,
-            "value": "1",
-          },
-          Object {
-            "computed": false,
-            "value": "'two'",
-          },
-          Object {
-            "computed": false,
-            "value": "3",
-          },
-        ],
-      },
-    },
-    "LOCAL_ONE": Object {
-      "description": "",
-      "required": false,
-      "type": Object {
-        "name": "number",
-      },
-    },
     "bool": Object {
       "description": "",
       "required": false,
@@ -808,6 +932,64 @@ Object {
         "name": "number",
       },
     },
+    "api-external-values-arrayOf-enum": Object {
+      "description": "Comment for api-external-values-arrayOf-enum.",
+      "required": true,
+      "type": Object {
+        "name": "arrayOf",
+        "value": Object {
+          "name": "enum",
+          "value": Array [
+            Object {
+              "computed": false,
+              "value": "'external-values-string'",
+            },
+            Object {
+              "computed": false,
+              "value": "42",
+            },
+            Object {
+              "computed": false,
+              "value": "false",
+            },
+          ],
+        },
+      },
+    },
+    "api-external-values-arrayOf-shape-with-enum": Object {
+      "description": "Comment for api-external-values-arrayOf-enum.",
+      "required": true,
+      "type": Object {
+        "name": "arrayOf",
+        "value": Object {
+          "name": "shape",
+          "value": Object {
+            "enum3": Object {
+              "name": "enum",
+              "required": false,
+              "value": Array [
+                Object {
+                  "computed": false,
+                  "value": "'external-values-string'",
+                },
+                Object {
+                  "computed": false,
+                  "value": "42",
+                },
+                Object {
+                  "computed": false,
+                  "value": "false",
+                },
+              ],
+            },
+            "number3": Object {
+              "name": "number",
+              "required": true,
+            },
+          },
+        },
+      },
+    },
     "api-external-values-enum": Object {
       "description": "Comment for api-external-values-enum.",
       "required": false,
@@ -861,12 +1043,127 @@ Object {
         "name": "node",
       },
     },
+    "api-external-values-objectOf-enum": Object {
+      "description": "Comment for api-external-values-objectOf-enum.",
+      "required": true,
+      "type": Object {
+        "name": "objectOf",
+        "value": Object {
+          "name": "enum",
+          "value": Array [
+            Object {
+              "computed": false,
+              "value": "'external-values-string'",
+            },
+            Object {
+              "computed": false,
+              "value": "42",
+            },
+            Object {
+              "computed": false,
+              "value": "false",
+            },
+          ],
+        },
+      },
+    },
+    "api-external-values-objectOf-shape-with-enum": Object {
+      "description": "api-external-values-objectOf-shape-with-enum.",
+      "required": true,
+      "type": Object {
+        "name": "objectOf",
+        "value": Object {
+          "name": "shape",
+          "value": Object {
+            "enum2": Object {
+              "name": "enum",
+              "required": false,
+              "value": Array [
+                Object {
+                  "computed": false,
+                  "value": "'external-values-string'",
+                },
+                Object {
+                  "computed": false,
+                  "value": "42",
+                },
+                Object {
+                  "computed": false,
+                  "value": "false",
+                },
+              ],
+            },
+            "number2": Object {
+              "name": "number",
+              "required": true,
+            },
+          },
+        },
+      },
+    },
+    "api-external-values-oneOfType-with-enum-and-shape": Object {
+      "description": "Comment for api-external-values-oneOfType-with-enum-and-shape.",
+      "required": true,
+      "type": Object {
+        "name": "union",
+        "value": Array [
+          Object {
+            "name": "enum",
+            "value": Array [
+              Object {
+                "computed": false,
+                "value": "'external-values-string'",
+              },
+              Object {
+                "computed": false,
+                "value": "42",
+              },
+              Object {
+                "computed": false,
+                "value": "false",
+              },
+            ],
+          },
+          Object {
+            "name": "shape",
+            "value": Object {
+              "enum1": Object {
+                "name": "enum",
+                "required": false,
+                "value": Array [
+                  Object {
+                    "computed": false,
+                    "value": "'external-values-string'",
+                  },
+                  Object {
+                    "computed": false,
+                    "value": "42",
+                  },
+                  Object {
+                    "computed": false,
+                    "value": "false",
+                  },
+                ],
+              },
+              "number1": Object {
+                "name": "number",
+                "required": true,
+              },
+            },
+          },
+        ],
+      },
+    },
     "api-external-values-shape-with-enum": Object {
       "description": "Comment for api-external-values-enumList.",
       "required": true,
       "type": Object {
         "name": "shape",
         "value": Object {
+          "bool": Object {
+            "name": "bool",
+            "required": true,
+          },
           "enum": Object {
             "name": "enum",
             "required": false,
@@ -886,27 +1183,6 @@ Object {
             ],
           },
         },
-      },
-    },
-    "enum": Object {
-      "description": "",
-      "required": false,
-      "type": Object {
-        "name": "enum",
-        "value": Array [
-          Object {
-            "computed": false,
-            "value": "'external-values-string'",
-          },
-          Object {
-            "computed": false,
-            "value": "42",
-          },
-          Object {
-            "computed": false,
-            "value": "false",
-          },
-        ],
       },
     },
     "local-number": Object {

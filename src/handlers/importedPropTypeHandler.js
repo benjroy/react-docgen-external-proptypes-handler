@@ -11,8 +11,6 @@ const {
   getPropType,
   getPropertyName,
   getMemberValuePath,
-  printValue,
-  // appended
   getNameOrValue,
 } = docgen.utils;
 
@@ -26,13 +24,15 @@ function amendPropTypes(path, filepath, options) {
       const resolved = resolveToValueExternal(path.get('value'), { filepath });
       amendPropTypes(resolved.path, resolved.filepath, options);
 
-      if (isPropTypesExpression(resolved.path)) {
+      if (
+        isPropTypesExpression(resolved.path) &&
+        // avoid hoisting `shape` props up to top-level in docs
+        !types.CallExpression.check(path.parentPath.parentPath.parentPath.node)
+      ) {
         const { documentation, getDescriptor } = options;
         const propName = getPropertyName(path);
         const propDescriptor = getDescriptor(propName);
-        const type = isPropTypesExpression(resolved.path)
-          ? getPropType(resolved.path)
-          : { name: 'custom', raw: printValue(resolved.path) };
+        const type = getPropType(resolved.path);
 
         if (type) {
           propDescriptor.type = type;
