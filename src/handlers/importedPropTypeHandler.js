@@ -34,9 +34,7 @@ function amendPropTypes(path, filepath, options) {
         const { documentation, getDescriptor } = options;
         const propName = getPropertyName(path);
         const propDescriptor = getDescriptor(propName);
-        const type = isPropTypesExpression(resolved.path)
-          ? getPropType(resolved.path)
-          : { name: 'custom', raw: printValue(resolved.path) };
+        const type = getPropType(resolved.path);
 
         if (type) {
           propDescriptor.type = type;
